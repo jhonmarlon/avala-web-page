@@ -1,79 +1,82 @@
-<<<<<<< HEAD
-# React + TypeScript + Vite
+# Avala Web Page
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Landing corporativa de **Sistemas AG / Avala Group** construida con React, TypeScript y Vite, siguiendo una arquitectura reusable y pensada para escalar.
 
-Currently, two official plugins are available:
+## Stack actual
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19
+- TypeScript
+- Vite
+- React Router
+- Tailwind CSS v4
+- Motion
+- Lucide React
+- React Icons
 
-## React Compiler
+## Estado actual
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Hoy el proyecto ya tiene:
 
-## Expanding the ESLint configuration
+- layout público con `Header` y `Footer`
+- `HomePage` compuesta por secciones
+- sistema base de UI reusable (`Button`, `Card`, `Section`, `Heading`, etc.)
+- animaciones con Motion
+- assets reales del mockup integrados progresivamente
+- estructura lista para seguir refinando fidelidad visual y escalar a más páginas/features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Scripts
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+yarn dev
+yarn build
+yarn lint
+yarn preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Estructura principal
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```txt
+src/
+├── app/
+│   ├── layouts/
+│   └── router/
+├── assets/
+├── components/
+│   ├── layout/
+│   └── ui/
+├── config/
+├── features/
+│   └── home/
+├── lib/
+├── pages/
+└── index.css
 ```
-=======
-# avala-web-page
->>>>>>> eb971c8cdc9045f3461db5057faf1bef51c0332e
+
+## Convenciones del proyecto
+
+- **Inter** para UI y texto
+- **Manrope** para headings
+- componentes desacoplados y reutilizables
+- contenido centralizado en `features/home/data/content.ts`
+- assets del diseño en `src/assets/`
+- estilos semánticos preparados para futura evolución a dark mode
+
+## Assets relevantes
+
+En `src/assets/` ya están disponibles:
+
+- `avala_logo.png`
+- `background_1.png`
+- `background_2.png`
+- `background_3.png`
+- `hero.png`
+- `commercial_automation.png`
+- `company_platform.png`
+- `technological_integration.png`
+
+## Próximos pasos sugeridos
+
+- terminar de clavar fidelidad visual exacta contra el mockup
+- revisar responsive fino por breakpoint
+- limpiar contenido placeholder restante
+- preparar commits finales y PR
