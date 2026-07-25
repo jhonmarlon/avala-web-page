@@ -1,18 +1,12 @@
-import { ArrowRight, Bot, Cable, Cloud, Cpu } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { motion } from 'motion/react'
 import { Button } from '@/components/ui/Button'
 import { Reveal } from '@/components/ui/Reveal'
 import { Section } from '@/components/ui/Section'
 import { heroContent } from '@/features/home/data/content'
 import { fadeLeft, fadeUp, staggerContainer, subtleHover } from '@/lib/motion'
+import background1 from '@/assets/background_1.png'
 import heroImage from '@/assets/hero.png'
-
-const capabilityCards = [
-  { label: 'Automatización', Icon: Cpu },
-  { label: 'Integraciones', Icon: Cable },
-  { label: 'Cloud', Icon: Cloud },
-  { label: 'IA aplicada', Icon: Bot },
-]
 
 export function HeroSection() {
   const highlightedTitle = heroContent.title.replace(
@@ -23,15 +17,19 @@ export function HeroSection() {
   const titleParts = highlightedTitle.split('__')
 
   return (
-    <Section className="pb-8 text-white lg:pb-14" containerClassName="pt-8 lg:pt-20">
-      <div className="grid gap-10 lg:grid-cols-[1fr_0.96fr] lg:items-center lg:gap-12">
+    <Section
+      className="relative overflow-visible pb-24 text-white lg:pb-28"
+      containerClassName="pt-8 lg:pt-12"
+      style={{
+        backgroundImage: `linear-gradient(180deg, rgba(4, 11, 30, 0.78) 0%, rgba(5, 17, 44, -0.22) 100%), url(${background1})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center top',
+      }}
+    >
+      <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-10 xl:gap-14">
         <Reveal className="max-w-3xl space-y-7 lg:space-y-8">
           <div className="space-y-5">
-            <span className="inline-flex rounded-full border border-brand-400/30 bg-brand-500/10 px-4 py-2 text-xs font-medium text-brand-100 sm:text-sm">
-              {heroContent.eyebrow}
-            </span>
-
-            <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl xl:text-7xl">
+            <h1 className="max-w-[17ch] text-4xl font-extrabold tracking-tight text-balance sm:text-5xl lg:text-[4.15rem] lg:leading-[1.04] xl:text-[4.6rem]">
               {titleParts[0]}
               <span className="text-brand-400">{titleParts[1]}</span>
               {titleParts[2]}
@@ -73,51 +71,26 @@ export function HeroSection() {
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(43,179,255,0.3),transparent_55%)] blur-3xl" />
 
           <motion.div
-            className="panel-dark-glass overflow-hidden p-4 sm:p-5 lg:p-8"
+            className="relative min-h-[23rem] sm:min-h-[29rem] lg:min-h-[34rem]"
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.25 }}
           >
-            <div className="mb-4 overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,rgba(8,20,39,0.94),rgba(16,47,87,0.72))] p-3 sm:mb-5 sm:p-4">
-              <img src={heroImage} alt="Visual de soluciones tecnológicas" className="mx-auto w-full max-w-[30rem] object-contain" />
-            </div>
-
-            <div className="mb-5 inline-flex rounded-full border border-brand-400/20 bg-brand-500/10 px-4 py-2 text-xs font-medium tracking-[0.18em] text-brand-100 uppercase">
-              {heroContent.floatingBadge}
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              {capabilityCards.map(({ label, Icon }, index) => (
-                <motion.div
-                  key={label}
-                  variants={fadeUp}
-                  whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                  className={[
-                    'rounded-[2rem] border border-white/10 bg-surface-950/55 p-5 sm:p-6',
-                    index === 0 ? 'sm:translate-y-8' : '',
-                    index === 1 ? 'sm:-translate-y-2' : '',
-                    index === 2 ? 'sm:translate-y-2' : '',
-                    index === 3 ? 'sm:-translate-y-8' : '',
-                  ].join(' ')}
-                >
-                  <div className="space-y-8 sm:space-y-10">
-                    <div className="flex size-12 items-center justify-center rounded-2xl bg-brand-500/12 text-brand-300 ring-1 ring-brand-400/25">
-                      <Icon className="size-6" />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-lg font-semibold text-white">{label}</p>
-                      <p className="text-sm leading-7 text-slate-300">
-                        Base preparada para traducir el mockup a bloques visuales reutilizables.
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+            <motion.div
+              variants={fadeUp}
+              className="absolute left-1/2 top-1/2 w-full max-w-[42rem] -translate-x-1/2 -translate-y-1/2"
+            >
+              <img
+                src={heroImage}
+                alt="Visual de soluciones tecnológicas"
+                className="mx-auto w-full object-contain drop-shadow-[0_25px_70px_rgba(18,152,255,0.3)] h-[85%] sm:h-[90%] lg:h-[100%]"
+              />
+            </motion.div>
           </motion.div>
         </Reveal>
       </div>
+
     </Section>
   )
 }

@@ -1,27 +1,27 @@
 import {
   BarChart3,
-  BriefcaseBusiness,
-  ChartNoAxesColumn,
-  Clock3,
   Cloud,
-  Cog,
-  Cpu,
-  HandHelping,
-  Globe,
-  LaptopMinimal,
+  BrainCircuit,
+  Code2,
   Megaphone,
-  Network,
+  MessagesSquare,
+  PenTool,
+  Puzzle,
   RadioTower,
-  Search,
-  ShieldCheck,
-  Smartphone,
   Rocket,
-  SquarePen,
-  Workflow,
+  Search,
+  Settings,
+  ShieldCheck,
+  Smile,
+  Smartphone,
+  Users,
+  Infinity as InfinityIcon,
 } from 'lucide-react'
+import commercialAutomationImage from '@/assets/commercial_automation.png'
+import companyPlatformImage from '@/assets/company_platform.png'
+import technologicalIntegrationImage from '@/assets/technological_integration.png'
 
 export const heroContent = {
-  eyebrow: 'Transformación digital para empresas que quieren escalar',
   title: 'Transformamos procesos complejos en soluciones tecnológicas inteligentes.',
   highlightedText: 'soluciones tecnológicas inteligentes',
   description:
@@ -34,24 +34,23 @@ export const heroContent = {
     label: 'Conoce nuestras soluciones',
     to: '/soluciones',
   },
-  floatingBadge: 'Arquitectura + automatización + IA aplicada',
 }
 
 export const metrics = [
   {
     value: '120+',
     label: 'Proyectos exitosos',
-    Icon: BriefcaseBusiness,
+    Icon: Rocket,
   },
   {
     value: '15+',
     label: 'Años de experiencia',
-    Icon: Clock3,
+    Icon: Users,
   },
   {
     value: '95%',
     label: 'Clientes satisfechos',
-    Icon: BarChart3,
+    Icon: Smile,
   },
   {
     value: '24/7',
@@ -61,10 +60,7 @@ export const metrics = [
 ]
 
 export const servicesIntro = {
-  eyebrow: 'Nuestras soluciones',
-  title: 'Servicios pensados para acompañar cada etapa de tu transformación digital.',
-  description:
-    'La idea no es dibujar cajas lindas. La idea es modelar una grilla reusable que después podamos alimentar desde CMS, panel o API sin romper presentación.',
+  title: 'Nuestras soluciones',
 }
 
 export const services = [
@@ -73,7 +69,7 @@ export const services = [
     description:
       'Eliminamos tareas repetitivas y optimizamos flujos de trabajo con automatización inteligente.',
     ctaLabel: 'Ver más',
-    Icon: Cog,
+    Icon: Settings,
     featured: true,
   },
   {
@@ -81,7 +77,7 @@ export const services = [
     description:
       'Creamos plataformas modernas, escalables y enfocadas en resultados medibles.',
     ctaLabel: 'Ver más',
-    Icon: Globe,
+    Icon: Code2,
   },
   {
     title: 'Aplicaciones móviles',
@@ -95,14 +91,14 @@ export const services = [
     description:
       'Integramos IA para analizar datos, asistir decisiones y automatizar acciones.',
     ctaLabel: 'Ver más',
-    Icon: Cpu,
+    Icon: BrainCircuit,
   },
   {
     title: 'Integraciones',
     description:
       'Conectamos sistemas, APIs y plataformas para que tu operación funcione en armonía.',
     ctaLabel: 'Ver más',
-    Icon: Network,
+    Icon: Puzzle,
   },
   {
     title: 'Cloud',
@@ -116,7 +112,7 @@ export const services = [
     description:
       'Acompañamiento estratégico para definir soluciones tecnológicas a la medida.',
     ctaLabel: 'Ver más',
-    Icon: HandHelping,
+    Icon: MessagesSquare,
   },
   {
     title: 'Marketing digital',
@@ -130,7 +126,7 @@ export const services = [
     description:
       'Automatizamos despliegues y operaciones para acelerar entrega y confiabilidad.',
     ctaLabel: 'Ver más',
-    Icon: Workflow,
+    Icon: InfinityIcon,
   },
   {
     title: 'Telecomunicaciones',
@@ -142,50 +138,49 @@ export const services = [
 ]
 
 export const processIntro = {
-  eyebrow: 'Así trabajamos',
-  title: 'Un proceso claro para convertir complejidad técnica en ejecución confiable.',
-  description:
-    'El mockup muestra una secuencia lineal, pero en código necesitamos una estructura reusable que sirva para timelines, pasos de onboarding o flujos de servicio.',
+  title: 'Así trabajamos',
 }
 
 export const processSteps = [
   {
-    step: '01',
+    step: '1',
     title: 'Descubrimos',
     description: 'Entendemos tus necesidades y alineamos la solución con objetivos reales.',
     Icon: Search,
+    accentClass: 'from-sky-400/40 via-sky-500/18 to-transparent text-sky-300 border-sky-400/45 shadow-[0_0_36px_rgba(56,189,248,0.22)] hover:shadow-[0_0_60px_rgba(56,189,248,0.4)]',
   },
   {
-    step: '02',
+    step: '2',
     title: 'Diseñamos',
     description: 'Definimos estrategia, alcance y arquitectura antes de ejecutar.',
-    Icon: SquarePen,
+    Icon: PenTool,
+    accentClass: 'from-emerald-300/35 via-emerald-400/18 to-transparent text-emerald-200 border-emerald-300/45 shadow-[0_0_36px_rgba(52,211,153,0.2)] hover:shadow-[0_0_60px_rgba(52,211,153,0.38)]',
   },
   {
-    step: '03',
+    step: '3',
     title: 'Construimos',
     description: 'Desarrollamos e integramos la solución con foco en escalabilidad.',
-    Icon: LaptopMinimal,
+    Icon: Code2,
+    accentClass: 'from-sky-400/40 via-blue-500/18 to-transparent text-sky-300 border-sky-400/45 shadow-[0_0_36px_rgba(59,130,246,0.24)] hover:shadow-[0_0_60px_rgba(59,130,246,0.42)]',
   },
   {
-    step: '04',
+    step: '4',
     title: 'Implementamos',
     description: 'Puesta en marcha segura, iterativa y con mínima fricción operativa.',
     Icon: Rocket,
+    accentClass: 'from-fuchsia-300/35 via-violet-400/20 to-transparent text-fuchsia-200 border-fuchsia-300/45 shadow-[0_0_36px_rgba(217,70,239,0.24)] hover:shadow-[0_0_60px_rgba(217,70,239,0.42)]',
   },
   {
-    step: '05',
+    step: '5',
     title: 'Optimizamos',
     description: 'Medimos, mejoramos y escalamos para sostener crecimiento.',
-    Icon: ChartNoAxesColumn,
+    Icon: BarChart3,
+    accentClass: 'from-cyan-300/35 via-cyan-400/20 to-transparent text-cyan-200 border-cyan-300/45 shadow-[0_0_36px_rgba(34,211,238,0.2)] hover:shadow-[0_0_60px_rgba(34,211,238,0.38)]',
   },
 ]
 
 export const successCasesIntro = {
-  eyebrow: 'Casos de éxito',
-  title: 'Resultados concretos respaldados por ejecución técnica y visión de negocio.',
-  description:
-    'Acá no alcanza con una card bonita. Necesitamos piezas que después puedan crecer a testimonios, métricas, filtros y páginas de detalle.',
+  title: 'Casos de éxito',
 }
 
 export const successCases = [
@@ -195,6 +190,7 @@ export const successCases = [
       'Implementación de software para mejorar compras, procesos comerciales y operación interna.',
     metric: '+65%',
     metricLabel: 'Tiempo operativo optimizado',
+    image: commercialAutomationImage,
   },
   {
     title: 'Plataforma empresarial',
@@ -202,6 +198,7 @@ export const successCases = [
       'Desarrollamos una plataforma a medida con analítica y control de procesos clave.',
     metric: '+80%',
     metricLabel: 'Eficiencia operativa',
+    image: companyPlatformImage,
   },
   {
     title: 'Integración tecnológica',
@@ -209,14 +206,22 @@ export const successCases = [
       'Conectamos servicios y sistemas en una nube segura, escalable y observable.',
     metric: '100%',
     metricLabel: 'Sistemas conectados',
+    image: technologicalIntegrationImage,
   },
 ]
 
 export const successCasesAside = {
   eyebrow: 'Sobre nosotros',
-  title: 'Tecnología aplicada con foco en resultados y relaciones de largo plazo.',
+  title: 'Sobre nosotros',
   description:
-    'Somos una empresa enfocada en automatización, software e infraestructura. La meta no es vender humo tecnológico: es resolver problemas complejos con soluciones mantenibles.',
+    'Somos una empresa enfocada y tecnológica especializada en el desarrollo de soluciones tecnológicas, automatización de procesos e infraestructura y servicios en la nube de escala y medida.',
+  descriptionSecondary:
+    'Nuestro lado valioso integra innovaciones que combinan inteligencia artificial, datos y análisis en nuevas formas de conectar, ayudando a empresas de diferentes industrias a resolver retos operativos y escalar el éxito comercial.',
+  highlights: [
+    'Automatización e integración de procesos críticos.',
+    'Desarrollo web y plataformas escalables a medida.',
+    'Infraestructura, cloud y soporte continuo.',
+  ],
   ctaLabel: 'Conocer más sobre nosotros',
   ctaTo: '/nosotros',
 }

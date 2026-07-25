@@ -1,7 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap");
 @import "tailwindcss";
 
 @theme {
   --font-sans: Inter, system-ui, sans-serif;
+  --font-heading: Manrope, Inter, system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
@@ -76,6 +78,12 @@
     text-decoration: none;
   }
 
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+  }
+
   button {
     font: inherit;
   }
@@ -111,15 +119,28 @@
     @apply rounded-5xl border border-white/10 bg-white/5 text-white shadow-glow backdrop-blur-sm;
   }
 
+  .panel-light-elevated {
+    @apply rounded-5xl border border-[#dfe8f6] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,249,255,0.94))] text-card-foreground shadow-[0_24px_60px_rgba(8,20,39,0.12)];
+  }
+
+  .hero-grid-bg {
+    background-image:
+      linear-gradient(rgba(67, 138, 255, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(67, 138, 255, 0.08) 1px, transparent 1px),
+      radial-gradient(circle at center, rgba(43, 179, 255, 0.2), transparent 55%);
+    background-size: 42px 42px, 42px 42px, auto;
+    background-position: center;
+  }
+
+  .hero-chip {
+    @apply rounded-[1.75rem] border border-white/10 bg-surface-950/70 px-4 py-3 text-white shadow-glow backdrop-blur-md;
+  }
+
   .interactive-lift {
     @apply transition-transform duration-300 will-change-transform hover:-translate-y-1;
   }
 
   .section-copy {
-    @apply max-w-3xl text-base leading-8 text-body-muted sm:text-lg;
-  }
-
-  .text-body-muted {
-    @apply text-muted-foreground;
+    @apply max-w-3xl text-base leading-8 text-muted-foreground sm:text-lg;
   }
 }

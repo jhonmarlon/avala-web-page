@@ -5,17 +5,25 @@ import { Section } from '@/components/ui/Section'
 import { ProcessStepCard } from '@/features/home/components/ProcessStepCard'
 import { processIntro, processSteps } from '@/features/home/data/content'
 import { fadeUp, staggerContainer } from '@/lib/motion'
+import background2 from '@/assets/background_2.png'
 
 export function ProcessSection() {
   return (
-    <Section className="bg-surface-950 py-18 text-white lg:py-24">
+    <Section
+      className="py-18 text-white lg:py-24"
+      style={{
+        backgroundImage: `linear-gradient(180deg, rgba(4, 11, 30, 0.58) 0%, rgba(5, 17, 44, 0.56) 100%), url(${background2})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center bottom',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       <div className="space-y-12">
         <Reveal>
           <Heading
-            eyebrow={processIntro.eyebrow}
             title={processIntro.title}
-            description={processIntro.description}
-            className="max-w-3xl [&>p:first-child]:text-brand-200 [&_h2]:text-white [&_p:last-child]:text-slate-300"
+            showAccentLine
+            className="max-w-3xl [&_h2]:text-[2.35rem] [&_h2]:text-white [&_h2]:leading-[1.1] [&_h2]:after:bg-brand-400"
           />
         </Reveal>
 

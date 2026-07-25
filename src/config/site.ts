@@ -17,6 +17,7 @@ export const footerLinkGroups = [
       { label: 'Desarrollo web', href: '/soluciones' },
       { label: 'Aplicaciones móviles', href: '/soluciones' },
       { label: 'Inteligencia artificial', href: '/soluciones' },
+      { label: 'Ver todas las soluciones', href: '/soluciones' },
     ],
   },
   {
@@ -26,6 +27,7 @@ export const footerLinkGroups = [
       { label: 'Casos de éxito', href: '/casos-de-exito' },
       { label: 'Blog', href: '/blog' },
       { label: 'Trabajá con nosotros', href: '/contacto' },
+      { label: 'Capacitación', href: '/contacto' },
     ],
   },
 ]

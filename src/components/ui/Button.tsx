@@ -4,19 +4,19 @@ import { Link, type LinkProps } from 'react-router'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 rounded-full border text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60 disabled:pointer-events-none disabled:opacity-60',
+  'inline-flex items-center justify-center gap-2 rounded-[1.05rem] border text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60 disabled:pointer-events-none disabled:opacity-60',
   {
     variants: {
       variant: {
         primary:
-          'border-brand-500 bg-brand-500 px-5 py-3 text-white shadow-glow hover:border-brand-400 hover:bg-brand-400',
+          'border-[#d6a33e] bg-[linear-gradient(180deg,#ad7a1f_0%,#8e6012_100%)] px-5 py-3 text-white shadow-[0_18px_35px_rgba(173,122,31,0.24)] hover:border-[#efc160] hover:brightness-110',
         secondary:
-          'border-slate-300 bg-white px-5 py-3 text-slate-900 hover:border-brand-400 hover:text-brand-700',
+          'border-white/18 bg-white/4 px-5 py-3 text-white hover:border-brand-400/50 hover:bg-white/8',
         ghost: 'border-transparent bg-transparent px-0 py-0 text-brand-700 hover:text-brand-500',
       },
       size: {
         md: 'min-h-11',
-        lg: 'min-h-12 px-6 py-3.5 text-base',
+        lg: 'min-h-[3.3rem] px-6 py-3.5 text-base',
       },
       fullWidth: {
         true: 'w-full',

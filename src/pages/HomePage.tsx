@@ -1,4 +1,3 @@
-import { AboutSection } from '@/features/home/sections/AboutSection'
 import { FinalCTASection } from '@/features/home/sections/FinalCTASection'
 import { HeroSection } from '@/features/home/sections/HeroSection'
 import { MetricsSection } from '@/features/home/sections/MetricsSection'
@@ -14,7 +13,6 @@ export function HomePage() {
       <ServicesSection />
       <ProcessSection />
       <SuccessCasesSection />
-      <AboutSection />
       <FinalCTASection />
     </>
   )

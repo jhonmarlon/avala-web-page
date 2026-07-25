@@ -7,6 +7,7 @@ type SectionProps = HTMLAttributes<HTMLElement> & {
   containerClassName?: string
   innerClassName?: string
   as?: 'section' | 'div'
+  withSpacing?: boolean
 }
 
 export function Section({
@@ -15,12 +16,13 @@ export function Section({
   containerClassName,
   innerClassName,
   as = 'section',
+  withSpacing = true,
   ...props
 }: SectionProps) {
   const Component = as
 
   return (
-    <Component className={cn('section-spacing', className)} {...props}>
+    <Component className={cn(withSpacing && 'section-spacing', className)} {...props}>
       <Container className={containerClassName}>
         <div className={innerClassName}>{children}</div>
       </Container>
