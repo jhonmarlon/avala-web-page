@@ -32,3 +32,7 @@ export const subtleHover = {
   whileHover: { y: -6, scale: 1.01, transition: { duration: 0.2 } },
   whileTap: { scale: 0.985, transition: { duration: 0.15 } },
 }
+
+export const subtleHoverOnly = {
+  whileHover: { y: -6, scale: 1.01, transition: { duration: 0.2 } },
+}
