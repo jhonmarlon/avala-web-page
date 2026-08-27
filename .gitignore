@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Local Pi runtime state
+.atl/
+
+# Local quotation examples
+/ejemplo_cotizacion.pdf
