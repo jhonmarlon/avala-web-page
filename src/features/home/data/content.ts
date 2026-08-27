@@ -34,6 +34,10 @@ export const heroContent = {
     label: 'Conoce nuestras soluciones',
     to: '/soluciones',
   },
+  estimatorCta: {
+    label: 'Estimar mi proyecto',
+    to: '/estimar-proyecto',
+  },
 }
 
 export const metrics = [
@@ -247,5 +251,9 @@ export const finalCtaContent = {
   primaryCta: {
     label: 'Agendá ahora',
     to: '/contacto',
+  },
+  secondaryCta: {
+    label: 'Estimar mi proyecto',
+    to: '/estimar-proyecto',
   },
 }

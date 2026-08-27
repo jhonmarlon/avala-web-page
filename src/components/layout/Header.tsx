@@ -33,7 +33,6 @@ export function Header() {
             <p className="mt-1 text-sm font-semibold text-white sm:text-[0.95rem] md:text-base lg:text-[1.05rem]">AG</p>
           </div>
         </NavLink>
-
         <nav className="hidden items-center gap-6 text-sm text-slate-300 lg:flex xl:gap-8">
           {navigationItems.map((item) => (
             <NavLink
