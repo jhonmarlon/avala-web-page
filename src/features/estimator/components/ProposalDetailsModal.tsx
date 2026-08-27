@@ -183,9 +183,9 @@ export function ProposalDetailsModal({
 							¡Todo listo!
 						</h3>
 						<p className="mt-3 max-w-lg text-base leading-7 text-slate-600">
-							Tu información quedó preparada en este navegador. Por ahora no se
-							ha enviado a un servidor; cuando conectemos el canal de contacto,
-							podremos recibirla y preparar tu propuesta personalizada.
+							Esta funcionalidad todavía está en desarrollo. Tus datos se
+							prepararon solo en este navegador y aún no se enviaron ni se
+							almacenaron en nuestros servidores.
 						</p>
 					</section>
 				) : (
@@ -263,8 +263,8 @@ export function ProposalDetailsModal({
 					) : (
 						<>
 							<p className="text-xs leading-5 text-slate-500">
-								Esta vista prepara la información localmente; todavía no hay un
-								canal conectado para enviar tus datos.
+								Funcionalidad en desarrollo: el envío de datos todavía no está
+								habilitado.
 							</p>
 							<div className="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
 								<Button
