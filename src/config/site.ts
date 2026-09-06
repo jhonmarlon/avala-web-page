@@ -9,6 +9,14 @@ export const companyInfo = {
   hours: 'L - V · 8:00 a.m. - 6:00 p.m.',
 }
 
+const esimPwaBaseUrl =
+  import.meta.env.VITE_ESIM_PWA_URL?.replace(/\/$/, '') ?? 'http://localhost:5173'
+
+export const esimExperienceLinks = {
+  buy: `${esimPwaBaseUrl}/comprar`,
+  activate: `${esimPwaBaseUrl}/activar`,
+}
+
 export const footerLinkGroups = [
   {
     title: 'Soluciones',
