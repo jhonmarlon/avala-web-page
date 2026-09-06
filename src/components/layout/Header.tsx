@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { CalendarDays, ChevronDown } from 'lucide-react'
-import { NavLink } from 'react-router'
+import { NavLink, useLocation } from 'react-router'
 import logoImage from '@/assets/avala_logo.png'
 import background1 from '@/assets/background_1.png'
 import { Button } from '@/components/ui/Button'
@@ -9,6 +9,8 @@ import { navigationItems } from '@/config/navigation'
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [openDropdownHref, setOpenDropdownHref] = useState<string | null>(null)
+  const location = useLocation()
 
   return (
     <header
@@ -34,28 +36,126 @@ export function Header() {
           </div>
         </NavLink>
         <nav className="hidden items-center gap-6 text-sm text-slate-300 lg:flex xl:gap-8">
-          {navigationItems.map((item) => (
-            <NavLink
-              key={item.href}
-              to={item.href}
-              className={({ isActive }) => cn('group relative rounded-full px-2 py-2 transition-colors duration-200', isActive ? 'text-white' : 'hover:text-brand-400')}
-            >
-              {({ isActive }) => (
-                <>
-                  <span className="inline-flex items-center gap-1.5">
-                    {item.label}
-                    {item.hasChildren ? <ChevronDown className="size-3.5 opacity-70" /> : null}
-                  </span>
-                  <span
+          {navigationItems.map((item) => {
+            const hasChildren = item.children && item.children.length > 0
+            const isChildActive = item.children?.some((child) => child.href === location.pathname) ?? false
+            const isDropdownOpen = openDropdownHref === item.href
+
+            if (hasChildren) {
+              return (
+                <div
+                  key={item.href}
+                  className="relative"
+                  onMouseEnter={() => setOpenDropdownHref(item.href)}
+                  onMouseLeave={() => setOpenDropdownHref(null)}
+                  onFocus={() => setOpenDropdownHref(item.href)}
+                  onBlur={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget)) {
+                      setOpenDropdownHref(null)
+                    }
+                  }}
+                >
+                  <button
+                    type="button"
+                    aria-expanded={isDropdownOpen}
+                    onClick={() => setOpenDropdownHref(item.href)}
                     className={cn(
-                      'absolute inset-x-2 -bottom-[0.15rem] h-0.5 origin-left rounded-full bg-brand-400 transition-transform duration-300',
-                      isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100',
+                      'relative inline-flex rounded-full px-2 py-2 transition-colors duration-200',
+                      isChildActive || isDropdownOpen ? 'text-white' : 'hover:text-brand-400',
                     )}
-                  />
-                </>
-              )}
-            </NavLink>
-          ))}
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      {item.label}
+                      <ChevronDown
+                        className={cn(
+                          'size-3.5 opacity-70 transition-transform duration-200',
+                          isDropdownOpen && 'rotate-180',
+                        )}
+                      />
+                    </span>
+                    <span
+                      className={cn(
+                        'absolute inset-x-2 -bottom-[0.15rem] h-0.5 origin-left rounded-full bg-brand-400 transition-transform duration-300',
+                        isChildActive || isDropdownOpen ? 'scale-x-100' : 'scale-x-0',
+                      )}
+                    />
+                  </button>
+
+                  <div
+                    className={cn(
+                      'absolute left-1/2 top-full z-50 w-[22rem] -translate-x-1/2 pt-4 transition-all duration-300 ease-out',
+                      isDropdownOpen
+                        ? 'visible translate-y-0 opacity-100'
+                        : 'invisible -translate-y-2 opacity-0',
+                    )}
+                  >
+                    <div className="rounded-[1.35rem] border border-white/10 bg-surface-950/96 p-2 text-white shadow-[0_22px_70px_rgba(3,8,20,0.42)] backdrop-blur-xl">
+                      {item.children?.map((child) => (
+                        <NavLink
+                          key={child.href}
+                          to={child.href}
+                          onClick={() => setOpenDropdownHref(null)}
+                          className={({ isActive }) =>
+                            cn(
+                              'relative isolate block overflow-hidden rounded-[1rem] p-[1px] transition-colors duration-200',
+                              isActive ? 'text-white' : 'text-slate-300 hover:text-white',
+                            )
+                          }
+                        >
+                          {({ isActive }) => (
+                            <>
+                              {isActive ? (
+                                <span
+                                  aria-hidden="true"
+                                  className="absolute -inset-10 -z-10 animate-[spin_3.2s_linear_infinite] bg-[conic-gradient(from_90deg,transparent_0_72%,rgba(56,189,248,0.95)_78%,rgba(251,191,36,0.9)_82%,transparent_88%)]"
+                                />
+                              ) : null}
+                              <span
+                                className={cn(
+                                  'relative block rounded-[0.95rem] px-4 py-3 transition-colors duration-200',
+                                  isActive
+                                    ? 'bg-surface-950/96 shadow-[inset_0_0_0_1px_rgba(56,189,248,0.18),0_0_28px_rgba(56,189,248,0.18)]'
+                                    : 'hover:bg-white/6',
+                                )}
+                              >
+                                <span className="block text-sm font-semibold">{child.label}</span>
+                                <span className="mt-1 block text-xs leading-5 text-slate-400">{child.description}</span>
+                              </span>
+                            </>
+                          )}
+                        </NavLink>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+
+            return (
+              <NavLink
+                key={item.href}
+                to={item.href}
+                className={({ isActive }) =>
+                  cn(
+                    'group relative rounded-full px-2 py-2 transition-colors duration-200',
+                    isActive ? 'text-white' : 'hover:text-brand-400',
+                  )
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <span className="inline-flex items-center gap-1.5">{item.label}</span>
+                    <span
+                      className={cn(
+                        'absolute inset-x-2 -bottom-[0.15rem] h-0.5 origin-left rounded-full bg-brand-400 transition-transform duration-300',
+                        isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100',
+                      )}
+                    />
+                  </>
+                )}
+              </NavLink>
+            )
+          })}
         </nav>
 
         <Button
@@ -109,26 +209,105 @@ export function Header() {
         <div className="page-container py-4">
           <nav className="panel-dark-glass rounded-[2rem] p-4 text-white">
             <div className="flex flex-col gap-2">
-              {navigationItems.map((item) => (
-                <NavLink
-                  key={item.href}
-                  to={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={({ isActive }) =>
-                    cn(
-                      'rounded-2xl px-4 py-3 text-sm font-medium transition-colors duration-200',
-                      isActive
-                        ? 'bg-brand-500/15 text-white ring-1 ring-brand-400/30'
-                        : 'text-slate-300 hover:bg-white/5 hover:text-white',
-                    )
-                  }
-                >
-                  <span className="inline-flex items-center gap-1.5">
-                    {item.label}
-                    {item.hasChildren ? <ChevronDown className="size-3.5 opacity-70" /> : null}
-                  </span>
-                </NavLink>
-              ))}
+              {navigationItems.map((item) => {
+                const hasChildren = item.children && item.children.length > 0
+                const isChildActive = item.children?.some((child) => child.href === location.pathname) ?? false
+                const isMobileDropdownOpen = openDropdownHref === item.href
+
+                if (hasChildren) {
+                  return (
+                    <div key={item.href}>
+                      <button
+                        type="button"
+                        aria-expanded={isMobileDropdownOpen}
+                        onClick={() =>
+                          setOpenDropdownHref((current) => (current === item.href ? null : item.href))
+                        }
+                        className={cn(
+                          'flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left text-sm font-medium transition-colors duration-200',
+                          isChildActive || isMobileDropdownOpen
+                            ? 'bg-brand-500/15 text-white ring-1 ring-brand-400/30'
+                            : 'text-slate-300 hover:bg-white/5 hover:text-white',
+                        )}
+                      >
+                        <span>{item.label}</span>
+                        <ChevronDown
+                          className={cn(
+                            'size-3.5 opacity-70 transition-transform duration-200',
+                            isMobileDropdownOpen && 'rotate-180',
+                          )}
+                        />
+                      </button>
+
+                      <div
+                        className={cn(
+                          'overflow-hidden transition-all duration-300 ease-out',
+                          isMobileDropdownOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0',
+                        )}
+                      >
+                        <div className="mt-1 space-y-1 border-l border-white/10 pl-4">
+                          {item.children?.map((child) => (
+                            <NavLink
+                              key={child.href}
+                              to={child.href}
+                              onClick={() => {
+                                setOpenDropdownHref(null)
+                                setIsMobileMenuOpen(false)
+                              }}
+                              className={({ isActive }) =>
+                                cn(
+                                  'relative isolate block overflow-hidden rounded-xl p-[1px] text-xs transition-colors duration-200',
+                                  isActive ? 'text-white' : 'text-slate-400 hover:text-white',
+                                )
+                              }
+                            >
+                              {({ isActive }) => (
+                                <>
+                                  {isActive ? (
+                                    <span
+                                      aria-hidden="true"
+                                      className="absolute -inset-10 -z-10 animate-[spin_3.2s_linear_infinite] bg-[conic-gradient(from_90deg,transparent_0_72%,rgba(56,189,248,0.95)_78%,rgba(251,191,36,0.9)_82%,transparent_88%)]"
+                                    />
+                                  ) : null}
+                                  <span
+                                    className={cn(
+                                      'relative block rounded-[0.68rem] px-4 py-2.5 transition-colors duration-200',
+                                      isActive
+                                        ? 'bg-surface-950/96 shadow-[inset_0_0_0_1px_rgba(56,189,248,0.18),0_0_24px_rgba(56,189,248,0.16)]'
+                                        : 'hover:bg-white/5',
+                                    )}
+                                  >
+                                    {child.label}
+                                  </span>
+                                </>
+                              )}
+                            </NavLink>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                }
+
+                return (
+                  <div key={item.href}>
+                    <NavLink
+                      to={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={({ isActive }) =>
+                        cn(
+                          'flex rounded-2xl px-4 py-3 text-sm font-medium transition-colors duration-200',
+                          isActive
+                            ? 'bg-brand-500/15 text-white ring-1 ring-brand-400/30'
+                            : 'text-slate-300 hover:bg-white/5 hover:text-white',
+                        )
+                      }
+                    >
+                      {item.label}
+                    </NavLink>
+                  </div>
+                )
+              })}
             </div>
 
             <div className="mt-4 border-t border-white/10 pt-4">
