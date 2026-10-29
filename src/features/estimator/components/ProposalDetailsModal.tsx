@@ -282,7 +282,17 @@ export function ProposalDetailsModal({
 								</p>
 							) : (
 								<p className="text-xs leading-5 text-slate-500">
-									Usaremos tus datos solo para enviarte la propuesta.
+									Al enviar autorizas el tratamiento de tus datos para preparar
+									tu propuesta, según nuestra{" "}
+									<a
+										href="/privacidad"
+										target="_blank"
+										rel="noopener"
+										className="underline underline-offset-2 hover:text-slate-700"
+									>
+										política de privacidad
+									</a>
+									.
 								</p>
 							)}
 							<div className="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">

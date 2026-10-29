@@ -1,6 +1,7 @@
 export const companyInfo = {
   name: 'Avala Group',
   legalName: 'Sistemas AG S.A.S.',
+  nit: '901.331.029-1',
   description:
     'Soluciones tecnológicas inteligentes para impulsar el crecimiento de tu empresa.',
   address: 'Medellín, Antioquia, Colombia',

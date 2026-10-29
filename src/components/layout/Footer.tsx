@@ -97,7 +97,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 flex flex-col gap-4 border-t border-white/10 pt-5 text-sm text-slate-400 lg:flex-row lg:items-center lg:justify-between">
-          <p className="text-xs text-slate-400">{companyInfo.legalName}</p>
+          <p className="text-xs text-slate-400">{companyInfo.legalName} · NIT {companyInfo.nit}</p>
 
           <div className="flex flex-wrap gap-4">
             {legalLinks.map((link) => (

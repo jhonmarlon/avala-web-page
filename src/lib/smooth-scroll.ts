@@ -42,9 +42,10 @@ export function scrollToTop() {
   else window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
 }
 
-export function scrollToTarget(target: string | number) {
+// offset: px a restar al destino (p. ej. altura del header fijo); sin Lenis lo resuelve scroll-margin del CSS
+export function scrollToTarget(target: string | number, offset = 0) {
   if (lenis) {
-    lenis.scrollTo(target, { duration: 1.6 })
+    lenis.scrollTo(target, { duration: 1.6, offset: -offset })
     return
   }
   if (typeof target === 'number') window.scrollTo({ top: target, behavior: 'smooth' })

@@ -1,6 +1,7 @@
 import { ArrowUpRight, Check, LoaderCircle, MessageCircle } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useId, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { Link } from 'react-router'
 import { Honeypot } from '@/components/ui/Honeypot'
 import { companyInfo } from '@/config/site'
 import { whatsappLink } from '@/features/contact/data/channels'
@@ -350,6 +351,13 @@ export function ContactForm() {
               </button>
             )}
           </div>
+          <p className="-mt-6 text-xs leading-5 text-avala-paper/50 sm:col-span-2">
+            Al enviar autorizás el tratamiento de tus datos para responder tu solicitud, según nuestra{' '}
+            <Link to="/privacidad" className="underline underline-offset-4 hover:text-avala-paper">
+              política de privacidad
+            </Link>
+            .
+          </p>
           {sendError && (
             <p role="alert" className="-mt-6 font-mono text-[0.72rem] leading-5 tracking-[0.04em] text-[#ff8aa3] sm:col-span-2">
               {sendError} Podés escribirnos a{' '}
