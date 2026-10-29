@@ -1,9 +1,19 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@700;800&display=swap");
 @import "tailwindcss";
 
 @theme {
   --font-sans: Inter, system-ui, sans-serif;
   --font-heading: Manrope, Inter, system-ui, sans-serif;
+  --font-display: 'Inter Tight', Inter, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --color-avala-ink: #05081a;
+  --color-avala-ink-2: #0a1030;
+  --color-avala-paper: #eef2ff;
+  --color-avala-mute: #8a93b5;
+  --color-avala-neon: #2fb8ff;
+  --color-avala-gold: #d4a94f;
+  --color-avala-cyan: #3fd0ff;
+  --color-avala-violet: #7b5cff;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
@@ -60,6 +70,31 @@
 
   html {
     scroll-behavior: smooth;
+  }
+
+  /* Lenis (scroll suave) */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-stopped,
+  html.is-loading {
+    overflow: hidden;
+  }
+
+  html.has-cursor,
+  html.has-cursor * {
+    cursor: none !important;
+  }
+
+  ::selection {
+    background: var(--color-avala-neon);
+    color: var(--color-avala-ink);
   }
 
   body {
@@ -143,4 +178,51 @@
   .section-copy {
     @apply max-w-3xl text-base leading-8 text-muted-foreground sm:text-lg;
   }
+
+  /* Texto hueco con contorno */
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: var(--stroke-w, 1.5px) var(--stroke-c, var(--color-avala-paper));
+  }
+
+  .text-outline-neon {
+    --stroke-c: var(--color-avala-neon);
+    filter: drop-shadow(0 0 14px rgba(47, 184, 255, 0.45));
+  }
+
+  /* Brillo neón: acompaña al acento azul en textos, líneas y rellenos */
+  .text-avala-neon {
+    text-shadow: 0 0 18px rgba(47, 184, 255, 0.45);
+  }
+
+  .bg-avala-neon {
+    box-shadow: 0 0 22px rgba(47, 184, 255, 0.45), 0 0 60px rgba(123, 92, 255, 0.18);
+  }
+
+  .hud-label {
+    @apply font-mono text-[0.68rem] uppercase tracking-[0.14em] text-avala-mute;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .display-tight {
+    @apply font-display font-semibold tracking-[-0.055em];
+  }
+
+  .grid-lines {
+    background-image:
+      linear-gradient(rgba(238, 242, 255, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(238, 242, 255, 0.045) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+}
+
+@keyframes grain-shift {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-6%, 4%); }
+  40% { transform: translate(5%, -7%); }
+  60% { transform: translate(-3%, 8%); }
+  80% { transform: translate(7%, 3%); }
 }

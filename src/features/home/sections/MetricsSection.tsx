@@ -1,45 +1,61 @@
-import { motion } from 'motion/react'
-import { Reveal } from '@/components/ui/Reveal'
-import { Card } from '@/components/ui/Card'
-import { Section } from '@/components/ui/Section'
+import { animate, motion, useInView } from 'motion/react'
+import { useEffect, useRef, useState } from 'react'
+import { SectionLabel } from '@/components/fx/SectionLabel'
 import { metrics } from '@/features/home/data/content'
-import { fadeUp, staggerContainer } from '@/lib/motion'
+
+// Separa "120+" en número animable y sufijo; "24/7" → 24 y "/7"
+function parseMetric(value: string) {
+  const match = value.match(/^(\d+)(.*)$/)
+  return match ? { target: Number(match[1]), suffix: match[2] } : { target: 0, suffix: value }
+}
+
+function Counter({ value }: { value: string }) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const inView = useInView(ref, { once: true, amount: 0.8 })
+  const { target, suffix } = parseMetric(value)
+  const [current, setCurrent] = useState(0)
+
+  useEffect(() => {
+    if (!inView) return
+    const controls = animate(0, target, {
+      duration: 2,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: (v) => setCurrent(Math.round(v)),
+    })
+    return () => controls.stop()
+  }, [inView, target])
+
+  return (
+    <span ref={ref} className="tabular">
+      {current}
+      <span className="text-avala-neon">{suffix}</span>
+    </span>
+  )
+}
 
 export function MetricsSection() {
   return (
-    <Section className="-mt-30 py-0 lg:-mt-34" containerClassName="relative z-30">
-      <Reveal>
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.35 }}
-        >
-          <Card className="overflow-hidden rounded-[2rem] border-[#d5e1f2] bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] px-4 py-3 shadow-[0_28px_72px_rgba(8,20,39,0.18)] sm:px-5 sm:py-4 lg:rounded-[2rem] lg:px-6 lg:py-5">
-            <div className="grid gap-2 md:grid-cols-2 md:gap-x-3 md:gap-y-4 lg:grid-cols-4 lg:gap-0">
-            {metrics.map(({ value, label, Icon }, index) => (
-              <motion.div
-                key={label}
-                variants={fadeUp}
-                className={[
-                  'flex items-center gap-3 px-2 py-3 sm:gap-4 lg:px-5 lg:py-3',
-                  index !== metrics.length - 1 ? 'lg:border-r lg:border-[#d8e3f2]' : '',
-                ].join(' ')}
-              >
-                <div className="flex size-[4.15rem] shrink-0 items-center justify-center rounded-full bg-[radial-gradient(circle_at_center,#ffffff_0%,#eef5ff_100%)] text-[#2a73ff] ring-1 ring-[#d6e5ff] shadow-[0_18px_35px_rgba(43,179,255,0.16)] sm:size-[4.3rem]">
-                  <Icon className="size-[1.6rem]" strokeWidth={1.7} />
-                </div>
+    <section className="page-container pb-24 lg:pb-40">
+      <SectionLabel index="(02)" label="En números" meta="Desde Medellín para LATAM" />
 
-                <div className="space-y-1">
-                  <p className="text-[2rem] font-extrabold tracking-tight text-[#0d1730]">{value}</p>
-                  <p className="max-w-40 text-[0.92rem] leading-5 text-[#22324f]">{label}</p>
-                </div>
-              </motion.div>
-            ))}
-            </div>
-          </Card>
-        </motion.div>
-      </Reveal>
-    </Section>
+      <div className="grid grid-cols-2 lg:grid-cols-4">
+        {metrics.map(({ value, label }, i) => (
+          <motion.div
+            key={label}
+            className="group relative border-b border-avala-paper/15 py-8 pr-4 even:border-l even:pl-4 lg:border-b-0 lg:border-l lg:py-12 lg:pl-6 lg:first:border-l-0 lg:first:pl-0"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.9, delay: i * 0.08, ease: [0.76, 0, 0.24, 1] }}
+          >
+            <p className="hud-label tabular mb-6">{String(i + 1).padStart(2, '0')} / {String(metrics.length).padStart(2, '0')}</p>
+            <p className="display-tight text-[clamp(3.4rem,8vw,7.5rem)] leading-[0.85] text-avala-paper">
+              <Counter value={value} />
+            </p>
+            <p className="mt-5 max-w-[16ch] text-sm leading-6 text-avala-paper/65">{label}</p>
+          </motion.div>
+        ))}
+      </div>
+    </section>
   )
 }

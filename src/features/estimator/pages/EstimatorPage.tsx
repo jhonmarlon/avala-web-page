@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
 	ArrowRight,
 	CheckCircle2,
@@ -18,6 +18,7 @@ import { ProposalDetailsModal } from "@/features/estimator/components/ProposalDe
 import { estimatorSteps } from "@/features/estimator/data/catalog";
 import { calculateEstimate } from "@/features/estimator/utils/calculateEstimate";
 import type {
+	EstimateResult,
 	EstimatorAnswers,
 	EstimatorLead,
 	EstimatorQuestion,
@@ -26,6 +27,7 @@ import type {
 	SingleSelectQuestion,
 	TextareaQuestion,
 } from "@/features/estimator/types/estimator.types";
+import { submitForm } from "@/lib/forms";
 import { fadeLeft, fadeUp, subtleHoverOnly } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -83,6 +85,56 @@ function formatCop(value: number) {
 	}).format(value);
 }
 
+// Respuestas y estimación en texto legible, para el correo que recibe ventas@
+function describeEstimate(
+	answers: EstimatorAnswers,
+	result: EstimateResult | null,
+): Array<[string, string]> {
+	const rows: Array<[string, string]> = [];
+
+	for (const step of estimatorSteps) {
+		for (const question of step.questions) {
+			let value: string;
+			if (question.type === "multi-select") {
+				value = (question as MultiSelectQuestion).options
+					.filter((option) => answers.features.includes(option.value))
+					.map((option) => option.label)
+					.join(", ");
+			} else if (question.type === "single-select") {
+				const selected = answers[question.id as keyof EstimatorAnswers];
+				value =
+					(question as SingleSelectQuestion).options.find(
+						(option) => option.value === selected,
+					)?.label ?? "";
+			} else {
+				value = String(answers[question.id as keyof EstimatorAnswers] ?? "");
+			}
+			if (value.trim()) rows.push([question.title, value.trim()]);
+		}
+	}
+
+	if (result) {
+		rows.push(
+			["Complejidad", complexityLabels[result.complexity]],
+			["Enfoque recomendado", approachLabels[result.recommendedApproach]],
+			[
+				"Duración estimada",
+				`${result.estimatedMonths.min}–${result.estimatedMonths.max} meses (${result.estimatedHours.min}–${result.estimatedHours.max} h)`,
+			],
+			[
+				"Inversión estimada",
+				`${formatCop(result.estimatedCostCop.min)} – ${formatCop(result.estimatedCostCop.max)}`,
+			],
+		);
+		if (result.detectedModules.length > 0)
+			rows.push(["Módulos detectados", result.detectedModules.join(", ")]);
+		if (result.warnings.length > 0)
+			rows.push(["Advertencias", result.warnings.join(" · ")]);
+	}
+
+	return rows;
+}
+
 function validateLead(lead: EstimatorLead) {
 	return {
 		fullName:
@@ -115,7 +167,12 @@ export function EstimatorPage() {
 	const [isLeadSubmitting, setIsLeadSubmitting] = useState(false);
 	const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
 	const [leadTouched, setLeadTouched] = useState(false);
-	const submissionTimerRef = useRef<number | null>(null);
+	const [leadSubmitError, setLeadSubmitError] = useState<string | null>(null);
+	const [honeypot, setHoneypot] = useState("");
+	// Cada cierre del modal invalida el envío en curso para no pisar el estado
+	const submissionIdRef = useRef(0);
+	// Momento de apertura del modal: la API rechaza envíos instantáneos (bots)
+	const leadStartedAtRef = useRef(0);
 	const resetAfterCloseRef = useRef(false);
 
 	const hasCoreProjectData =
@@ -195,6 +252,8 @@ export function EstimatorPage() {
 	}
 
 	function handleContinueToLead() {
+		leadStartedAtRef.current = Date.now();
+		setLeadSubmitError(null);
 		setIsProposalModalOpen(true);
 	}
 
@@ -208,10 +267,7 @@ export function EstimatorPage() {
 	}
 
 	function handleProposalModalClose() {
-		if (submissionTimerRef.current !== null) {
-			window.clearTimeout(submissionTimerRef.current);
-			submissionTimerRef.current = null;
-		}
+		submissionIdRef.current += 1;
 		setIsLeadSubmitting(false);
 		resetAfterCloseRef.current = isLeadSubmitted;
 		setIsProposalModalOpen(false);
@@ -229,25 +285,24 @@ export function EstimatorPage() {
 		setIsLeadSubmitting(false);
 	}
 
-	function handleLeadSubmit() {
+	async function handleLeadSubmit() {
 		setLeadTouched(true);
 		if (!isLeadValid || isLeadSubmitting) return;
 
+		const submissionId = ++submissionIdRef.current;
 		setIsLeadSubmitting(true);
-		submissionTimerRef.current = window.setTimeout(() => {
-			submissionTimerRef.current = null;
-			setIsLeadSubmitting(false);
-			setIsLeadSubmitted(true);
-		}, 700);
-	}
+		setLeadSubmitError(null);
+		const response = await submitForm(
+			"/api/lead",
+			{ ...lead, details: describeEstimate(answers, result) },
+			{ startedAt: leadStartedAtRef.current, honeypot },
+		);
+		if (submissionId !== submissionIdRef.current) return;
 
-	useEffect(() => {
-		return () => {
-			if (submissionTimerRef.current !== null) {
-				window.clearTimeout(submissionTimerRef.current);
-			}
-		};
-	}, []);
+		setIsLeadSubmitting(false);
+		if (response.ok) setIsLeadSubmitted(true);
+		else setLeadSubmitError(response.error);
+	}
 
 	function renderQuestion(question: EstimatorQuestion) {
 		if (question.type === "single-select") {
@@ -730,6 +785,9 @@ export function EstimatorPage() {
 						isLeadValid={isLeadValid}
 						isLeadSubmitted={isLeadSubmitted}
 						isLeadSubmitting={isLeadSubmitting}
+						submitError={leadSubmitError}
+						honeypot={honeypot}
+						onHoneypotChange={setHoneypot}
 						onClose={handleProposalModalClose}
 						onLeadChange={handleLeadChange}
 						onLeadBlur={() => setLeadTouched(true)}

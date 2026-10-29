@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { CheckCircle2, LoaderCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Honeypot } from "@/components/ui/Honeypot";
+import { companyInfo } from "@/config/site";
 import type { EstimatorLead } from "@/features/estimator/types/estimator.types";
 
 interface LeadErrors {
@@ -18,6 +20,9 @@ interface ProposalDetailsModalProps {
 	isLeadValid: boolean;
 	isLeadSubmitted: boolean;
 	isLeadSubmitting: boolean;
+	submitError: string | null;
+	honeypot: string;
+	onHoneypotChange: (value: string) => void;
 	onClose: () => void;
 	onLeadChange: (field: keyof EstimatorLead, value: string) => void;
 	onLeadBlur: () => void;
@@ -31,6 +36,9 @@ export function ProposalDetailsModal({
 	isLeadValid,
 	isLeadSubmitted,
 	isLeadSubmitting,
+	submitError,
+	honeypot,
+	onHoneypotChange,
 	onClose,
 	onLeadChange,
 	onLeadBlur,
@@ -147,7 +155,7 @@ export function ProposalDetailsModal({
 								className="text-[1.8rem] font-bold leading-[1.1] text-white"
 							>
 								{isLeadSubmitted
-									? "Solicitud preparada"
+									? "Solicitud enviada"
 									: "Cuéntanos cómo podemos contactarte"}
 							</h2>
 							<p
@@ -155,7 +163,7 @@ export function ProposalDetailsModal({
 								className="max-w-2xl text-base leading-7 text-slate-200"
 							>
 								{isLeadSubmitted
-									? "Tus datos están listos para el siguiente paso."
+									? "Recibimos tu estimación y tus datos."
 									: "Esta propuesta se basa en la configuración que realizaste en el estimador. Déjanos tus datos y te contactamos para convertirla en una propuesta técnica y económica personalizada."}
 							</p>
 						</div>
@@ -183,9 +191,8 @@ export function ProposalDetailsModal({
 							¡Todo listo!
 						</h3>
 						<p className="mt-3 max-w-lg text-base leading-7 text-slate-600">
-							Esta funcionalidad todavía está en desarrollo. Tus datos se
-							prepararon solo en este navegador y aún no se enviaron ni se
-							almacenaron en nuestros servidores.
+							Nuestro equipo comercial revisará tu proyecto y te contactará en
+							menos de 24 h hábiles con una propuesta personalizada.
 						</p>
 					</section>
 				) : (
@@ -204,15 +211,15 @@ export function ProposalDetailsModal({
 									aria-hidden="true"
 								/>
 								<p className="mt-5 text-lg font-semibold text-[#0d1730]">
-									Preparando tu solicitud…
+									Enviando tu solicitud…
 								</p>
 								<p className="mt-2 text-sm text-slate-500">
-									Estamos organizando los datos de tu estimación en este
-									navegador.
+									Estamos enviando tu estimación a nuestro equipo comercial.
 								</p>
 							</div>
 						) : (
-							<div className="grid gap-4 sm:grid-cols-2">
+							<div className="relative grid gap-4 sm:grid-cols-2">
+								<Honeypot value={honeypot} onChange={onHoneypotChange} />
 								{[
 									["fullName", "Nombre completo", "Ej. Ana González", "name"],
 									["company", "Empresa", "Ej. Avala Group", "organization"],
@@ -262,10 +269,22 @@ export function ProposalDetailsModal({
 						</Button>
 					) : (
 						<>
-							<p className="text-xs leading-5 text-slate-500">
-								Funcionalidad en desarrollo: el envío de datos todavía no está
-								habilitado.
-							</p>
+							{submitError ? (
+								<p role="alert" className="text-sm leading-5 text-red-600">
+									{submitError} También puedes escribirnos a{" "}
+									<a
+										href={`mailto:${companyInfo.email}`}
+										className="font-medium underline underline-offset-2"
+									>
+										{companyInfo.email}
+									</a>
+									.
+								</p>
+							) : (
+								<p className="text-xs leading-5 text-slate-500">
+									Usaremos tus datos solo para enviarte la propuesta.
+								</p>
+							)}
 							<div className="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
 								<Button
 									variant="ghost"
@@ -284,7 +303,7 @@ export function ProposalDetailsModal({
 									onClick={onSubmit}
 								>
 									{isLeadSubmitting
-										? "Preparando…"
+										? "Enviando…"
 										: "Quiero una propuesta personalizada"}
 								</Button>
 							</div>

@@ -25,12 +25,8 @@ export function Footer() {
         <div className="grid gap-8 xl:grid-cols-[1.15fr_0.9fr_0.8fr_1fr]">
           <div className="max-w-sm space-y-5">
             <div>
-              <div className="flex items-center gap-3">
-                <img src={logoImage} alt="Sistemas AG" className="h-13 w-auto object-contain h-30 absolute -translate-x-8 translate-y-1"/>
-                <div className="flex flex-col translate-x-17 -translate-y-0.5">
-                  <p className="text-xs uppercase tracking-[0.28em] text-slate-400">Sistemas</p>
-                  <p className="text-base font-semibold text-white">AG</p>
-                </div>
+              <div className="flex items-center">
+                <img src={logoImage} alt="Avala Group" className="h-14 w-auto object-contain" />
               </div>
               <p className="mt-3 text-sm leading-6 text-slate-300">{companyInfo.description}</p>
             </div>
@@ -85,7 +81,7 @@ export function Footer() {
             </ul>
 
             <a
-              href="https://wa.me/573021234567"
+              href="https://wa.me/573126573502"
               target="_blank"
               rel="noreferrer"
               className="inline-flex min-h-[3.15rem] min-w-[12.8rem] items-center justify-between gap-3 rounded-[0.9rem] border border-[#30d273]/55 bg-[linear-gradient(180deg,#16a34a_0%,#0b7a3a_100%)] px-4 text-sm font-medium text-white shadow-[0_16px_32px_rgba(22,163,74,0.28)] transition-all duration-200 hover:brightness-110"

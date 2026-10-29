@@ -4,8 +4,8 @@ export const companyInfo = {
   description:
     'Soluciones tecnológicas inteligentes para impulsar el crecimiento de tu empresa.',
   address: 'Medellín, Antioquia, Colombia',
-  phone: '+57 302 123 4567',
-  email: 'contacto@avala.group',
+  phone: '+57 312 657 3502',
+  email: 'info@avalagroup.net',
   hours: 'L - V · 8:00 a.m. - 6:00 p.m.',
 }
 
@@ -48,5 +48,5 @@ export const legalLinks = [
 export const socialLinks = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com' },
   { label: 'Instagram', href: 'https://www.instagram.com' },
-  { label: 'WhatsApp', href: 'https://wa.me/573021234567' },
+  { label: 'WhatsApp', href: 'https://wa.me/573126573502' },
 ]

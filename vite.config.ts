@@ -17,8 +17,12 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
 
+    // En Docker sobre Windows los eventos de archivos no llegan al contenedor
+    watch: process.env.VITE_USE_POLLING === 'true' ? { usePolling: true, interval: 300 } : undefined,
+
     allowedHosts: [
-      'presence-begin-mart-practitioners.trycloudflare.com',
+      // Cualquier túnel rápido de Cloudflare (la URL cambia en cada arranque)
+      '.trycloudflare.com',
     ],
   },
 })

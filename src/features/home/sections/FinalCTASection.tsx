@@ -1,51 +1,59 @@
-import { ArrowRight } from 'lucide-react'
-import { motion } from 'motion/react'
-import { Button } from '@/components/ui/Button'
-import { Heading } from '@/components/ui/Heading'
-import { Reveal } from '@/components/ui/Reveal'
-import { Section } from '@/components/ui/Section'
+import { motion, useScroll, useTransform } from 'motion/react'
+import { useRef } from 'react'
+import { Link } from 'react-router'
+import { CtaLink } from '@/components/fx/CtaLink'
+import { Magnetic } from '@/components/fx/Magnetic'
+import { SectionLabel } from '@/components/fx/SectionLabel'
+import { SplitReveal } from '@/components/fx/SplitReveal'
+import { companyInfo } from '@/config/site'
+import { ContactChannelList } from '@/features/contact/components/ContactChannelList'
 import { finalCtaContent } from '@/features/home/data/content'
-import { subtleHover } from '@/lib/motion'
 
 export function FinalCTASection() {
+  const ref = useRef<HTMLElement>(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] })
+  const scale = useTransform(scrollYProgress, [0, 1], [0.86, 1])
+  const lineScale = useTransform(scrollYProgress, [0.3, 1], [0, 1])
+
   return (
-    <Section withSpacing={false} className="bg-[linear-gradient(180deg,#f7fbff_0%,#eef5ff_100%)] px-0 pt-1 pb-7 lg:pt-2 lg:pb-8">
-      <Reveal>
-        <div className="px-4 text-center sm:px-6">
-          <div className="mx-auto max-w-4xl space-y-2">
-            <Heading
-              align="center"
-              title={finalCtaContent.title}
-              description={finalCtaContent.description}
-              className="[&_h2]:text-[2rem] [&_h2]:leading-[1.05] [&_h2]:text-[#0d1730] [&_p]:mx-auto [&_p]:max-w-2xl [&_p]:text-[0.95rem] [&_p]:leading-6 [&_p]:text-[#22324f] lg:[&_h2]:text-[2.35rem]"
-            />
+    <section ref={ref} className="relative overflow-hidden pt-24 pb-16 lg:pt-40">
+      <div className="page-container">
+        <SectionLabel index="(07)" label="Contacto" meta={companyInfo.hours} />
 
-            <div className="flex flex-col items-center justify-center gap-3 pt-2 sm:flex-row">
-              <motion.div {...subtleHover}>
-                <Button
-                  to={finalCtaContent.primaryCta.to}
-                  size="lg"
-                  className="min-w-[12rem] border-[#d6a33e] bg-[linear-gradient(180deg,#15284b_0%,#0a1830_100%)] text-white shadow-[0_18px_35px_rgba(10,24,48,0.24)] hover:border-[#efc160] hover:bg-[linear-gradient(180deg,#1a3158_0%,#0d1f3b_100%)]"
-                >
+        <motion.h2
+          className="display-tight origin-top-left pt-12 text-[clamp(3.2rem,11vw,11rem)] leading-[0.86] text-avala-paper lg:pt-20"
+          style={{ scale }}
+        >
+          <SplitReveal text={finalCtaContent.title} stagger={0.018} />
+        </motion.h2>
+
+        <motion.div className="mt-12 h-px origin-left bg-avala-neon" style={{ scaleX: lineScale }} />
+
+        <div className="grid gap-12 pt-12 lg:grid-cols-12 lg:items-center">
+          <p className="text-base leading-7 text-avala-paper/70 lg:col-span-5 lg:text-lg lg:leading-8">
+            {finalCtaContent.description}
+          </p>
+
+          <div className="flex flex-col items-start gap-10 lg:col-span-6 lg:col-start-7 lg:flex-row lg:items-center lg:justify-end">
+            <Magnetic strength={0.4}>
+              <Link
+                to={finalCtaContent.primaryCta.to}
+                data-cursor="Agendar"
+                className="group flex size-44 items-center justify-center rounded-full bg-avala-neon text-center font-mono text-[0.75rem] font-medium uppercase tracking-[0.14em] text-avala-ink transition-colors duration-500 hover:bg-avala-paper sm:size-52"
+              >
+                <span className="transition-transform duration-500 group-hover:scale-110">
                   {finalCtaContent.primaryCta.label}
-                  <ArrowRight className="size-4" />
-                </Button>
-              </motion.div>
-
-              <motion.div {...subtleHover}>
-                <Button
-                  to={finalCtaContent.secondaryCta.to}
-                  variant="ghost"
-                  className="min-w-[12rem] rounded-[0.95rem] border border-brand-200/80 bg-white/70 px-5 py-3 text-brand-700 shadow-[0_10px_24px_rgba(18,152,255,0.08)] backdrop-blur-sm hover:border-brand-300 hover:bg-white hover:text-brand-500"
-                >
-                  {finalCtaContent.secondaryCta.label}
-                  <ArrowRight className="size-4" />
-                </Button>
-              </motion.div>
-            </div>
+                </span>
+              </Link>
+            </Magnetic>
+            <CtaLink to={finalCtaContent.secondaryCta.to} variant="line" cursor="Estimar">
+              {finalCtaContent.secondaryCta.label}
+            </CtaLink>
           </div>
         </div>
-      </Reveal>
-    </Section>
+
+        <ContactChannelList className="mt-20" />
+      </div>
+    </section>
   )
 }

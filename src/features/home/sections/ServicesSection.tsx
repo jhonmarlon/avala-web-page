@@ -1,38 +1,132 @@
-import { motion } from 'motion/react'
-import { Heading } from '@/components/ui/Heading'
-import { Reveal } from '@/components/ui/Reveal'
-import { Section } from '@/components/ui/Section'
-import { ServiceCard } from '@/features/home/components/ServiceCard'
+import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform } from 'motion/react'
+import { ArrowUpRight } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { Link } from 'react-router'
+import { SectionLabel } from '@/components/fx/SectionLabel'
 import { services, servicesIntro } from '@/features/home/data/content'
-import { fadeUp, staggerContainer } from '@/lib/motion'
+
+const ease = [0.76, 0, 0.24, 1] as const
 
 export function ServicesSection() {
-  return (
-    <Section withSpacing={false} className="pt-3 pb-16 lg:pt-4 lg:pb-20">
-      <div className="space-y-10">
-        <Reveal>
-          <Heading
-            title={servicesIntro.title}
-            description="Ofrecemos un portafolio integral de servicios tecnológicos para acompañar a tu empresa en cada etapa de su transformación digital."
-            showAccentLine
-            className="max-w-4xl [&_h2]:text-[2.35rem] [&_h2]:leading-[1.1] [&_p]:max-w-2xl [&_p]:pt-1"
-          />
-        </Reveal>
+  const rootRef = useRef<HTMLElement>(null)
+  const listRef = useRef<HTMLUListElement>(null)
+  const [active, setActive] = useState<number | null>(null)
 
-        <motion.div
-          className="grid gap-4 md:grid-cols-2 xl:grid-cols-5"
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.15 }}
+  const { scrollYProgress } = useScroll({ target: rootRef, offset: ['start end', 'end start'] })
+  const bigX = useTransform(scrollYProgress, [0, 1], ['5%', '-45%'])
+
+  // Tarjeta flotante que sigue al cursor dentro de la lista
+  const px = useMotionValue(0)
+  const py = useMotionValue(0)
+  const cardX = useSpring(px, { stiffness: 220, damping: 26 })
+  const cardY = useSpring(py, { stiffness: 220, damping: 26 })
+
+  const current = active !== null ? services[active] : null
+
+  return (
+    <section ref={rootRef} className="relative overflow-hidden py-24 lg:py-40">
+      <motion.p
+        aria-hidden="true"
+        className="display-tight text-outline pointer-events-none whitespace-nowrap text-[clamp(6rem,18vw,17rem)] leading-none [--stroke-w:1px] [--stroke-c:rgba(238,242,255,0.12)]"
+        style={{ x: bigX }}
+      >
+        Qué hacemos — Qué hacemos — Qué hacemos —
+      </motion.p>
+
+      <div className="page-container -mt-[0.35em] lg:-mt-24">
+        <SectionLabel
+          index="(03)"
+          label={servicesIntro.title}
+          meta={`${String(services.length).padStart(2, '0')} líneas de servicio`}
+        />
+
+        <ul
+          ref={listRef}
+          className="relative"
+          onPointerMove={(event) => {
+            const rect = listRef.current?.getBoundingClientRect()
+            if (!rect) return
+            px.set(event.clientX - rect.left)
+            py.set(event.clientY - rect.top)
+          }}
+          onPointerLeave={() => setActive(null)}
         >
-          {services.map((service) => (
-            <motion.div key={service.title} variants={fadeUp} className="h-full">
-              <ServiceCard {...service} />
-            </motion.div>
+          {services.map((service, i) => (
+            <motion.li
+              key={service.title}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.6 }}
+              transition={{ duration: 0.8, ease, delay: (i % 3) * 0.05 }}
+              onPointerEnter={() => setActive(i)}
+            >
+              <Link
+                to="/soluciones"
+                data-cursor="Ver"
+                className="group relative isolate grid grid-cols-[3rem_1fr_auto] items-center gap-4 overflow-hidden border-b border-avala-paper/15 py-5 sm:grid-cols-[4rem_1fr_auto] lg:grid-cols-[5rem_minmax(0,1.1fr)_minmax(0,1fr)_3rem] lg:py-7"
+              >
+                {/* Relleno que sube desde la base */}
+                <span className="absolute inset-0 -z-10 origin-bottom scale-y-0 bg-avala-neon transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-y-100" />
+
+                <span className="hud-label tabular transition-colors duration-500 group-hover:text-avala-ink">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+
+                <span className="display-tight relative block overflow-hidden text-[clamp(1.7rem,3.6vw,3.4rem)] leading-[1.05] text-avala-paper transition-[color,transform] duration-500 group-hover:translate-x-3 group-hover:text-avala-ink">
+                  {service.title}
+                </span>
+
+                <span className="hidden text-sm leading-6 text-avala-paper/55 transition-colors duration-500 group-hover:text-avala-ink/80 lg:block">
+                  {service.description}
+                </span>
+
+                <ArrowUpRight
+                  className="size-6 justify-self-end text-avala-paper/60 transition-all duration-500 group-hover:rotate-45 group-hover:text-avala-ink"
+                  strokeWidth={1.25}
+                />
+              </Link>
+            </motion.li>
           ))}
-        </motion.div>
+
+          {/* Previsualización flotante (solo con puntero fino) */}
+          <motion.li
+            aria-hidden="true"
+            className="pointer-events-none absolute left-0 top-0 z-20 hidden [@media(hover:hover)]:lg:block"
+            style={{ x: cardX, y: cardY }}
+          >
+            <AnimatePresence>
+              {current && (
+                <motion.div
+                  key="card"
+                  className="ml-8 -mt-24 w-64 border border-avala-paper/20 bg-avala-ink p-5"
+                  initial={{ opacity: 0, scale: 0.85, rotate: -4 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.85, rotate: 4 }}
+                  transition={{ duration: 0.35, ease }}
+                >
+                  <div className="hud-label flex justify-between">
+                    <span className="tabular text-avala-neon">S—{String((active ?? 0) + 1).padStart(2, '0')}</span>
+                    <span>Servicio</span>
+                  </div>
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={current.title}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.25 }}
+                      className="pt-10"
+                    >
+                      <current.Icon className="size-12 text-avala-paper" strokeWidth={1} />
+                      <p className="mt-6 text-sm leading-6 text-avala-paper/75">{current.description}</p>
+                    </motion.div>
+                  </AnimatePresence>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.li>
+        </ul>
       </div>
-    </Section>
+    </section>
   )
 }
