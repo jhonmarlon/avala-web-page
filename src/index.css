@@ -70,6 +70,38 @@
 
   html {
     scroll-behavior: smooth;
+    scrollbar-color: var(--color-brand-700) var(--color-avala-ink);
+    scrollbar-width: auto;
+  }
+
+  /* Keep viewport colors from inheriting into nested scroll containers. */
+  body {
+    scrollbar-color: auto;
+  }
+
+  @supports selector(::-webkit-scrollbar) {
+    html { scrollbar-color: auto; }
+  }
+
+  html::-webkit-scrollbar { width: 14px; height: 14px; }
+  html::-webkit-scrollbar-track { background: var(--color-avala-ink); }
+  html::-webkit-scrollbar-thumb {
+    background: var(--color-brand-700);
+    border: 3px solid var(--color-avala-ink);
+    border-radius: 999px;
+  }
+  html::-webkit-scrollbar-thumb:hover { background: var(--color-brand-500); }
+
+  @media (forced-colors: active) {
+    html { scrollbar-color: auto; scrollbar-width: auto; }
+    html::-webkit-scrollbar { width: auto; height: auto; }
+    html::-webkit-scrollbar-track { background: revert; }
+    html::-webkit-scrollbar-thumb,
+    html::-webkit-scrollbar-thumb:hover {
+      background: revert;
+      border: revert;
+      border-radius: revert;
+    }
   }
 
   /* Lenis (scroll suave) */
@@ -142,6 +174,12 @@
     @apply py-16 lg:py-24;
   }
 
+  /* Home boundaries use two 24/40px halves; single-owner and decorative
+     boundaries declare their exceptions on the section itself. */
+  .home-section-spacing {
+    @apply py-6 lg:py-10;
+  }
+
   .panel-surface {
     @apply rounded-5xl border border-border bg-card text-card-foreground shadow-soft;
   }
@@ -176,7 +214,7 @@
   }
 
   .section-copy {
-    @apply max-w-3xl text-base leading-8 text-muted-foreground sm:text-lg;
+    @apply max-w-3xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8;
   }
 
   /* Texto hueco con contorno */
@@ -200,7 +238,7 @@
   }
 
   .hud-label {
-    @apply font-mono text-[0.68rem] uppercase tracking-[0.14em] text-avala-mute;
+    @apply font-mono text-[0.75rem] leading-normal uppercase tracking-[0.14em] text-avala-mute;
   }
 
   .tabular {
@@ -216,6 +254,12 @@
       linear-gradient(rgba(238, 242, 255, 0.045) 1px, transparent 1px),
       linear-gradient(90deg, rgba(238, 242, 255, 0.045) 1px, transparent 1px);
     background-size: 64px 64px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
 

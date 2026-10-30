@@ -13,7 +13,7 @@ export const isTouchDevice = () =>
 export function startSmoothScroll() {
   if (lenis || prefersReducedMotion()) return
 
-  lenis = new Lenis({ duration: 1.15, smoothWheel: true })
+  lenis = new Lenis({ duration: 0.65, smoothWheel: true })
   if (locked) lenis.stop()
 
   const raf = (time: number) => {
@@ -44,10 +44,12 @@ export function scrollToTop() {
 
 // offset: px a restar al destino (p. ej. altura del header fijo); sin Lenis lo resuelve scroll-margin del CSS
 export function scrollToTarget(target: string | number, offset = 0) {
-  if (lenis) {
+  const reducedMotion = prefersReducedMotion()
+  if (lenis && !reducedMotion) {
     lenis.scrollTo(target, { duration: 1.6, offset: -offset })
     return
   }
-  if (typeof target === 'number') window.scrollTo({ top: target, behavior: 'smooth' })
-  else document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' })
+  const behavior = reducedMotion ? 'instant' : 'smooth'
+  if (typeof target === 'number') window.scrollTo({ top: target, behavior })
+  else document.querySelector(target)?.scrollIntoView({ behavior })
 }

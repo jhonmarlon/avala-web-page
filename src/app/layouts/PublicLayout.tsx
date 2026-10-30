@@ -7,12 +7,14 @@ import { Footer } from '@/components/layout/Footer'
 import { Header } from '@/components/layout/Header'
 import { ScrollToTop } from '@/components/layout/ScrollToTop'
 import { startSmoothScroll, stopSmoothScroll } from '@/lib/smooth-scroll'
+import { useMediaQuery } from '@/lib/use-media-query'
 
 export function PublicLayout() {
+  const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
   useEffect(() => {
-    startSmoothScroll()
+    if (!reducedMotion) startSmoothScroll()
     return stopSmoothScroll
-  }, [])
+  }, [reducedMotion])
 
   return (
     <MotionConfig reducedMotion="user">
