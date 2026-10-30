@@ -147,7 +147,6 @@ export function EsimPage() {
     <>
       <Section
         className="relative overflow-hidden text-white"
-        containerClassName="py-16 lg:py-24"
         style={{
           backgroundImage: `linear-gradient(135deg, rgba(3, 8, 20, 0.95) 0%, rgba(5, 17, 44, 0.86) 55%, rgba(18, 152, 255, 0.36) 100%), url(${background1})`,
           backgroundSize: 'cover',
@@ -213,7 +212,7 @@ export function EsimPage() {
         </div>
       </Section>
 
-      <Section className="bg-[linear-gradient(180deg,#f7fbff_0%,#eef5ff_100%)]" containerClassName="py-9 lg:py-11">
+      <Section className="bg-[linear-gradient(180deg,#f7fbff_0%,#eef5ff_100%)]">
         <Heading
           eyebrow="Dos entradas, una experiencia segura"
           title="SIEMBRA separa compra web y activación por voucher para que cada flujo valide lo que corresponde."
@@ -222,7 +221,7 @@ export function EsimPage() {
         />
       </Section>
 
-      <Section className="relative overflow-hidden bg-surface-950 text-white" containerClassName="py-9 lg:py-11">
+      <Section className="relative overflow-hidden bg-surface-950 text-white">
         <div className="absolute left-1/2 top-0 h-64 w-[42rem] -translate-x-1/2 rounded-full bg-brand-400/18 blur-3xl" />
         <div className="absolute -right-32 bottom-0 size-80 rounded-full bg-amber-300/10 blur-3xl" />
 

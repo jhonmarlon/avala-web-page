@@ -1,5 +1,6 @@
 import { animate, motion, useInView } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
+import { SectionContinue } from '@/components/ui/SectionContinue'
 import { SectionLabel } from '@/components/fx/SectionLabel'
 import { metrics } from '@/features/home/data/content'
 
@@ -35,7 +36,7 @@ function Counter({ value }: { value: string }) {
 
 export function MetricsSection() {
   return (
-    <section className="page-container pb-24 lg:pb-40">
+    <section id="home-metrics" className="scroll-mt-24 page-container pb-6 lg:pb-10">
       <SectionLabel index="(02)" label="En números" meta="Desde Medellín para LATAM" />
 
       <div className="grid grid-cols-2 lg:grid-cols-4">
@@ -49,13 +50,14 @@ export function MetricsSection() {
             transition={{ duration: 0.9, delay: i * 0.08, ease: [0.76, 0, 0.24, 1] }}
           >
             <p className="hud-label tabular mb-6">{String(i + 1).padStart(2, '0')} / {String(metrics.length).padStart(2, '0')}</p>
-            <p className="display-tight text-[clamp(3.4rem,8vw,7.5rem)] leading-[0.85] text-avala-paper">
+            <p className="display-tight text-[clamp(3rem,7vw,6.5rem)] leading-[0.85] text-avala-paper">
               <Counter value={value} />
             </p>
             <p className="mt-5 max-w-[16ch] text-sm leading-6 text-avala-paper/65">{label}</p>
           </motion.div>
         ))}
       </div>
+      <SectionContinue targetId="home-services" />
     </section>
   )
 }

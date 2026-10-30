@@ -2,6 +2,7 @@ import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTrans
 import { ArrowUpRight } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { Link } from 'react-router'
+import { SectionContinue } from '@/components/ui/SectionContinue'
 import { SectionLabel } from '@/components/fx/SectionLabel'
 import { services, servicesIntro } from '@/features/home/data/content'
 
@@ -23,17 +24,19 @@ export function ServicesSection() {
 
   const current = active !== null ? services[active] : null
 
+  // Subtract the watermark's flow height minus its existing negative margin
+  // from the top half-gap; never pull the decoration above the section edge.
   return (
-    <section ref={rootRef} className="relative overflow-hidden py-24 lg:py-40">
+    <section id="home-services" ref={rootRef} className="scroll-mt-24 relative overflow-hidden pt-[max(0px,calc(4.5rem-clamp(4rem,10vw,9rem)))] pb-6 lg:pt-[max(0px,calc(8.5rem-clamp(4rem,10vw,9rem)))] lg:pb-10">
       <motion.p
         aria-hidden="true"
-        className="display-tight text-outline pointer-events-none whitespace-nowrap text-[clamp(6rem,18vw,17rem)] leading-none [--stroke-w:1px] [--stroke-c:rgba(238,242,255,0.12)]"
+        className="display-tight text-outline pointer-events-none whitespace-nowrap text-[clamp(4rem,10vw,9rem)] leading-none [--stroke-w:1px] [--stroke-c:rgba(238,242,255,0.12)]"
         style={{ x: bigX }}
       >
         Qué hacemos — Qué hacemos — Qué hacemos —
       </motion.p>
 
-      <div className="page-container -mt-[0.35em] lg:-mt-24">
+      <div className="page-container -mt-12 lg:-mt-24">
         <SectionLabel
           index="(03)"
           label={servicesIntro.title}
@@ -63,7 +66,7 @@ export function ServicesSection() {
               <Link
                 to="/soluciones"
                 data-cursor="Ver"
-                className="group relative isolate grid grid-cols-[3rem_1fr_auto] items-center gap-4 overflow-hidden border-b border-avala-paper/15 py-5 sm:grid-cols-[4rem_1fr_auto] lg:grid-cols-[5rem_minmax(0,1.1fr)_minmax(0,1fr)_3rem] lg:py-7"
+                className="group relative isolate grid grid-cols-[3rem_1fr_auto] items-center gap-4 overflow-hidden border-b border-avala-paper/15 px-4 py-4 sm:grid-cols-[4rem_1fr_auto] lg:grid-cols-[5rem_minmax(0,1.1fr)_minmax(0,1fr)_3rem] lg:px-6 lg:py-5"
               >
                 {/* Relleno que sube desde la base */}
                 <span className="absolute inset-0 -z-10 origin-bottom scale-y-0 bg-avala-neon transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-y-100" />
@@ -72,7 +75,7 @@ export function ServicesSection() {
                   {String(i + 1).padStart(2, '0')}
                 </span>
 
-                <span className="display-tight relative block overflow-hidden text-[clamp(1.7rem,3.6vw,3.4rem)] leading-[1.05] text-avala-paper transition-[color,transform] duration-500 group-hover:translate-x-3 group-hover:text-avala-ink">
+                <span className="display-tight relative block overflow-hidden text-[clamp(1.25rem,2.1vw,1.875rem)] leading-[1.15] text-avala-paper transition-[color,transform] duration-500 group-hover:translate-x-3 group-hover:text-avala-ink">
                   {service.title}
                 </span>
 
@@ -126,6 +129,7 @@ export function ServicesSection() {
             </AnimatePresence>
           </motion.li>
         </ul>
+        <SectionContinue targetId="home-process" />
       </div>
     </section>
   )

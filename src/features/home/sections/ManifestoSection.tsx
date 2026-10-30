@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform, type MotionValue } from 'motion/react'
 import { useRef } from 'react'
 import { CtaLink } from '@/components/fx/CtaLink'
+import { SectionContinue } from '@/components/ui/SectionContinue'
 import { SectionLabel } from '@/components/fx/SectionLabel'
 import { aboutSectionContent } from '@/features/home/data/content'
 
@@ -19,13 +20,13 @@ export function ManifestoSection() {
   const words = aboutSectionContent.title.split(' ')
 
   return (
-    <section id="manifiesto" className="page-container py-24 lg:py-40">
+    <section id="manifiesto" className="scroll-mt-24 page-container pt-6 pb-12 lg:pt-10 lg:pb-20">
       <SectionLabel index="(01)" label={aboutSectionContent.eyebrow} meta="Quiénes somos" />
 
-      <div className="grid gap-12 pt-12 lg:grid-cols-12 lg:pt-20">
+      <div className="grid gap-8 pt-8 lg:grid-cols-12 lg:gap-12 lg:pt-12">
         <p
           ref={textRef}
-          className="display-tight text-[clamp(2.1rem,4.6vw,4.4rem)] leading-[1.02] text-avala-paper lg:col-span-11"
+          className="display-tight text-[clamp(2rem,3.5vw,3rem)] leading-[1.15] text-avala-paper lg:col-span-11"
         >
           {words.map((word, i) => (
             <Word key={i} progress={scrollYProgress} range={[i / words.length, (i + 1) / words.length]}>
@@ -35,7 +36,7 @@ export function ManifestoSection() {
         </p>
 
         <div className="grid gap-10 border-t border-avala-paper/15 pt-10 lg:col-span-12 lg:grid-cols-12">
-          <p className="text-base leading-7 text-avala-paper/70 lg:col-span-5 lg:text-lg lg:leading-8">
+          <p className="text-base leading-7 text-avala-paper/70 sm:text-lg sm:leading-8 lg:col-span-5">
             {aboutSectionContent.description}
           </p>
           <ol className="lg:col-span-5 lg:col-start-7">
@@ -60,6 +61,7 @@ export function ManifestoSection() {
           </ol>
         </div>
       </div>
+      <SectionContinue targetId="home-metrics" />
     </section>
   )
 }

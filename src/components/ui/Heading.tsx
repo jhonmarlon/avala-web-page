@@ -45,7 +45,7 @@ export function Heading({
         </h2>
 
         {description ? (
-          <p className="max-w-3xl text-base leading-8 text-muted-foreground sm:text-lg">{description}</p>
+          <p className="section-copy">{description}</p>
         ) : null}
       </div>
 

@@ -25,7 +25,7 @@ export function CtaLink({ to, children, variant = 'solid', className, cursor, on
       onClick={onClick}
       data-cursor={cursor}
       className={cn(
-        'group inline-flex h-12 items-center justify-between gap-6 px-5 font-mono text-[0.72rem] font-medium uppercase tracking-[0.14em] transition-colors duration-300',
+        'group inline-flex h-12 items-center justify-between gap-6 px-5 font-mono text-[0.75rem] leading-normal font-medium uppercase tracking-[0.14em] transition-colors duration-300',
         variants[variant],
         className,
       )}
