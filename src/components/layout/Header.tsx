@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { NavLink, useLocation } from 'react-router'
 import logoImage from '@/assets/avala_logo.png'
@@ -11,6 +11,7 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [openDropdownHref, setOpenDropdownHref] = useState<string | null>(null)
   const location = useLocation()
+  const closeMobileMenu = useCallback(() => setIsMobileMenuOpen(false), [])
 
   return (
     <header
@@ -24,7 +25,7 @@ export function Header() {
             className="pointer-events-none h-11 w-auto object-contain sm:h-12 lg:h-14"
           />
         </NavLink>
-        <nav className="hidden items-center gap-6 font-mono text-[0.72rem] uppercase tracking-[0.12em] text-avala-paper/65 lg:flex xl:gap-8">
+        <nav className="hidden items-center gap-6 font-mono text-[0.75rem] leading-normal uppercase tracking-[0.12em] text-avala-paper/65 lg:flex xl:gap-8">
           {navigationItems.map((item) => {
             const hasChildren = item.children && item.children.length > 0
             const isChildActive = item.children?.some((child) => child.href === location.pathname) ?? false
@@ -183,7 +184,7 @@ export function Header() {
         </button>
       </div>
 
-      <MobileMenu open={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
+      <MobileMenu open={isMobileMenuOpen} onClose={closeMobileMenu} />
     </header>
   )
 }

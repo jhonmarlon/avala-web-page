@@ -62,29 +62,19 @@ type ButtonAsAnchorProps = CommonProps &
 type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps | ButtonAsAnchorProps
 
 export function Button(props: ButtonProps) {
-  const { className, variant, size, fullWidth, children } = props
+  const { className, variant, size, fullWidth, children, ...rest } = props
   const classes = cn(buttonVariants({ variant, size, fullWidth }), className)
 
-  if ('to' in props && props.to !== undefined) {
-    const { to, replace, state, preventScrollReset, relative, viewTransition } = props
-
+  if ('to' in rest && rest.to !== undefined) {
     return (
-      <Link
-        className={classes}
-        to={to}
-        replace={replace}
-        state={state}
-        preventScrollReset={preventScrollReset}
-        relative={relative}
-        viewTransition={viewTransition}
-      >
+      <Link {...rest} className={classes}>
         {children}
       </Link>
     )
   }
 
-  if ('href' in props && props.href !== undefined) {
-    const { href, target, rel, ...anchorProps } = props
+  if ('href' in rest && rest.href !== undefined) {
+    const { href, target, rel, ...anchorProps } = rest
 
     return (
       <a
@@ -99,7 +89,7 @@ export function Button(props: ButtonProps) {
     )
   }
 
-  const { type = 'button', ...buttonProps } = props
+  const { type = 'button', ...buttonProps } = rest
 
   return (
     <button className={classes} type={type} {...buttonProps}>

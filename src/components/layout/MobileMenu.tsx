@@ -1,6 +1,6 @@
 import { ArrowUpRight, Plus } from 'lucide-react'
-import { AnimatePresence, motion } from 'motion/react'
-import { useState } from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { NavLink } from 'react-router'
 import { CtaLink } from '@/components/fx/CtaLink'
@@ -18,6 +18,48 @@ type MobileMenuProps = {
 // Menú móvil a pantalla completa: enlaces grandes numerados y soluciones con descripción
 export function MobileMenu({ open, onClose }: MobileMenuProps) {
   const [expanded, setExpanded] = useState<string | null>(null)
+  const dialogRef = useRef<HTMLDialogElement>(null)
+  const reducedMotion = useReducedMotion()
+  const previousOverflow = useRef<string | null>(null)
+
+  const releaseDialog = useCallback(() => {
+    dialogRef.current?.close()
+    if (previousOverflow.current !== null) {
+      document.documentElement.style.overflow = previousOverflow.current
+      previousOverflow.current = null
+    }
+  }, [])
+
+  useEffect(() => releaseDialog, [releaseDialog])
+
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (!open || !dialog) return
+
+    // Native modality traps focus, makes the page inert and restores the trigger.
+    const desktop = window.matchMedia('(min-width: 1024px)')
+    if (desktop.matches) {
+      releaseDialog()
+      onClose()
+      return
+    }
+    if (!dialog.open) {
+      previousOverflow.current = document.documentElement.style.overflow
+      dialog.showModal()
+      document.documentElement.style.overflow = 'hidden'
+    }
+    const closeOnDesktop = () => {
+      if (desktop.matches) {
+        // The mobile panel is hidden on desktop, so release modality immediately.
+        releaseDialog()
+        onClose()
+      }
+    }
+    desktop.addEventListener('change', closeOnDesktop)
+    return () => {
+      desktop.removeEventListener('change', closeOnDesktop)
+    }
+  }, [open, onClose, releaseDialog])
 
   const close = () => {
     setExpanded(null)
@@ -26,16 +68,40 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
 
   // Portal: el header usa backdrop-filter, que rompe el posicionamiento fixed de sus hijos
   return createPortal(
-    <AnimatePresence>
+    <dialog
+      ref={dialogRef}
+      id="mobile-navigation"
+      aria-label="Menú principal"
+      data-lenis-prevent
+      onCancel={(event) => {
+        event.preventDefault()
+        close()
+      }}
+      className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none border-0 bg-transparent p-0 text-avala-paper backdrop:bg-transparent lg:hidden"
+    >
+      {/* Keep the visible header close control inside the modal's interactive tree. */}
+      <div className="page-container pointer-events-none absolute inset-x-0 top-0 z-50 flex min-h-18 items-center justify-end">
+        <button
+          type="button"
+          onClick={close}
+          aria-label="Cerrar menú"
+          className="pointer-events-auto inline-flex h-11 w-11 items-center justify-center border border-avala-paper/20 bg-avala-ink text-white transition-colors duration-300 hover:border-avala-neon focus-visible:outline-2 focus-visible:outline-avala-neon"
+        >
+          <Plus className="size-5 rotate-45" aria-hidden="true" />
+        </button>
+      </div>
+    <AnimatePresence onExitComplete={() => {
+      // Keep focus containment and scroll locking until the panel finishes closing.
+      if (!open) releaseDialog()
+    }}>
       {open && (
         <motion.div
-          id="mobile-navigation"
           data-lenis-prevent
           className="fixed inset-x-0 bottom-0 top-[4.5rem] z-40 overflow-y-auto bg-avala-ink text-avala-paper lg:hidden"
-          initial={{ clipPath: 'inset(0% 0% 100% 0%)' }}
+          initial={reducedMotion ? false : { clipPath: 'inset(0% 0% 100% 0%)' }}
           animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
           exit={{ clipPath: 'inset(0% 0% 100% 0%)' }}
-          transition={{ duration: 0.6, ease }}
+          transition={{ duration: reducedMotion ? 0 : 0.6, ease }}
         >
           <div
             aria-hidden="true"
@@ -63,7 +129,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                     className="border-b border-avala-paper/15"
                     initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease, delay: 0.15 + i * 0.05 }}
+                    transition={{ duration: reducedMotion ? 0 : 0.6, ease, delay: reducedMotion ? 0 : 0.15 + i * 0.05 }}
                   >
                     {item.children?.length ? (
                       <>
@@ -89,7 +155,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                               initial={{ height: 0 }}
                               animate={{ height: 'auto' }}
                               exit={{ height: 0 }}
-                              transition={{ duration: 0.45, ease }}
+                              transition={{ duration: reducedMotion ? 0 : 0.45, ease }}
                             >
                               {item.children.map((child, k) => (
                                 <li key={child.href} className="pb-2 pl-8">
@@ -151,7 +217,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
               className="mt-auto space-y-6 pt-10"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.45 }}
+              transition={{ duration: reducedMotion ? 0 : 0.6, delay: reducedMotion ? 0 : 0.45 }}
             >
               <CtaLink to="/contacto" onClick={close} className="w-full">
                 Agendá una reunión
@@ -168,7 +234,8 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
           </nav>
         </motion.div>
       )}
-    </AnimatePresence>,
+    </AnimatePresence>
+    </dialog>,
     document.body,
   )
 }
