@@ -1,11 +1,12 @@
-import { motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 import logoImage from '@/assets/avala_logo.png'
 import { companyInfo } from '@/config/site'
 import { setScrollLocked } from '@/lib/smooth-scroll'
 
-const MIN_DURATION = 2200
-const MAX_DURATION = 4500
+const FONT_WAIT = 250
+const EXIT_DURATION = 400
+const REDUCED_EXIT_DURATION = 50
 const ease = [0.76, 0, 0.24, 1] as const
 
 type LogLine = { at: number; key: string; value: string }
@@ -31,93 +32,82 @@ type PreloaderProps = {
 }
 
 export function Preloader({ onDone }: PreloaderProps) {
-  const [progress, setProgress] = useState(0)
+  const reducedMotion = useReducedMotion()
   const [lines, setLines] = useState<LogLine[]>([])
   const [exiting, setExiting] = useState(false)
   const [hidden, setHidden] = useState(false)
   const doneRef = useRef(onDone)
+  const completedRef = useRef(false)
 
   useEffect(() => {
     doneRef.current = onDone
   }, [onDone])
 
   useEffect(() => {
+    if (completedRef.current) return
     setScrollLocked(true)
     const start = performance.now()
-    const env = readEnvironment()
     let alive = true
-    const log = (key: string, value: string) => {
-      if (alive) setLines((prev) => [...prev, { at: performance.now(), key, value }])
+    let exiting = false
+    let fallback: number | undefined
+    let reveal: number | undefined
+    const finish = (fontStatus: string) => {
+      if (!alive || exiting) return
+      exiting = true
+      window.clearTimeout(fallback)
+      const at = performance.now() - start
+      setLines([
+        ...readEnvironment().map((line) => ({ ...line, at })),
+        { at, key: 'fonts', value: fontStatus },
+      ])
+      setExiting(true)
+      reveal = window.setTimeout(() => {
+        if (!alive) return
+        alive = false
+        completedRef.current = true
+        setScrollLocked(false)
+        setHidden(true)
+        doneRef.current()
+      }, reducedMotion ? REDUCED_EXIT_DURATION : EXIT_DURATION)
     }
 
-    let fontsReady = false
-    document.fonts?.ready.then(() => {
-      fontsReady = true
-      log('fonts', `${document.fonts.size} cargadas`)
-    })
-
-    let frame = 0
-    let printed = 0
-    const tick = (now: number) => {
-      const elapsed = now - start
-      const timeP = Math.min(elapsed / MIN_DURATION, 1)
-      const p = fontsReady || elapsed > MAX_DURATION ? timeP : Math.min(timeP, 0.92)
-      setProgress(p)
-
-      const due = Math.min(env.length, Math.floor(p * (env.length + 1)))
-      while (printed < due) {
-        const line = env[printed++]
-        log(line.key, line.value)
-      }
-
-      if (p >= 1) {
-        log('status', 'listo')
-        setExiting(true)
-        return
-      }
-      frame = requestAnimationFrame(tick)
+    const fonts = document.fonts
+    if (fonts) {
+      fallback = window.setTimeout(() => finish('en segundo plano'), FONT_WAIT)
+      fonts.ready.then(
+        () => finish('listas'),
+        () => finish('no disponibles; usando alternativas'),
+      )
+    } else {
+      finish('API no disponible; usando alternativas')
     }
-    frame = requestAnimationFrame(tick)
     return () => {
       alive = false
-      cancelAnimationFrame(frame)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!exiting) return
-    const reveal = window.setTimeout(() => {
-      setScrollLocked(false)
-      doneRef.current()
-    }, 650)
-    const remove = window.setTimeout(() => setHidden(true), 1700)
-    return () => {
+      window.clearTimeout(fallback)
       window.clearTimeout(reveal)
-      window.clearTimeout(remove)
+      setScrollLocked(false)
     }
-  }, [exiting])
+  }, [reducedMotion])
 
   if (hidden) return null
-
-  const pct = Math.round(progress * 100)
 
   return (
     <div aria-hidden="true" className="fixed inset-0 z-[95] text-avala-paper">
       <motion.div
         className="absolute inset-x-0 top-0 h-1/2 bg-avala-ink"
-        animate={exiting ? { y: '-100%' } : { y: 0 }}
-        transition={{ duration: 1, ease, delay: 0.5 }}
+        animate={reducedMotion ? { opacity: exiting ? 0 : 1 } : { y: exiting ? '-100%' : 0 }}
+        transition={{ duration: (reducedMotion ? REDUCED_EXIT_DURATION : EXIT_DURATION) / 1000, ease }}
       />
       <motion.div
         className="absolute inset-x-0 bottom-0 h-1/2 bg-avala-ink"
-        animate={exiting ? { y: '100%' } : { y: 0 }}
-        transition={{ duration: 1, ease, delay: 0.5 }}
+        animate={reducedMotion ? { opacity: exiting ? 0 : 1 } : { y: exiting ? '100%' : 0 }}
+        transition={{ duration: (reducedMotion ? REDUCED_EXIT_DURATION : EXIT_DURATION) / 1000, ease }}
       />
 
       <motion.div
         className="absolute inset-0"
         animate={{ opacity: exiting ? 0 : 1 }}
-        transition={{ duration: 0.35, delay: exiting ? 0.15 : 0 }}
+        transition={{ duration: reducedMotion ? 0.05 : 0.15 }}
       >
         <div className="absolute inset-x-4 top-5 flex items-start justify-between sm:inset-x-8 sm:top-7">
           <img src={logoImage} alt="" className="h-9 w-auto sm:h-10" />
@@ -127,16 +117,12 @@ export function Preloader({ onDone }: PreloaderProps) {
           </div>
         </div>
 
-        {/* Línea de progreso a todo el ancho */}
+        {/* Lecturas del entorno, sin progreso ni tiempos simulados */}
         <div className="absolute inset-x-4 top-1/2 sm:inset-x-8">
           <div className="h-px w-full bg-avala-paper/12" />
-          <div
-            className="absolute left-0 top-0 h-px bg-avala-neon"
-            style={{ width: `${progress * 100}%` }}
-          />
           <div className="hud-label mt-3 flex justify-between">
-            <span>Inicializando</span>
-            <span className="tabular">{(progress * MIN_DURATION / 1000).toFixed(2)} s</span>
+            <span>{exiting ? 'Bienvenido' : 'Preparando tipografía'}</span>
+            <span>Lecturas del entorno</span>
           </div>
         </div>
 
@@ -151,7 +137,7 @@ export function Preloader({ onDone }: PreloaderProps) {
         </ol>
 
         <p className="tabular display-tight absolute bottom-3 right-4 text-[clamp(4.5rem,16vw,13rem)] leading-[0.8] sm:bottom-6 sm:right-8">
-          {String(pct).padStart(3, '0')}
+          AVALA
         </p>
       </motion.div>
     </div>
