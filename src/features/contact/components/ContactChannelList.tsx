@@ -1,5 +1,6 @@
 import { ArrowUpRight } from 'lucide-react'
 import { motion } from 'motion/react'
+import { RowHoverFill } from '@/components/fx/RowHoverFill'
 import { contactChannels } from '@/features/contact/data/channels'
 import { cn } from '@/lib/utils'
 
@@ -22,7 +23,7 @@ export function ContactChannelList({ className }: { className?: string }) {
             data-cursor={channel.cursor}
             className="group relative isolate grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 border-b border-avala-paper/15 px-4 py-4 sm:grid-cols-[3rem_9rem_minmax(0,1fr)_auto] lg:px-6 lg:py-5"
           >
-            <span className="absolute inset-0 -z-10 origin-bottom scale-y-0 bg-avala-neon transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-y-100 group-active:scale-y-100" />
+            <RowHoverFill active />
             <span className="hud-label tabular text-avala-neon transition-colors duration-500 group-hover:text-avala-ink group-active:text-avala-ink">
               {String(i + 1).padStart(2, '0')}
             </span>

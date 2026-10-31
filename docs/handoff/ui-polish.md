@@ -32,6 +32,14 @@ in `src/features/home/data/content.ts`, without a legacy catalog re-export.
 Home and Contact import the unchanged Bogotá clock from
 `src/components/ui/LocalClock.tsx`.
 
+## Shared row feedback
+
+`RowHoverFill` owns the bottom-up decorative fill in Home Services, eSIM steps and
+Contact channels. Parents retain the group, positioning, isolation and clipping.
+Contact opts into pressed/touch feedback with `<RowHoverFill active />`; omitted or
+false `active` preserves the original Home/eSIM output. The fill stays inert,
+ARIA-hidden and transition-free with reduced motion.
+
 ## Reusable title sizes
 
 Home and Contact use shared typography tokens for their approved title sizes. This centralization preserves the approved formulas and appearance; publishing remains a separate step.
