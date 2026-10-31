@@ -40,6 +40,13 @@ Contact opts into pressed/touch feedback with `<RowHoverFill active />`; omitted
 false `active` preserves the original Home/eSIM output. The fill stays inert,
 ARIA-hidden and transition-free with reduced motion.
 
+## Legacy information shells
+
+`LegacyPlaceholderPage` owns the identical outer container and white placeholder
+card used by About, Success Cases and Services. Pages provide their original label
+and title; Services keeps its estimator promotion as page-owned children. This
+extraction preserves the existing appearance and copy rather than redesigning it.
+
 ## Reusable title sizes
 
 Home and Contact use shared typography tokens for their approved title sizes. This centralization preserves the approved formulas and appearance; publishing remains a separate step.
