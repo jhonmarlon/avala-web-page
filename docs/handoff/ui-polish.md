@@ -1,11 +1,15 @@
-# Resume the UI polish work
+# Resume the UI work
 
-Continue on `feat/ui-polish-accessibility`, based on `feat/avala-group-web` at `c196a66`. The implementation is saved separately from the teammate's branch and the Wompi integration. Browser validation remains the next step; automated checks passed.
+The consolidated implementation is on `feat/shared-ui-consolidation-07-close`.
+See [Shared UI ownership](./shared-ui-consolidation.md) for all 11 routes, neutral
+owners, local review slices and current verification limits. The earlier polish
+baseline remains on `feat/ui-polish-accessibility`, separate from the teammate's
+branch and Wompi integration. Browser validation remains open; automated checks passed.
 
 ## Quick start
 
 ```bash
-git switch feat/ui-polish-accessibility
+git switch feat/shared-ui-consolidation-07-close
 npm run dev
 ```
 
@@ -326,11 +330,11 @@ npm run lint
 git diff --check
 ```
 
-There are 69 passing tests (including four shared CtaLink tests, five eSIM/Home SSR tests and one shared row-fill test covering protected-step effects, Home hover preservation, the corrected composition, preserved content, canonical purchase root and disabled voucher preview, alongside mobile navigation typography, contact values, Cases image fading, shared international phone, autofill states and phone-row alignment). The Node test loader uses the already-installed TypeScript package; no dependencies were added. The previous lint timeout was explicitly retried with authorization and resolved.
+There are 102 passing tests, covering the earlier polish contracts plus shared ownership, generic form actions, native ref props, legacy/editorial isolation, opt-in row active feedback and preserved legacy shells. Earlier unit counts below are historical, not the current suite total. The Node test loader uses the already-installed TypeScript package; no dependencies were added. The previous lint timeout was explicitly retried with authorization and resolved.
 
-For the latest contact-value/image-edge unit, focused tests passed 4/4 after
+For the earlier contact-value/image-edge unit, focused tests passed 4/4 after
 observing two intended RED failures, the full suite passed 54/54 and lint passed.
-The latest build passed using the explicitly authorized environment-safe equivalent
+That unit's build passed using the explicitly authorized environment-safe equivalent
 below, rather than `npm run build`, so Vite did not load local environment files:
 
 ```bash
