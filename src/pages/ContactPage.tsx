@@ -5,7 +5,7 @@ import { SplitReveal } from '@/components/fx/SplitReveal'
 import { companyInfo } from '@/config/site'
 import { ContactChannelList } from '@/features/contact/components/ContactChannelList'
 import { ContactForm } from '@/features/contact/components/ContactForm'
-import { LocalClock } from '@/features/home/components/LocalClock'
+import { LocalClock } from '@/components/ui/LocalClock'
 
 const ease = [0.76, 0, 0.24, 1] as const
 

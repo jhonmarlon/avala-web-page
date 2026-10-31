@@ -26,6 +26,13 @@ Do not merge or publish a release without a separate decision. Local environment
 | Loading/motion | Intro has no artificial 2.2s minimum. Font waiting is capped at 250ms; normal exit is 400ms. Marquee frame/scroll subscriptions suspend offscreen or while paused. |
 | Scrolling | Lenis smoothing is 0.65s without increasing gesture distance. Native scrollbar uses the page palette and a forced-colors fallback. |
 
+The shared service catalog now lives in `src/config/services.ts`; Home Hero,
+Services and Marquee import it directly. Home marketing content remains in
+`src/features/home/data/content.ts`, with a temporary catalog re-export for
+ContactForm. After the parallel units integrate, update ContactForm to import
+`@/config/services` and remove that re-export. Home and Contact now import the
+unchanged Bogotá clock from `src/components/ui/LocalClock.tsx`.
+
 ## Reusable title sizes
 
 Home and Contact use shared typography tokens for their approved title sizes. This centralization preserves the approved formulas and appearance; publishing remains a separate step.

@@ -14,7 +14,7 @@ import {
 import { useRef, useState } from 'react'
 import { SectionContinue } from '@/components/ui/SectionContinue'
 import { cn } from '@/lib/utils'
-import { services } from '@/features/home/data/content'
+import { services } from '@/config/services'
 
 const wrap = (min: number, max: number, v: number) => {
   const range = max - min

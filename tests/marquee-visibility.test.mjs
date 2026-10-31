@@ -8,7 +8,7 @@ const boundary = { visible: false, reduced: false, paused: false, frames: [], va
 globalThis.__marqueeBoundary = boundary
 registerHooks({
   resolve(specifier, context, next) {
-    if (['motion/react', 'react', '@/features/home/data/content', '@/lib/utils'].includes(specifier) && context.parentURL?.includes('MarqueeSection')) {
+    if (['motion/react', 'react', '@/config/services', '@/lib/utils'].includes(specifier) && context.parentURL?.includes('MarqueeSection')) {
       return { url: `marquee:${specifier}`, shortCircuit: true }
     }
     return next(specifier, context.parentURL?.startsWith('marquee:') ? { ...context, parentURL: import.meta.url } : context)
@@ -20,7 +20,7 @@ registerHooks({
           globalThis.__marqueeBoundary.paused = fn(globalThis.__marqueeBoundary.paused)
         }];`,
       'marquee:@/lib/utils': 'export const cn = (...parts) => parts.filter(Boolean).join(" ");',
-      'marquee:@/features/home/data/content': 'export const services = [{ title: "Servicio" }];',
+      'marquee:@/config/services': 'export const services = [{ title: "Servicio" }];',
       'marquee:motion/react': `import { createElement } from 'react';
         const b = globalThis.__marqueeBoundary;
         export const motion = { div: ({ children, ...props }) => createElement('div', props, children) };

@@ -5,7 +5,8 @@ import { Link } from 'react-router'
 import { SectionContinue } from '@/components/ui/SectionContinue'
 import { SectionLabel } from '@/components/fx/SectionLabel'
 import { RowHoverFill } from '@/components/fx/RowHoverFill'
-import { services, servicesIntro } from '@/features/home/data/content'
+import { services } from '@/config/services'
+import { servicesIntro } from '@/features/home/data/content'
 
 const ease = [0.76, 0, 0.24, 1] as const
 

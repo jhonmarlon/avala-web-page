@@ -19,8 +19,8 @@ registerHooks({
       : result
   },
 })
-const { services } = await import('../src/features/home/data/content.ts')
-const { LocalClock } = await import('../src/features/home/components/LocalClock.tsx')
+const { services } = await import('../src/config/services.ts')
+const { LocalClock } = await import('../src/components/ui/LocalClock.tsx')
 const { ContactForm } = await import('../src/features/contact/components/ContactForm.tsx')
 const { AboutPage } = await import('../src/pages/AboutPage.tsx')
 const { SuccessCasesPage } = await import('../src/pages/SuccessCasesPage.tsx')
