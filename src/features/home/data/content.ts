@@ -58,9 +58,6 @@ export const servicesIntro = {
   title: 'Nuestras soluciones',
 }
 
-// Temporary bridge for ContactForm until the parallel ownership units integrate.
-export { services } from '@/config/services'
-
 export const processIntro = {
   title: 'Así trabajamos',
 }
