@@ -3,6 +3,7 @@ import { FaInstagram, FaLinkedinIn, FaWhatsapp } from 'react-icons/fa6'
 import background3 from '@/assets/background_3.png'
 import logoImage from '@/assets/avala_logo.png'
 import { companyInfo, footerLinkGroups, legalLinks, socialLinks } from '@/config/site'
+import { Button } from '@/components/ui/Button'
 
 const socialIcons = {
   LinkedIn: FaLinkedinIn,
@@ -15,7 +16,7 @@ export function Footer() {
     <footer
       className="border-t border-white/10 text-white"
       style={{
-        backgroundImage: `linear-gradient(180deg, rgba(4, 11, 30, 0.72) 0%, rgba(5, 13, 34, 0.82) 100%), url(${background3})`,
+        backgroundImage: `linear-gradient(180deg, rgba(4, 11, 30, 0.92) 0%, rgba(5, 13, 34, 0.95) 100%), url(${background3})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center bottom',
         backgroundRepeat: 'no-repeat',
@@ -36,15 +37,17 @@ export function Footer() {
                 const Icon = socialIcons[link.label as keyof typeof socialIcons]
 
                 return (
-                  <a
+                  <Button
                     key={link.label}
+                    variant="outline"
+                    size="icon"
                     href={link.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-200 transition-colors hover:border-brand-400/40 hover:text-white"
+                    aria-label={link.label}
                   >
-                    <Icon className="size-4" />
-                  </a>
+                    <Icon aria-hidden="true" className="size-4" />
+                  </Button>
                 )
               })}
             </div>
@@ -80,19 +83,15 @@ export function Footer() {
               <li className="flex items-start gap-2.5"><Clock3 className="mt-0.5 size-4 shrink-0 text-brand-300" />{companyInfo.hours}</li>
             </ul>
 
-            <a
+            <Button
+              variant="outline"
               href="https://wa.me/573126573502"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-h-[3.15rem] min-w-[12.8rem] items-center justify-between gap-3 rounded-[0.9rem] border border-[#30d273]/55 bg-[linear-gradient(180deg,#16a34a_0%,#0b7a3a_100%)] px-4 text-sm font-medium text-white shadow-[0_16px_32px_rgba(22,163,74,0.28)] transition-all duration-200 hover:brightness-110"
             >
-              <span className="flex items-center gap-2.5">
-                <span className="flex size-7 items-center justify-center rounded-full bg-white/12">
-                  <FaWhatsapp className="size-[0.95rem]" />
-                </span>
-                <span>Chatear ahora</span>
-              </span>
-            </a>
+              <FaWhatsapp aria-hidden="true" className="size-5 shrink-0 text-green-400" />
+              Hablemos por WhatsApp
+            </Button>
           </div>
         </div>
 

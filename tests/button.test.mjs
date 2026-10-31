@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
+import { createElement } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
+import { MemoryRouter } from 'react-router'
 import { Button } from '../src/components/ui/Button.tsx'
 
 for (const destination of [{}, { href: '/contacto' }, { to: '/contacto' }]) {
@@ -23,6 +26,57 @@ test('Button retains defaults, disabled state and explicit submit type', () => {
   assert.equal(element.props.disabled, true)
   assert.match(element.props.className, /min-h-11/)
 })
+
+for (const destination of [{}, { href: '/contacto' }, { to: '/contacto' }]) {
+  test(`Button renders the opt-in outline family: ${JSON.stringify(destination)}`, () => {
+    const html = renderToStaticMarkup(createElement(MemoryRouter, null,
+      createElement(Button, { ...destination, variant: 'outline' }, 'Contactar')))
+    const tag = html.match(/^<(?:button|a)\b[^>]*>/)[0]
+    for (const token of [
+      'rounded-sm', 'border-avala-paper/25', 'bg-avala-ink', 'text-avala-paper',
+      'px-4', 'py-3', 'min-h-11', 'transition-colors',
+      'hover:border-avala-neon/50', 'hover:bg-avala-neon/10',
+      'focus-visible:outline-none', 'focus-visible:ring-2', 'focus-visible:ring-avala-neon/60',
+      'motion-reduce:transition-none',
+    ]) assert.ok(tag.includes(token), `Missing ${token} on ${tag}`)
+    assert.doesNotMatch(tag, /rounded-\[|transition-all|gradient|shadow-/)
+    assert.match(html, />Contactar<\//)
+    if ('href' in destination || 'to' in destination) assert.match(tag, /^<a\b[^>]*href="\/contacto"/)
+    else assert.match(tag, /^<button\b[^>]*type="button"/)
+  })
+}
+
+test('Button keeps the existing primary, secondary and ghost families opt-in behavior', () => {
+  const defaults = Button({ children: 'Enviar' }).props.className
+  assert.match(defaults, /rounded-\[1\.05rem\]/)
+  assert.match(defaults, /bg-\[linear-gradient/)
+  assert.match(defaults, /focus-visible:ring-brand-400\/60/)
+  const secondary = Button({ variant: 'secondary', children: 'Enviar' }).props.className
+  assert.match(secondary, /bg-white\/4/)
+  assert.match(secondary, /hover:border-brand-400\/50/)
+  const ghost = Button({ variant: 'ghost', children: 'Enviar' }).props.className
+  assert.match(ghost, /bg-transparent/)
+  assert.match(ghost, /px-0 py-0 text-brand-700/)
+  for (const classes of [defaults, secondary, ghost]) assert.doesNotMatch(classes, /bg-avala-ink|rounded-sm/)
+})
+
+for (const destination of [{}, { href: '/contacto' }, { to: '/contacto' }]) {
+  test(`Button renders a square outline icon size: ${JSON.stringify(destination)}`, () => {
+    const html = renderToStaticMarkup(createElement(MemoryRouter, null,
+      createElement(Button, { ...destination, variant: 'outline', size: 'icon', 'aria-label': 'Contacto' },
+        createElement('svg', { 'aria-hidden': true }))))
+    const tag = html.match(/^<(?:button|a)\b[^>]*>/)[0]
+    for (const token of ['size-11', 'p-0', 'shrink-0', 'rounded-sm', 'border-avala-paper/25',
+      'bg-avala-ink', 'text-avala-paper', 'focus-visible:ring-avala-neon/60']) {
+      assert.ok(tag.includes(token), `Missing ${token} on ${tag}`)
+    }
+    assert.doesNotMatch(tag, /\bpx-|\bpy-|min-h-|rounded-full/)
+    assert.match(tag, /aria-label="Contacto"/)
+    assert.match(html, /<svg aria-hidden="true"><\/svg>/)
+    if ('href' in destination || 'to' in destination) assert.match(tag, /^<a\b[^>]*href="\/contacto"/)
+    else assert.match(tag, /^<button\b[^>]*type="button"/)
+  })
+}
 
 test('Button preserves external link protection and explicit rel', () => {
   assert.equal(Button({ href: 'https://example.com', target: '_blank', children: 'Link' }).props.rel, 'noreferrer noopener')

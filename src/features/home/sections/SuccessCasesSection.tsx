@@ -18,20 +18,22 @@ function CaseRow({ item, index }: { item: (typeof successCases)[number]; index: 
   return (
     <article ref={ref} className="grid items-center gap-6 border-b border-avala-paper/15 py-8 lg:grid-cols-12 lg:gap-10 lg:py-10">
       <motion.figure
-        className={cn('relative aspect-[16/10] overflow-hidden bg-avala-ink-2 lg:col-span-7', reversed && 'lg:order-2 lg:col-start-6')}
+        className={cn('relative aspect-[16/10] overflow-hidden lg:col-span-7', reversed && 'lg:order-2 lg:col-start-6')}
         initial={reducedMotion ? false : { opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.1 }}
         transition={{ duration: reducedMotion ? 0 : 0.65, ease: 'easeOut' }}
         data-cursor="Caso"
       >
-        <motion.img
-          src={item.image}
-          alt={item.title}
-          loading="lazy"
-          className="absolute inset-x-0 -top-[12%] h-[124%] w-full object-cover grayscale-[35%] transition-[filter] duration-700 hover:grayscale-0"
-          style={{ y: reducedMotion ? 0 : imageY }}
-        />
+        <div className="absolute inset-0 image-edge-fade">
+          <motion.img
+            src={item.image}
+            alt={item.title}
+            loading="lazy"
+            className="absolute inset-x-0 -top-[12%] h-[124%] w-full object-cover grayscale-[35%] transition-[filter] duration-700 hover:grayscale-0"
+            style={{ y: reducedMotion ? 0 : imageY }}
+          />
+        </div>
         <figcaption className="hud-label absolute left-4 top-4 bg-avala-ink px-2 py-1 text-avala-paper">
           Caso {String(index + 1).padStart(2, '0')}
         </figcaption>

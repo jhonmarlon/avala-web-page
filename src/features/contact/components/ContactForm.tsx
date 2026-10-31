@@ -3,9 +3,12 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useId, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import { Honeypot } from '@/components/ui/Honeypot'
+import { formStyles } from '@/components/ui/form-styles'
 import { companyInfo } from '@/config/site'
 import { whatsappLink } from '@/features/contact/data/channels'
 import { services } from '@/features/home/data/content'
+import { PhoneField } from '@/features/estimator/components/PhoneField'
+import { composePhone, DEFAULT_PHONE_COUNTRY, type PhoneCountryId } from '@/features/estimator/utils/phone'
 import { submitForm } from '@/lib/forms'
 import { cn } from '@/lib/utils'
 
@@ -66,22 +69,13 @@ type FieldProps = {
 
 function Field({ id, label, index, error, optional, children }: FieldProps) {
   return (
-    <div className="group/field relative">
-      <label htmlFor={id} className="hud-label flex items-baseline gap-3">
+    <div>
+      <label htmlFor={id} className={cn(formStyles.label, 'flex items-baseline gap-3')}>
         <span className="tabular text-avala-neon">{index}</span>
         <span className="text-avala-paper/80">{label}</span>
         {optional && <span className="text-avala-mute/70">(opcional)</span>}
       </label>
       {children}
-      {/* Línea base + línea neón que se dibuja al enfocar */}
-      <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-px bg-avala-paper/15" />
-      <span
-        aria-hidden="true"
-        className={cn(
-          'absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-avala-neon transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-focus-within/field:scale-x-100',
-          error && 'scale-x-100 bg-[#ff6b8a]',
-        )}
-      />
       <AnimatePresence>
         {error && (
           <motion.p
@@ -90,7 +84,7 @@ function Field({ id, label, index, error, optional, children }: FieldProps) {
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="absolute -bottom-6 left-0 font-mono text-[0.68rem] tracking-[0.04em] text-[#ff8aa3]"
+            className={cn(formStyles.error, 'mt-2')}
           >
             {error}
           </motion.p>
@@ -100,12 +94,12 @@ function Field({ id, label, index, error, optional, children }: FieldProps) {
   )
 }
 
-const inputClass =
-  'display-tight mt-3 w-full bg-transparent pb-4 text-[clamp(1.3rem,2.4vw,1.9rem)] tracking-[-0.03em] text-avala-paper placeholder:text-avala-paper/20 focus:outline-none'
+const inputClass = cn(formStyles.input, 'mt-3')
 
 export function ContactForm() {
   const uid = useId()
   const [fields, setFields] = useState<Fields>(emptyFields)
+  const [phoneCountry, setPhoneCountry] = useState<PhoneCountryId>(DEFAULT_PHONE_COUNTRY)
   const [interests, setInterests] = useState<string[]>([])
   const [submitted, setSubmitted] = useState(false)
   const [sentVia, setSentVia] = useState<Channel | null>(null)
@@ -121,6 +115,9 @@ export function ContactForm() {
     startedAt.current ??= Date.now()
     setFields((current) => ({ ...current, [key]: event.target.value }))
   }
+
+  // Keep validation on the national draft; add the prefix only at delivery boundaries.
+  const deliveryFields = { ...fields, phone: composePhone(phoneCountry, fields.phone) }
 
   const toggleInterest = (title: string) =>
     setInterests((current) => (current.includes(title) ? current.filter((item) => item !== title) : [...current, title]))
@@ -142,7 +139,7 @@ export function ContactForm() {
     setSendError(null)
     const result = await submitForm(
       '/api/contact',
-      { ...fields, interests },
+      { ...deliveryFields, interests },
       { startedAt: startedAt.current ?? Date.now(), honeypot },
     )
     setSending(false)
@@ -152,12 +149,13 @@ export function ContactForm() {
 
   const sendWhatsapp = () => {
     if (!isValid()) return
-    openWhatsapp(composeMessage(fields, interests))
+    openWhatsapp(composeMessage(deliveryFields, interests))
     setSentVia('whatsapp')
   }
 
   const reset = () => {
     setFields(emptyFields)
+    setPhoneCountry(DEFAULT_PHONE_COUNTRY)
     setInterests([])
     setSubmitted(false)
     setSentVia(null)
@@ -194,7 +192,7 @@ export function ContactForm() {
             {sentVia === 'whatsapp' && (
               <button
                 type="button"
-                onClick={() => openWhatsapp(composeMessage(fields, interests))}
+                onClick={() => openWhatsapp(composeMessage(deliveryFields, interests))}
                 data-cursor="Reintentar"
                 className="h-12 border border-avala-paper/25 px-5 font-mono text-[0.72rem] uppercase tracking-[0.14em] text-avala-paper transition-colors duration-300 hover:border-avala-paper"
               >
@@ -233,7 +231,7 @@ export function ContactForm() {
               onChange={update('name')}
               aria-invalid={Boolean(errors.name)}
               aria-describedby={describedBy('name')}
-              className={inputClass}
+              className={cn(inputClass, errors.name && formStyles.inputError)}
             />
           </Field>
           <Field id={`${uid}-company`} index="02" label="Empresa" optional>
@@ -259,27 +257,32 @@ export function ContactForm() {
               onChange={update('email')}
               aria-invalid={Boolean(errors.email)}
               aria-describedby={describedBy('email')}
-              className={inputClass}
+              className={cn(inputClass, errors.email && formStyles.inputError)}
             />
           </Field>
-          <Field id={`${uid}-phone`} index="04" label="Teléfono" optional error={errors.phone}>
-            <input
-              id={`${uid}-phone`}
-              name="phone"
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel"
-              placeholder="+57 300 000 0000"
-              value={fields.phone}
-              onChange={update('phone')}
-              aria-invalid={Boolean(errors.phone)}
-              aria-describedby={describedBy('phone')}
-              className={inputClass}
-            />
-          </Field>
+          <PhoneField
+            id={`${uid}-phone`}
+            name="phone"
+            className="space-y-2"
+            label={
+              <span className="flex items-baseline gap-3">
+                <span className="tabular text-avala-neon">04</span>
+                <span className="text-avala-paper/80">Teléfono</span>
+                <span className="text-avala-mute/70">(opcional)</span>
+              </span>
+            }
+            country={phoneCountry}
+            nationalDigits={fields.phone}
+            disabled={false}
+            error={errors.phone ?? ''}
+            errorRole="alert"
+            onCountryChange={setPhoneCountry}
+            onDigitsChange={(value) => update('phone')({ target: { value } })}
+            onBlur={() => {}}
+          />
 
           <fieldset className="sm:col-span-2">
-            <legend className="hud-label flex items-baseline gap-3">
+            <legend className={cn(formStyles.label, 'flex items-baseline gap-3')}>
               <span className="tabular text-avala-neon">05</span>
               <span className="text-avala-paper/80">¿Qué te interesa?</span>
               <span className="text-avala-mute/70">(podés elegir varias)</span>
@@ -319,7 +322,7 @@ export function ContactForm() {
                 onChange={update('message')}
                 aria-invalid={Boolean(errors.message)}
                 aria-describedby={describedBy('message')}
-                className={cn(inputClass, 'resize-none text-[clamp(1.1rem,1.8vw,1.4rem)] leading-snug')}
+                className={cn(inputClass, 'resize-none', errors.message && formStyles.inputError)}
               />
             </Field>
           </div>
@@ -359,7 +362,7 @@ export function ContactForm() {
             .
           </p>
           {sendError && (
-            <p role="alert" className="-mt-6 font-mono text-[0.72rem] leading-5 tracking-[0.04em] text-[#ff8aa3] sm:col-span-2">
+            <p role="alert" className={cn(formStyles.error, '-mt-6 sm:col-span-2')}>
               {sendError} Podés escribirnos a{' '}
               <a href={`mailto:${companyInfo.email}`} className="underline underline-offset-4">
                 {companyInfo.email}

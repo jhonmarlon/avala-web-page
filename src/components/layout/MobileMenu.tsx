@@ -15,7 +15,7 @@ type MobileMenuProps = {
   onClose: () => void
 }
 
-// Menú móvil a pantalla completa: enlaces grandes numerados y soluciones con descripción
+// Menú móvil a pantalla completa: enlaces compactos numerados y soluciones con descripción
 export function MobileMenu({ open, onClose }: MobileMenuProps) {
   const [expanded, setExpanded] = useState<string | null>(null)
   const dialogRef = useRef<HTMLDialogElement>(null)
@@ -140,7 +140,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                           className="flex w-full items-start py-4 text-left"
                         >
                           {number}
-                          <span className="display-tight flex-1 text-[2.4rem] leading-none text-avala-paper">{item.label}</span>
+                          <span className="display-tight flex-1 text-nav-mobile-item leading-none text-avala-paper">{item.label}</span>
                           <span className="mt-1.5 flex size-8 items-center justify-center border border-avala-paper/20 text-avala-paper">
                             <motion.span animate={{ rotate: isExpanded ? 45 : 0 }} transition={{ duration: 0.3 }}>
                               <Plus className="size-4" strokeWidth={1.5} />
@@ -177,7 +177,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                                       className="row-span-3 size-5 self-center text-avala-paper/60 group-active:text-avala-ink"
                                       strokeWidth={1.25}
                                     />
-                                    <span className="display-tight text-xl leading-tight text-avala-paper group-active:text-avala-ink">
+                                    <span className="display-tight text-lg leading-tight text-avala-paper group-active:text-avala-ink">
                                       {child.label}
                                     </span>
                                     <span className="text-xs leading-5 text-avala-paper/55 group-active:text-avala-ink/70">
@@ -196,10 +196,9 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                           <>
                             {number}
                             <span
-                              className={cn(
-                                'display-tight flex-1 text-[2.4rem] leading-none transition-colors',
+                              className={`display-tight flex-1 text-nav-mobile-item leading-none transition-colors ${cn(
                                 isActive ? 'text-avala-neon' : 'text-avala-paper group-active:text-avala-neon',
-                              )}
+                              )}`}
                             >
                               {item.label}
                             </span>

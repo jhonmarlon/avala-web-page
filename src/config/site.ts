@@ -14,7 +14,7 @@ const esimPwaBaseUrl =
   import.meta.env.VITE_ESIM_PWA_URL?.replace(/\/$/, '') ?? 'http://localhost:5173'
 
 export const esimExperienceLinks = {
-  buy: `${esimPwaBaseUrl}/comprar`,
+  buy: 'https://siembradigital.avalashop.com/',
   activate: `${esimPwaBaseUrl}/activar`,
 }
 

@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { SectionContinue } from '@/components/ui/SectionContinue'
 import { SectionLabel } from '@/components/fx/SectionLabel'
+import { RowHoverFill } from '@/components/fx/RowHoverFill'
 import { services, servicesIntro } from '@/features/home/data/content'
 
 const ease = [0.76, 0, 0.24, 1] as const
@@ -69,7 +70,7 @@ export function ServicesSection() {
                 className="group relative isolate grid grid-cols-[3rem_1fr_auto] items-center gap-4 overflow-hidden border-b border-avala-paper/15 px-4 py-4 sm:grid-cols-[4rem_1fr_auto] lg:grid-cols-[5rem_minmax(0,1.1fr)_minmax(0,1fr)_3rem] lg:px-6 lg:py-5"
               >
                 {/* Relleno que sube desde la base */}
-                <span className="absolute inset-0 -z-10 origin-bottom scale-y-0 bg-avala-neon transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-y-100" />
+                <RowHoverFill />
 
                 <span className="hud-label tabular transition-colors duration-500 group-hover:text-avala-ink">
                   {String(i + 1).padStart(2, '0')}

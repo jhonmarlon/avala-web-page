@@ -29,11 +29,11 @@ export function ContactChannelList({ className }: { className?: string }) {
             <span className="hud-label transition-colors duration-500 group-hover:text-avala-ink/70 group-active:text-avala-ink/70">
               {channel.label}
             </span>
-            <span className="display-tight col-span-2 col-start-2 row-start-2 min-w-0 [overflow-wrap:anywhere] text-[clamp(1.125rem,2.8vw,2rem)] leading-tight text-avala-paper transition-colors duration-500 group-hover:text-avala-ink group-active:text-avala-ink sm:col-span-1 sm:col-start-3 sm:row-start-1">
+            <span className="display-tight col-span-2 col-start-2 row-start-2 min-w-0 [overflow-wrap:anywhere] text-contact-value leading-tight text-avala-paper transition-colors duration-500 group-hover:text-avala-ink group-active:text-avala-ink sm:col-span-1 sm:col-start-3 sm:row-start-1">
               {channel.value}
             </span>
-            <span className="col-start-3 row-start-1 flex size-10 items-center justify-center border border-avala-paper/20 text-avala-paper transition-all duration-500 group-hover:rotate-45 group-hover:border-avala-ink group-hover:text-avala-ink group-active:border-avala-ink group-active:text-avala-ink sm:col-start-4">
-              <ArrowUpRight className="size-4" strokeWidth={1.5} />
+            <span className="col-start-3 row-start-1 flex size-10 items-center justify-center border border-avala-paper/20 bg-avala-ink text-avala-paper transition-all duration-500 group-hover:rotate-45 group-hover:text-avala-neon group-active:text-avala-neon sm:col-start-4 sm:size-14">
+              <ArrowUpRight className="size-4 sm:size-7" strokeWidth={1.25} />
             </span>
           </a>
         </motion.li>

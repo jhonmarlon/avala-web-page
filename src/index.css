@@ -10,6 +10,9 @@
   --text-title-hero--line-height: 1.02;
   --text-title-page: clamp(3.5rem, 6vw, 5.5rem);
   --text-title-page--line-height: 1.02;
+  --text-contact-value: clamp(1rem, 2vw, 1.5rem);
+  --text-contact-value--line-height: 1.25;
+  --text-nav-mobile-item: clamp(1.5rem, 4vw, 1.75rem);
   --color-avala-ink: #05081a;
   --color-avala-ink-2: #0a1030;
   --color-avala-paper: #eef2ff;
@@ -37,6 +40,12 @@
   --shadow-soft: 0 18px 60px rgba(7, 18, 38, 0.12);
   --shadow-glow: 0 0 0 1px rgba(43, 179, 255, 0.18), 0 20px 80px rgba(18, 152, 255, 0.16);
   --radius-5xl: 2.5rem;
+  --animate-section-continue: section-continue 1.9s ease-in-out infinite;
+
+  @keyframes section-continue {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-100%); }
+  }
 }
 
 @layer base {
@@ -215,6 +224,19 @@
 
   .interactive-lift {
     @apply transition-transform duration-300 will-change-transform hover:-translate-y-1;
+  }
+
+  /* Apply to a stationary image viewport, with captions outside the mask. */
+  .image-edge-fade {
+    --image-edge-ramp: clamp(16px, 3vw, 40px);
+    -webkit-mask-image:
+      linear-gradient(to right, transparent, #000 var(--image-edge-ramp), #000 calc(100% - var(--image-edge-ramp)), transparent),
+      linear-gradient(to bottom, transparent, #000 var(--image-edge-ramp), #000 calc(100% - var(--image-edge-ramp)), transparent);
+    mask-image:
+      linear-gradient(to right, transparent, #000 var(--image-edge-ramp), #000 calc(100% - var(--image-edge-ramp)), transparent),
+      linear-gradient(to bottom, transparent, #000 var(--image-edge-ramp), #000 calc(100% - var(--image-edge-ramp)), transparent);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
   }
 
   .section-copy {

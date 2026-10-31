@@ -3,6 +3,10 @@ import { motion, useReducedMotion } from "motion/react";
 import { CheckCircle2, LoaderCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Honeypot } from "@/components/ui/Honeypot";
+import { estimatorStyles } from "@/features/estimator/components/estimator-styles";
+import { PhoneField } from "@/features/estimator/components/PhoneField";
+import type { PhoneCountryId } from "@/features/estimator/utils/phone";
+import { cn } from "@/lib/utils";
 import { companyInfo } from "@/config/site";
 import type { EstimatorLead } from "@/features/estimator/types/estimator.types";
 
@@ -15,6 +19,9 @@ interface LeadErrors {
 
 interface ProposalDetailsModalProps {
 	lead: EstimatorLead;
+	phoneCountry: PhoneCountryId;
+	phoneDigits: string;
+	onPhoneCountryChange: (country: PhoneCountryId) => void;
 	leadErrors: LeadErrors;
 	leadTouched: boolean;
 	isLeadValid: boolean;
@@ -31,6 +38,9 @@ interface ProposalDetailsModalProps {
 
 export function ProposalDetailsModal({
 	lead,
+	phoneCountry,
+	phoneDigits,
+	onPhoneCountryChange,
 	leadErrors,
 	leadTouched,
 	isLeadValid,
@@ -79,7 +89,7 @@ export function ProposalDetailsModal({
 			if (event.key !== "Tab" || !dialogRef.current) return;
 
 			const focusableElements = dialogRef.current.querySelectorAll<HTMLElement>(
-				'button:not(:disabled), input:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
+				'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
 			);
 			const firstElement = focusableElements[0];
 			const lastElement = focusableElements[focusableElements.length - 1];
@@ -104,9 +114,9 @@ export function ProposalDetailsModal({
 		};
 	}, []);
 
-	function renderFieldError(error: string) {
+	function renderFieldError(error: string, id: string) {
 		if (!error) return null;
-		return <p className="text-xs leading-5 text-red-600">{error}</p>;
+		return <p id={id} className={estimatorStyles.error}>{error}</p>;
 	}
 
 	return (
@@ -118,7 +128,7 @@ export function ProposalDetailsModal({
 				duration: shouldReduceMotion ? 0.01 : 0.28,
 				ease: "easeOut",
 			}}
-			className="fixed inset-0 z-50 flex items-center justify-center bg-[#030814]/75 p-4 backdrop-blur-sm sm:p-6"
+			className="fixed inset-0 z-50 flex items-center justify-center bg-avala-ink/90 p-4 sm:p-6"
 		>
 			<motion.div
 				ref={dialogRef}
@@ -128,31 +138,33 @@ export function ProposalDetailsModal({
 				aria-describedby="proposal-details-description"
 				initial={{
 					opacity: 0,
-					y: shouldReduceMotion ? 0 : 18,
-					scale: shouldReduceMotion ? 1 : 0.985,
+					y: shouldReduceMotion ? 0 : 28,
+					scale: shouldReduceMotion ? 1 : 0.97,
 				}}
 				animate={{ opacity: 1, y: 0, scale: 1 }}
 				exit={{
 					opacity: 0,
-					y: shouldReduceMotion ? 0 : 12,
-					scale: shouldReduceMotion ? 1 : 0.99,
+					y: shouldReduceMotion ? 0 : 16,
+					scale: shouldReduceMotion ? 1 : 0.985,
 				}}
 				transition={{
-					duration: shouldReduceMotion ? 0.01 : 0.4,
+					duration: shouldReduceMotion ? 0.01 : 0.45,
 					ease: [0.22, 1, 0.36, 1],
 				}}
-				className="flex max-h-[min(760px,calc(100vh-2rem))] w-full max-w-3xl flex-col overflow-hidden rounded-[1.9rem] border border-[#d8e4f4] bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] shadow-[0_30px_90px_rgba(3,8,20,0.3)]"
+				className={cn(
+					estimatorStyles.panel,
+					"flex max-h-[min(760px,calc(100dvh-2rem))] w-full max-w-3xl flex-col overflow-hidden rounded-none",
+				)}
 			>
-				<header className="relative shrink-0 overflow-hidden border-b border-brand-200/70 bg-[linear-gradient(135deg,#071226_0%,#102d58_58%,#1298ff_150%)] px-6 py-6 text-white sm:px-8">
-					<div className="pointer-events-none absolute -right-20 -top-24 size-64 rounded-full bg-brand-400/20 blur-3xl" />
-					<div className="relative flex items-start justify-between gap-5">
+				<header className="shrink-0 border-b border-avala-paper/15 px-4 py-4 sm:px-6">
+					<div className="flex items-start justify-between gap-3">
 						<div className="space-y-2">
-							<p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-100">
+							<p className={cn(estimatorStyles.label, "text-avala-neon")}>
 								Recibir propuesta detallada
 							</p>
 							<h2
 								id="proposal-details-title"
-								className="text-[1.8rem] font-bold leading-[1.1] text-white"
+								className="font-display text-2xl font-semibold leading-tight text-avala-paper sm:text-3xl"
 							>
 								{isLeadSubmitted
 									? "Solicitud enviada"
@@ -160,7 +172,7 @@ export function ProposalDetailsModal({
 							</h2>
 							<p
 								id="proposal-details-description"
-								className="max-w-2xl text-base leading-7 text-slate-200"
+								className="max-w-2xl text-sm leading-6 text-avala-mute sm:text-base"
 							>
 								{isLeadSubmitted
 									? "Recibimos tu estimación y tus datos."
@@ -172,7 +184,10 @@ export function ProposalDetailsModal({
 							type="button"
 							onClick={onClose}
 							aria-label="Cerrar formulario de propuesta"
-							className="relative flex size-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:border-brand-300 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60"
+							className={cn(
+								estimatorStyles.buttonSecondary,
+								"flex size-11 shrink-0 items-center justify-center border p-0 transition-colors focus-visible:outline-none focus-visible:ring-2",
+							)}
 						>
 							<X className="size-5" />
 						</button>
@@ -181,23 +196,25 @@ export function ProposalDetailsModal({
 
 				{isLeadSubmitted ? (
 					<section
-						className="flex min-h-[18rem] flex-1 flex-col items-center justify-center px-6 py-12 text-center sm:px-8"
+						className="flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-4 py-8 text-center sm:px-6"
+						data-lenis-prevent
 						aria-live="polite"
 					>
-						<div className="flex size-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+						<div className="flex size-16 shrink-0 items-center justify-center border border-avala-neon/50 text-avala-neon">
 							<CheckCircle2 className="size-9" aria-hidden="true" />
 						</div>
-						<h3 className="mt-5 text-2xl font-bold text-[#0d1730]">
+						<h3 className="mt-5 font-display text-2xl font-semibold text-avala-paper">
 							¡Todo listo!
 						</h3>
-						<p className="mt-3 max-w-lg text-base leading-7 text-slate-600">
+						<p className="mt-3 max-w-lg text-base leading-7 text-avala-mute">
 							Nuestro equipo comercial revisará tu proyecto y te contactará en
 							menos de 24 h hábiles con una propuesta personalizada.
 						</p>
 					</section>
 				) : (
 					<div
-						className="min-h-0 overflow-y-auto px-6 py-6 sm:px-8"
+						className="min-h-0 overflow-y-auto px-4 py-5 sm:px-6"
+						data-lenis-prevent
 						aria-busy={isLeadSubmitting}
 					>
 						{isLeadSubmitting ? (
@@ -207,13 +224,13 @@ export function ProposalDetailsModal({
 								aria-live="polite"
 							>
 								<LoaderCircle
-									className="size-10 animate-spin text-brand-600 motion-reduce:animate-none"
+									className="size-10 animate-spin text-avala-neon motion-reduce:animate-none"
 									aria-hidden="true"
 								/>
-								<p className="mt-5 text-lg font-semibold text-[#0d1730]">
+								<p className="mt-5 font-display text-lg font-semibold text-avala-paper">
 									Enviando tu solicitud…
 								</p>
-								<p className="mt-2 text-sm text-slate-500">
+								<p className="mt-2 text-sm text-avala-mute">
 									Estamos enviando tu estimación a nuestro equipo comercial.
 								</p>
 							</div>
@@ -229,16 +246,17 @@ export function ProposalDetailsModal({
 										"Ej. nombre@empresa.com",
 										"email",
 									],
-									["phone", "Teléfono", "Ej. +57 300 000 0000", "tel"],
 								].map(([field, label, placeholder, autoComplete]) => (
 									<label
 										key={field}
 										className={`block space-y-2 ${field === "fullName" || field === "company" ? "sm:col-span-1" : "sm:col-span-2"}`}
 									>
-										<span className="text-sm font-medium text-[#0d1730]">
+										<span className={estimatorStyles.label}>
 											{label}
 										</span>
 										<input
+											type={field === "email" ? "text" : undefined}
+											inputMode={field === "email" ? "email" : undefined}
 											value={lead[field as keyof EstimatorLead] ?? ""}
 											onChange={(event) =>
 												onLeadChange(
@@ -250,45 +268,66 @@ export function ProposalDetailsModal({
 											placeholder={placeholder}
 											autoComplete={autoComplete}
 											disabled={isLeadSubmitting}
-											className="w-full rounded-[1rem] border border-[#dfe8f6] bg-white px-4 py-3 text-sm text-[#0d1730] outline-none transition-all focus:border-brand-400 focus:shadow-[0_0_0_4px_rgba(18,152,255,0.08)] disabled:cursor-not-allowed disabled:bg-slate-50"
+											aria-invalid={leadTouched && Boolean(leadErrors[field as keyof LeadErrors])}
+											aria-describedby={
+												leadTouched && leadErrors[field as keyof LeadErrors]
+													? `proposal-${field}-error`
+													: undefined
+											}
+											className={cn(
+												estimatorStyles.input,
+												"min-h-11",
+												leadTouched && leadErrors[field as keyof LeadErrors]
+													? estimatorStyles.inputError
+													: undefined,
+											)}
 										/>
 										{leadTouched
-											? renderFieldError(leadErrors[field as keyof LeadErrors])
+											? renderFieldError(leadErrors[field as keyof LeadErrors], `proposal-${field}-error`)
 											: null}
 									</label>
 								))}
+								<PhoneField
+									country={phoneCountry}
+									nationalDigits={phoneDigits}
+									onCountryChange={onPhoneCountryChange}
+									onDigitsChange={(digits) => onLeadChange("phone", digits)}
+									onBlur={onLeadBlur}
+									disabled={isLeadSubmitting}
+									error={leadTouched ? leadErrors.phone : ""}
+								/>
 							</div>
 						)}
 					</div>
 				)}
 
-				<footer className="shrink-0 border-t border-[#dfe8f6] bg-white/80 px-6 py-5 sm:px-8">
+				<footer className="shrink-0 border-t border-avala-paper/15 bg-avala-ink px-4 py-4 sm:px-6">
 					{isLeadSubmitted ? (
-						<Button fullWidth onClick={onClose}>
+						<Button fullWidth className={estimatorStyles.button} onClick={onClose}>
 							Cerrar
 						</Button>
 					) : (
 						<>
 							{submitError ? (
-								<p role="alert" className="text-sm leading-5 text-red-600">
+								<p role="alert" className={estimatorStyles.error}>
 									{submitError} También puedes escribirnos a{" "}
 									<a
 										href={`mailto:${companyInfo.email}`}
-										className="font-medium underline underline-offset-2"
+										className="font-medium underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-avala-neon"
 									>
 										{companyInfo.email}
 									</a>
 									.
 								</p>
 							) : (
-								<p className="text-xs leading-5 text-slate-500">
+								<p className="text-sm leading-5 text-avala-mute">
 									Al enviar autorizas el tratamiento de tus datos para preparar
 									tu propuesta, según nuestra{" "}
 									<a
 										href="/privacidad"
 										target="_blank"
 										rel="noopener"
-										className="underline underline-offset-2 hover:text-slate-700"
+										className="underline underline-offset-2 hover:text-avala-paper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-avala-neon"
 									>
 										política de privacidad
 									</a>
@@ -298,12 +337,14 @@ export function ProposalDetailsModal({
 							<div className="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
 								<Button
 									variant="ghost"
+									className={estimatorStyles.buttonSecondary}
 									onClick={onClose}
 									disabled={isLeadSubmitting}
 								>
 									Volver al estimador
 								</Button>
 								<Button
+									className={estimatorStyles.button}
 									disabled={
 										isLeadSubmitting ||
 										!lead.fullName ||

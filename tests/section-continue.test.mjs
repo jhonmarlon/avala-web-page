@@ -36,7 +36,15 @@ test('Continuar is a native keyboard button with a quiet indicator, visible focu
   const markup = renderToStaticMarkup(React.createElement(SectionContinue, { targetId: 'home-services' }))
   assert.match(markup, />Continuar</)
   assert.match(markup, /aria-hidden="true"/)
-  assert.doesNotMatch(markup, /Scroll|animate-/)
+  assert.doesNotMatch(markup, /Scroll/)
+})
+
+test('only the decorative blue segment opts into motion-safe vertical animation', () => {
+  const markup = renderToStaticMarkup(React.createElement(SectionContinue, { targetId: 'home-services' }))
+  assert.match(markup, /<span aria-hidden="true" class="relative block h-6 w-px bg-avala-paper\/20"><span class="absolute inset-x-0 bottom-0 h-3 bg-avala-neon motion-safe:animate-section-continue"/)
+  assert.equal((markup.match(/animate-/g) ?? []).length, 1)
+  assert.match(markup, />Continuar</)
+  assert.doesNotMatch(markup, /style=|motion-reduce:animate|opacity-/)
 })
 
 test('activation uses the explicit target and current measured header offset through the existing scroll boundary', () => {

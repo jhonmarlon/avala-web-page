@@ -13,10 +13,13 @@ const buttonVariants = cva(
         secondary:
           'border-white/18 bg-white/4 px-5 py-3 text-white hover:border-brand-400/50 hover:bg-white/8',
         ghost: 'border-transparent bg-transparent px-0 py-0 text-brand-700 hover:text-brand-500',
+        outline:
+          'rounded-sm border-avala-paper/25 bg-avala-ink px-4 py-3 text-avala-paper transition-colors hover:border-avala-neon/50 hover:bg-avala-neon/10 focus-visible:ring-avala-neon/60 motion-reduce:transition-none',
       },
       size: {
         md: 'min-h-11',
         lg: 'min-h-[3.3rem] px-6 py-3.5 text-base',
+        icon: 'size-11 shrink-0 p-0',
       },
       fullWidth: {
         true: 'w-full',

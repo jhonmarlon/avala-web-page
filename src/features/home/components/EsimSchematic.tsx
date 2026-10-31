@@ -2,7 +2,7 @@ import { motion } from 'motion/react'
 import { useEffect, useState } from 'react'
 
 const ease = [0.76, 0, 0.24, 1] as const
-const flow = ['Compra', 'QR', 'Perfil', 'Activa']
+const flow = ['Perfil', 'Compra', 'QR', 'Activa']
 const pins = ['VCC', 'RST', 'CLK', 'GND', 'VPP', 'I/O']
 
 const draw = (delay = 0) => ({

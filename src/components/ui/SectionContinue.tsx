@@ -24,7 +24,7 @@ export function SectionContinue({ targetId }: SectionContinueProps) {
       >
         Continuar
         <span aria-hidden="true" className="relative block h-6 w-px bg-avala-paper/20">
-          <span className="absolute inset-x-0 bottom-0 h-3 bg-avala-neon" />
+          <span className="absolute inset-x-0 bottom-0 h-3 bg-avala-neon motion-safe:animate-section-continue" />
         </span>
       </button>
     </div>
