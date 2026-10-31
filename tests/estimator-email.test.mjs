@@ -26,6 +26,38 @@ const props = {
 }
 const render = (overrides = {}) => renderToStaticMarkup(createElement(ProposalDetailsModal, { ...props, ...overrides }))
 const emailInput = (html) => html.match(/<input\b[^>]*autoComplete="email"[^>]*>/)?.[0] ?? ''
+const buttons = (html) => [...html.matchAll(/<button\b[^>]*>[\s\S]*?<\/button>/g)].map(([button]) => button)
+
+test('proposal actions preserve close target, loading, disabled and success states', () => {
+  for (const overrides of [{}, { isLeadSubmitting: true }, { isLeadSubmitted: true }]) {
+    const html = render(overrides)
+    const actions = buttons(html)
+    const close = actions.find((button) => button.includes('aria-label="Cerrar formulario de propuesta"'))
+    assert.ok(close)
+    assert.match(close, /type="button"/)
+    assert.doesNotMatch(close, /disabled=""/)
+    for (const token of ['size-11', 'shrink-0', 'p-0', 'border-avala-paper/25', 'bg-transparent', 'focus-visible:ring-2']) {
+      assert.ok(close.includes(token), token)
+    }
+    for (const button of actions) assert.match(button, /type="button"/)
+    if (overrides.isLeadSubmitted) {
+      assert.match(html, />Cerrar<\/button>/)
+      assert.doesNotMatch(html, /Volver al estimador|Quiero una propuesta personalizada/)
+    } else {
+      assert.match(html, />Volver al estimador<\/button>/)
+      const submit = actions.find((button) => /(?:Enviando…|Quiero una propuesta personalizada)<\/button>/.test(button))
+      assert.match(submit, /disabled=""/)
+      for (const token of ['rounded-none', 'px-5', 'py-3', 'text-base', 'min-h-11', 'disabled:opacity-40']) {
+        assert.ok(submit.includes(token), token)
+      }
+      if (overrides.isLeadSubmitting) {
+        assert.match(html, /role="status"/)
+        assert.match(html, /Enviando tu solicitud…/)
+        assert.match(actions.find((button) => button.includes('Volver al estimador')), /disabled=""/)
+      }
+    }
+  }
+})
 
 test('email uses text validation with email keyboard, autocomplete and no native constraints', () => {
   const html = render()

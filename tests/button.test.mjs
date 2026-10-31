@@ -78,6 +78,56 @@ for (const destination of [{}, { href: '/contacto' }, { to: '/contacto' }]) {
   })
 }
 
+test('Button passes object and callback refs to the native button in React 19', () => {
+  for (const ref of [{ current: null }, () => {}]) {
+    const element = Button({ children: 'Cerrar', ref, type: 'button' })
+    assert.equal(element.type, 'button')
+    assert.equal(element.props.ref, ref)
+  }
+})
+
+for (const destination of [{}, { href: '/contacto' }, { to: '/contacto' }]) {
+  for (const [variant, tokens] of [
+    ['neon', ['rounded-none', 'border-avala-neon', 'bg-[var(--color-avala-neon)]', 'bg-none', 'text-avala-ink', 'shadow-none', 'hover:bg-avala-paper', 'disabled:opacity-40']],
+    ['neonSecondary', ['rounded-none', 'border-avala-paper/25', 'bg-transparent', 'text-avala-paper', 'hover:text-avala-neon', 'disabled:opacity-40']],
+    ['editorialSolid', ['h-14', 'justify-between', 'gap-8', 'bg-avala-neon', 'text-avala-ink', 'disabled:cursor-wait', 'disabled:opacity-70']],
+    ['editorialLine', ['h-12', 'border', 'border-avala-paper/25', 'text-avala-paper', 'hover:border-avala-paper']],
+    ['editorialBare', ['h-12', 'text-avala-mute', 'hover:text-avala-paper']],
+  ]) {
+    test(`Button supports ${variant} actions: ${JSON.stringify(destination)}`, () => {
+      const onClick = (event) => event
+      const children = createElement('span', null, 'Enviando…')
+      const editorial = variant.startsWith('editorial')
+      const element = Button({ ...destination, variant, size: editorial ? null : 'md', children, onClick,
+        ...(!('href' in destination || 'to' in destination) ? { type: 'submit', disabled: true } : { target: '_blank' }) })
+      assert.equal(element.props.children, children)
+      assert.equal(element.props.onClick, onClick)
+      const event = { type: 'click' }
+      assert.equal(element.props.onClick(event), event)
+      assert.equal(element.props.variant, undefined)
+      for (const token of tokens) assert.ok(element.props.className.split(' ').includes(token), `${variant}: missing ${token}`)
+      if (editorial) {
+        for (const token of ['font-mono', 'uppercase', 'tracking-[0.14em]', 'transition-colors', 'duration-300']) {
+          assert.ok(element.props.className.split(' ').includes(token), `${variant}: missing ${token}`)
+        }
+        assert.doesNotMatch(element.props.className, /rounded-|min-h-|shadow-|focus-visible:ring|disabled:pointer-events/)
+      } else {
+        assert.match(element.props.className, /min-h-11/)
+        assert.match(element.props.className, /focus-visible:ring-avala-neon/)
+      }
+      if ('href' in destination) {
+        assert.equal(element.type, 'a')
+        assert.equal(element.props.rel, 'noreferrer noopener')
+        assert.equal(Button({ ...destination, variant, target: '_blank', rel: 'external', children }).props.rel, 'external')
+      } else if (!('to' in destination)) {
+        assert.equal(element.type, 'button')
+        assert.equal(element.props.type, 'submit')
+        assert.equal(element.props.disabled, true)
+      }
+    })
+  }
+}
+
 test('Button preserves external link protection and explicit rel', () => {
   assert.equal(Button({ href: 'https://example.com', target: '_blank', children: 'Link' }).props.rel, 'noreferrer noopener')
   assert.equal(Button({ href: 'https://example.com', target: '_blank', rel: 'external', children: 'Link' }).props.rel, 'external')

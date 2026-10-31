@@ -570,8 +570,8 @@ export function EstimatorPage() {
 
 								<div className="flex flex-col gap-3 border-t border-avala-paper/15 pt-4 sm:flex-row sm:justify-between">
 									<Button
-										variant="ghost"
-										className={estimatorStyles.buttonSecondary}
+										type="button"
+										variant="neonSecondary"
 										onClick={handleBack}
 										disabled={currentStepIndex === 0}
 									>
@@ -580,7 +580,8 @@ export function EstimatorPage() {
 
 									{canShowLeadForm ? (
 										<Button
-											className={estimatorStyles.button}
+											type="button"
+											variant="neon"
 											onClick={handleContinueToLead}
 											disabled={!canAdvance()}
 										>
@@ -588,7 +589,7 @@ export function EstimatorPage() {
 											<ArrowRight className="size-4" />
 										</Button>
 									) : (
-										<Button className={estimatorStyles.button} onClick={handleNext} disabled={!canAdvance()}>
+										<Button type="button" variant="neon" onClick={handleNext} disabled={!canAdvance()}>
 											Siguiente paso
 											<ArrowRight className="size-4" />
 										</Button>

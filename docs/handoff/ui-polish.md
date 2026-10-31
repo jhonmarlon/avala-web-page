@@ -111,6 +111,51 @@ social-specific color variant. The three footer socials use this combination.
 The footer retains its background image with a stronger 92–95% dark overlay;
 text, logo, columns and destinations are unchanged, without whole-footer opacity.
 
+## Shared form actions
+
+`src/components/ui/Button.tsx` owns generic Contact and Estimator actions.
+Estimator no longer defines `estimatorStyles.button` or `buttonSecondary`:
+use `variant="neon"` for its square solid action and `variant="neonSecondary"`
+for its transparent secondary action. These preserve the existing 44px minimum,
+16px text, neon focus, disabled opacity and reduced-motion styling.
+
+Contact uses `editorialSolid`, `editorialLine` and `editorialBare`, with
+`size={null}` to opt out of the default minimum-height sizing. The editorial
+family retains Contact's mono typography, native focus/disabled behavior and
+300ms color transitions rather than inheriting the legacy rounded family.
+Its solid action is 56px high; line/bare actions are 48px high. Contact's
+WhatsApp line action keeps its local 56px height, padding, icon gap and disabled
+opacity override; submit keeps its responsive minimum width. Labels, children,
+explicit native types, loading/disabled props and callbacks stay at each caller.
+Selection chips and Estimator options remain domain-owned native controls.
+
+```tsx
+<Button type="button" variant="neon" onClick={handleNext}>Siguiente paso</Button>
+<Button type="submit" variant="editorialSolid" size={null} disabled={sending}>
+  {sending ? 'Enviando…' : 'Enviar mensaje'}
+</Button>
+```
+
+The native-button branch accepts `ComponentPropsWithRef<'button'>`. With the
+installed React 19, its ref prop passes directly to the native button, without
+casts, wrappers or a new focus target. The modal close action uses
+`variant="neonSecondary" size="icon"`, keeping its existing ref, 44px square and
+150ms color transition. Its Escape listener, focus trap, initial focus,
+restoration, scroll lock and all controller effects are unchanged.
+
+Primary, secondary, ghost, outline and icon defaults remain unchanged for
+existing consumers. The new variants are opt-in; native anchors retain the
+existing external-rel protection. `CtaLink` is unchanged: its animated label and
+native/router navigation contract are not form-action abstractions.
+
+New variant tests observed missing-family RED failures, and the real modal
+consumer produced a compiler RED for its missing ref prop before the type fix.
+Ref forwarding already worked at runtime; that check was GREEN before the fix.
+SSR and bounded element/prop checks cover labels, native types, geometry tokens,
+disabled/loading states, callback identity and ref passthrough. They do not prove
+browser focus, keyboard dispatch, visual equivalence or full submission/reset.
+No real API, WhatsApp or checkout requests were made.
+
 ## Continuation indicator motion
 
 Only the blue 12px segment moves vertically inside its stationary 24px rail,

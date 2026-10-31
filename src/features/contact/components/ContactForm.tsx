@@ -2,6 +2,7 @@ import { ArrowUpRight, Check, LoaderCircle, MessageCircle } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useId, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router'
+import { Button } from '@/components/ui/Button'
 import { Honeypot } from '@/components/ui/Honeypot'
 import { formStyles } from '@/components/ui/form-styles'
 import { companyInfo } from '@/config/site'
@@ -190,23 +191,25 @@ export function ContactForm() {
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
             {sentVia === 'whatsapp' && (
-              <button
+              <Button
                 type="button"
+                variant="editorialLine"
+                size={null}
                 onClick={() => openWhatsapp(composeMessage(deliveryFields, interests))}
                 data-cursor="Reintentar"
-                className="h-12 border border-avala-paper/25 px-5 font-mono text-[0.72rem] uppercase tracking-[0.14em] text-avala-paper transition-colors duration-300 hover:border-avala-paper"
               >
                 ¿No se abrió? Reintentar
-              </button>
+              </Button>
             )}
-            <button
+            <Button
               type="button"
+              variant="editorialBare"
+              size={null}
               onClick={reset}
               data-cursor="Nuevo"
-              className="h-12 px-5 font-mono text-[0.72rem] uppercase tracking-[0.14em] text-avala-mute transition-colors duration-300 hover:text-avala-paper"
             >
               Enviar otro mensaje
-            </button>
+            </Button>
           </div>
         </motion.div>
       ) : (
@@ -328,11 +331,13 @@ export function ContactForm() {
           </div>
 
           <div className="flex flex-col gap-4 pt-2 sm:col-span-2 sm:flex-row sm:items-center">
-            <button
+            <Button
               type="submit"
+              variant="editorialSolid"
+              size={null}
               disabled={sending}
               data-cursor="Enviar"
-              className="group inline-flex h-14 items-center justify-between gap-8 bg-avala-neon px-6 font-mono text-[0.75rem] font-medium uppercase tracking-[0.14em] text-avala-ink transition-colors duration-300 hover:bg-avala-paper disabled:cursor-wait disabled:opacity-70 sm:min-w-72"
+              className="sm:min-w-72"
             >
               {sending ? 'Enviando…' : 'Enviar mensaje'}
               {sending ? (
@@ -340,18 +345,20 @@ export function ContactForm() {
               ) : (
                 <ArrowUpRight className="size-4 transition-transform duration-500 group-hover:rotate-45" strokeWidth={1.5} />
               )}
-            </button>
+            </Button>
             {whatsappLink && (
-              <button
+              <Button
                 type="button"
+                variant="editorialLine"
+                size={null}
                 onClick={sendWhatsapp}
                 disabled={sending}
                 data-cursor="WhatsApp"
-                className="inline-flex h-14 items-center justify-center gap-3 border border-avala-paper/25 px-6 font-mono text-[0.72rem] uppercase tracking-[0.14em] text-avala-paper transition-colors duration-300 hover:border-avala-paper disabled:opacity-50"
+                className="inline-flex h-14 items-center justify-center gap-3 px-6 disabled:opacity-50"
               >
                 <MessageCircle className="size-4" strokeWidth={1.5} />
                 Prefiero WhatsApp
-              </button>
+              </Button>
             )}
           </div>
           <p className="-mt-6 text-xs leading-5 text-avala-paper/50 sm:col-span-2">

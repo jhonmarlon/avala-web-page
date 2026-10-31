@@ -179,18 +179,17 @@ export function ProposalDetailsModal({
 									: "Esta propuesta se basa en la configuración que realizaste en el estimador. Déjanos tus datos y te contactamos para convertirla en una propuesta técnica y económica personalizada."}
 							</p>
 						</div>
-						<button
+						<Button
 							ref={closeButtonRef}
 							type="button"
 							onClick={onClose}
 							aria-label="Cerrar formulario de propuesta"
-							className={cn(
-								estimatorStyles.buttonSecondary,
-								"flex size-11 shrink-0 items-center justify-center border p-0 transition-colors focus-visible:outline-none focus-visible:ring-2",
-							)}
+							variant="neonSecondary"
+							size="icon"
+							className="flex transition-colors duration-150"
 						>
 							<X className="size-5" />
-						</button>
+						</Button>
 					</div>
 				</header>
 
@@ -303,7 +302,7 @@ export function ProposalDetailsModal({
 
 				<footer className="shrink-0 border-t border-avala-paper/15 bg-avala-ink px-4 py-4 sm:px-6">
 					{isLeadSubmitted ? (
-						<Button fullWidth className={estimatorStyles.button} onClick={onClose}>
+						<Button type="button" fullWidth variant="neon" onClick={onClose}>
 							Cerrar
 						</Button>
 					) : (
@@ -336,15 +335,16 @@ export function ProposalDetailsModal({
 							)}
 							<div className="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
 								<Button
-									variant="ghost"
-									className={estimatorStyles.buttonSecondary}
+									type="button"
+									variant="neonSecondary"
 									onClick={onClose}
 									disabled={isLeadSubmitting}
 								>
 									Volver al estimador
 								</Button>
 								<Button
-									className={estimatorStyles.button}
+									type="button"
+									variant="neon"
 									disabled={
 										isLeadSubmitting ||
 										!lead.fullName ||

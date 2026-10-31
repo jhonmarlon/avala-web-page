@@ -74,3 +74,23 @@ test('Contact preserves native semantics, labels, optional fields and interest c
   for (const [button] of interests) assert.match(button, /type="button"/)
   assert.match(html, /<button\b[^>]*type="submit"[^>]*>Enviar mensaje/)
 })
+
+test('Contact generic actions retain native types, labels and editorial geometry', () => {
+  const html = render()
+  const submit = html.match(/<button\b[^>]*data-cursor="Enviar"[^>]*>/)[0]
+  const whatsapp = html.match(/<button\b[^>]*data-cursor="WhatsApp"[^>]*>/)[0]
+  assert.match(submit, /type="submit"/)
+  assert.match(whatsapp, /type="button"/)
+  for (const tag of [submit, whatsapp]) {
+    for (const token of ['inline-flex', 'h-14', 'px-6', 'font-mono', 'uppercase', 'tracking-[0.14em]', 'transition-colors', 'duration-300']) {
+      assert.ok(tag.includes(token), `${token}: ${tag}`)
+    }
+    assert.doesNotMatch(tag, /disabled=""|rounded-|min-h-|shadow-|focus-visible:ring/)
+  }
+  assert.match(submit, /justify-between gap-8/)
+  assert.match(submit, /disabled:cursor-wait disabled:opacity-70 sm:min-w-72/)
+  assert.match(whatsapp, /justify-center gap-3/)
+  assert.match(whatsapp, /disabled:opacity-50/)
+  assert.match(html, />Enviar mensaje<svg/)
+  assert.match(html, /<\/svg>Prefiero WhatsApp<\/button>/)
+})
