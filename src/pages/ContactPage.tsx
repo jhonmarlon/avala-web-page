@@ -27,7 +27,7 @@ export function ContactPage() {
       <section className="page-container pt-10 pb-16 lg:pt-16 lg:pb-24">
         <SectionLabel index="(C)" label="Contacto" meta={companyInfo.hours} />
 
-        <h1 className="display-tight pt-12 text-[clamp(3rem,9vw,8.5rem)] leading-[0.88] text-avala-paper lg:pt-16">
+        <h1 className="display-tight pt-12 text-title-page text-avala-paper lg:pt-16">
           <SplitReveal text="Hablemos de tu" stagger={0.018} play />{' '}
           <SplitReveal text="próximo proyecto." stagger={0.018} delay={0.25} play className="text-avala-neon" />
         </h1>

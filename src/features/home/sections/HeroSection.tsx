@@ -60,7 +60,7 @@ export function HeroSection({ ready }: HeroSectionProps) {
 
       <div className="page-container grid flex-none gap-6 pt-8 pb-6 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:gap-8 lg:pt-10 lg:pb-20">
         <motion.div className="min-w-0 max-w-[40rem] space-y-8" style={{ y: scrollMotion ? copyY : 0, opacity: scrollMotion ? copyOpacity : 1 }}>
-          <h1 className="display-tight text-[clamp(2.4rem,3.8vw,3.5rem)] leading-[1.02] text-avala-paper">
+          <h1 className="display-tight text-title-hero text-avala-paper">
             <SplitReveal text={before.trim()} play={ready} stagger={0.012} delay={0.15} />{' '}
             <SplitReveal
               text={`${heroContent.highlightedText}${after}`}

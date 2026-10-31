@@ -6,6 +6,10 @@
   --font-heading: Manrope, Inter, system-ui, sans-serif;
   --font-display: 'Inter Tight', Inter, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --text-title-hero: clamp(2.75rem, 4.3vw, 4rem);
+  --text-title-hero--line-height: 1.02;
+  --text-title-page: clamp(3.5rem, 6vw, 5.5rem);
+  --text-title-page--line-height: 1.02;
   --color-avala-ink: #05081a;
   --color-avala-ink-2: #0a1030;
   --color-avala-paper: #eef2ff;
