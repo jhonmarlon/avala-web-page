@@ -17,7 +17,7 @@ import { ProposalDetailsModal } from "@/features/estimator/components/ProposalDe
 import { estimatorStyles } from "@/features/estimator/components/estimator-styles";
 import { estimatorSteps } from "@/features/estimator/data/catalog";
 import { calculateEstimate } from "@/features/estimator/utils/calculateEstimate";
-import { composePhone, DEFAULT_PHONE_COUNTRY, isValidNationalPhone, sanitizePhoneDigits, type PhoneCountryId } from "@/features/estimator/utils/phone";
+import { composePhone, DEFAULT_PHONE_COUNTRY, isValidNationalPhone, sanitizePhoneDigits, type PhoneCountryId } from "@/lib/phone";
 import type {
 	EstimateResult,
 	EstimatorAnswers,

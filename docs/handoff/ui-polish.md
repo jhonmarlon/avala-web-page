@@ -139,7 +139,9 @@ row's neon fill remain unchanged.
 ## Shared country picker and proposal modal
 
 Contact and Estimator reuse the same `PhoneField` and `CountryCodeSelect`,
-currently located under `src/features/estimator/components/`. Optional identity,
+from `src/components/ui/phone/`, with the unchanged country catalog, types,
+constants, `sanitizePhoneDigits`, `composePhone`, `isValidNationalPhone` and
+`searchPhoneCountries` owned by `src/lib/phone.ts`. Optional identity,
 name and label props let Contact retain its unique control/error IDs and numbered
 optional label; existing Estimator defaults are unchanged. Contact validates the
 national draft and adds the selected dialing prefix only when constructing the

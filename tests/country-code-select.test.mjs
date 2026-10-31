@@ -2,8 +2,8 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import * as phone from '../src/features/estimator/utils/phone.ts'
-import { PhoneField } from '../src/features/estimator/components/PhoneField.tsx'
+import * as phone from '../src/lib/phone.ts'
+import { PhoneField } from '../src/components/ui/phone/PhoneField.tsx'
 
 const ids = (query) => phone.searchPhoneCountries(query).map(({ id }) => id)
 test('search matches names, accents, ISO and dial codes without merging shared prefixes', () => {

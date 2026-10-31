@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
-import { estimatorStyles } from "@/features/estimator/components/estimator-styles";
-import { CountryCodeSelect } from "@/features/estimator/components/CountryCodeSelect";
+import { formStyles } from "@/components/ui/form-styles";
+import { CountryCodeSelect } from "@/components/ui/phone/CountryCodeSelect";
 import {
 	MAX_NATIONAL_DIGITS,
 	sanitizePhoneDigits,
 	type PhoneCountryId,
-} from "@/features/estimator/utils/phone";
+} from "@/lib/phone";
 import { cn } from "@/lib/utils";
 
 interface PhoneFieldProps {
@@ -33,7 +33,7 @@ export function PhoneField({
 		<div className={className}>
 			<CountryCodeSelect id={`${id}-country`} country={country} disabled={disabled} onCountryChange={onCountryChange} onBlur={onBlur}>
 				<div className="min-w-0 space-y-2">
-					<label htmlFor={id} className={estimatorStyles.label}>
+					<label htmlFor={id} className={formStyles.label}>
 						{label}
 					</label>
 					<input
@@ -51,11 +51,11 @@ export function PhoneField({
 						disabled={disabled}
 						aria-invalid={Boolean(error)}
 						aria-describedby={error ? errorId : undefined}
-						className={cn(estimatorStyles.input, "min-h-11", error ? estimatorStyles.inputError : undefined)}
+						className={cn(formStyles.input, "min-h-11", error ? formStyles.inputError : undefined)}
 					/>
 				</div>
 			</CountryCodeSelect>
-			{error ? <p id={errorId} role={errorRole} className={estimatorStyles.error}>{error}</p> : null}
+			{error ? <p id={errorId} role={errorRole} className={formStyles.error}>{error}</p> : null}
 		</div>
 	);
 }

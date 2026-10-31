@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { formStyles } from "@/components/ui/form-styles";
-import { DEFAULT_PHONE_COUNTRY, phoneCountries, searchPhoneCountries, type PhoneCountryId } from "@/features/estimator/utils/phone";
+import { DEFAULT_PHONE_COUNTRY, phoneCountries, searchPhoneCountries, type PhoneCountryId } from "@/lib/phone";
 import { cn } from "@/lib/utils";
 
 interface CountryCodeSelectProps {

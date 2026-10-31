@@ -2,8 +2,8 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { Children, createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { PhoneField } from '../src/features/estimator/components/PhoneField.tsx'
-import { composePhone, isValidNationalPhone, MAX_NATIONAL_DIGITS } from '../src/features/estimator/utils/phone.ts'
+import { PhoneField } from '../src/components/ui/phone/PhoneField.tsx'
+import { composePhone, isValidNationalPhone, MAX_NATIONAL_DIGITS } from '../src/lib/phone.ts'
 
 test('Contact country and national controls share an end-aligned row even with a wrapping caption', () => {
   const field = PhoneField({

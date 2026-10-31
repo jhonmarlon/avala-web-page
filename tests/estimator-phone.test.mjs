@@ -2,8 +2,8 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { Children } from 'react'
-import { phoneCountries, DEFAULT_PHONE_COUNTRY, MAX_NATIONAL_DIGITS, sanitizePhoneDigits, composePhone, isValidNationalPhone } from '../src/features/estimator/utils/phone.ts'
-import { PhoneField } from '../src/features/estimator/components/PhoneField.tsx'
+import { phoneCountries, DEFAULT_PHONE_COUNTRY, MAX_NATIONAL_DIGITS, sanitizePhoneDigits, composePhone, isValidNationalPhone } from '../src/lib/phone.ts'
+import { PhoneField } from '../src/components/ui/phone/PhoneField.tsx'
 
 const country = (id) => phoneCountries.find((entry) => entry.id === id)
 const controls = (element) => {
