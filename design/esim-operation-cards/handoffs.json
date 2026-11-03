@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "chosen": "01-uniform-cards.html",
+  "handoffs": {
+    "01-uniform-cards.html": {
+      "status": "in_progress",
+      "queued": false,
+      "sentAt": "2026-11-03T14:42:40.832Z",
+      "startedAt": "2026-11-03T16:37:07.558Z",
+      "implementedAt": null,
+      "note": "Cards de 8 px conservadas. /esim y Home 04 · Proceso usan pin de página completa (main y Footer), sin interceptar entradas. Anclas «Continuar» corregidas con offsets/CSS preservados. Writer: 130 pruebas/tipos/build/lint correctos; padre: 25 focalizadas correctas. Falta aceptación visual/gestos/foco y ciclo React real. Verificación independiente no disponible por timeout previo; assessment nativo bloqueado por untracked; sin aprobación nativa.",
+      "previewUrl": "http://localhost:5173/esim"
+    }
+  }
+}
