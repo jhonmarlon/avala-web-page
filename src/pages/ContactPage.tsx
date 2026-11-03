@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import { CtaLink } from '@/components/fx/CtaLink'
 import { SectionLabel } from '@/components/fx/SectionLabel'
 import { SplitReveal } from '@/components/fx/SplitReveal'
@@ -10,12 +10,20 @@ import { LocalClock } from '@/components/ui/LocalClock'
 const ease = [0.76, 0, 0.24, 1] as const
 
 const nextSteps = [
-  { title: 'Te respondemos', description: 'En menos de 24 h hábiles, con preguntas puntuales para entender tu caso.' },
-  { title: 'Reunión de descubrimiento', description: '30 minutos para entender objetivos, procesos y restricciones.' },
-  { title: 'Propuesta clara', description: 'Alcance, tiempos y costos por etapas. Sin letra chica.' },
+  { title: 'Recibimos tu mensaje.', description: 'Leemos lo que nos contás para entender tu consulta.' },
+  { title: 'Lo acercamos al equipo indicado.', description: 'Según lo que necesitás, buscamos quién puede ayudarte.' },
+  { title: 'Te respondemos para ayudarte con el siguiente paso.', description: 'Seguimos la conversación por el canal que elegiste.' },
 ]
 
 export function ContactPage() {
+  const reducedMotion = useReducedMotion()
+  const entrance = {
+    initial: reducedMotion ? false as const : { opacity: 0, y: 16 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.3 },
+    transition: { duration: reducedMotion ? 0 : 0.7, delay: 0, ease },
+  }
+
   return (
     <div className="relative isolate bg-avala-ink text-avala-paper [overflow-x:clip]">
       <div aria-hidden="true" className="grid-lines absolute inset-0 -z-10 [mask-image:linear-gradient(180deg,black,transparent_60%)]" />
@@ -28,18 +36,16 @@ export function ContactPage() {
         <SectionLabel index="(C)" label="Contacto" meta={companyInfo.hours} />
 
         <h1 className="display-tight pt-12 text-title-page text-avala-paper lg:pt-16">
-          <SplitReveal text="Hablemos de tu" stagger={0.018} play />{' '}
-          <SplitReveal text="próximo proyecto." stagger={0.018} delay={0.25} play className="text-avala-neon" />
+          <SplitReveal text="Hablemos." stagger={0.018} play />{' '}
+          <SplitReveal text="¿En qué podemos ayudarte?" stagger={0.018} delay={0.25} play className="text-avala-neon" />
         </h1>
 
         <motion.div
           className="mt-12 grid gap-8 border-t border-avala-paper/15 pt-8 lg:grid-cols-12"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease, delay: 0.6 }}
+          {...entrance}
         >
           <p className="text-base leading-7 text-avala-paper/70 lg:col-span-6 lg:text-lg lg:leading-8">
-            Contanos qué querés construir, automatizar o integrar. Te respondemos con una ruta clara, sin compromiso.
+            Contanos qué necesitás: conocer nuestros servicios, consultar sobre tu eSIM, trabajar con nosotros o conversar sobre una idea.
           </p>
           <div className="hud-label flex flex-col gap-3 lg:col-span-5 lg:col-start-8 lg:items-end">
             <p className="flex items-center gap-3 text-avala-paper">
@@ -57,9 +63,9 @@ export function ContactPage() {
       </section>
 
       <section className="page-container grid gap-16 pb-24 lg:grid-cols-12 lg:gap-12 lg:pb-32">
-        <div className="lg:col-span-7">
+        <motion.div {...entrance} className="lg:col-span-7">
           <ContactForm />
-        </div>
+        </motion.div>
 
         <aside className="space-y-12 lg:col-span-4 lg:col-start-9">
           <div>
@@ -69,10 +75,8 @@ export function ContactPage() {
                 <motion.li
                   key={step.title}
                   className="grid grid-cols-[2.5rem_1fr] gap-x-2 border-b border-avala-paper/15 py-5"
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.6 }}
-                  transition={{ duration: 0.7, delay: i * 0.08, ease }}
+                  {...entrance}
+                  transition={{ ...entrance.transition, delay: reducedMotion ? 0 : i * 0.08 }}
                 >
                   <span className="hud-label tabular pt-1 text-avala-neon">{String(i + 1).padStart(2, '0')}</span>
                   <div>
@@ -84,15 +88,15 @@ export function ContactPage() {
             </ol>
           </div>
 
-          <div className="border border-avala-paper/15 p-6">
-            <p className="hud-label text-avala-paper">¿Todavía no tenés claro el alcance?</p>
+          <motion.div {...entrance} className="border border-avala-paper/15 p-6">
+            <p className="hud-label text-avala-paper">¿Querés estimar un proyecto de software?</p>
             <p className="mt-3 text-sm leading-6 text-avala-paper/60">
-              Usá el estimador y obtené un rango de inversión en un par de minutos.
+              Obtené un rango de inversión para tu proyecto de software con el estimador.
             </p>
             <CtaLink to="/estimar-proyecto" variant="line" cursor="Estimar" className="mt-6 w-full">
               Estimar mi proyecto
             </CtaLink>
-          </div>
+          </motion.div>
         </aside>
       </section>
 

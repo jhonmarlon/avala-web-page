@@ -40,7 +40,7 @@ function validate(fields: Fields) {
 function composeMessage(fields: Fields, interests: string[]) {
   const optional = (label: string, value: string) => (value.trim() ? [`${label}: ${value.trim()}`] : [])
   return [
-    `Hola ${companyInfo.name}, quiero hablar de un proyecto.`,
+    `Hola ${companyInfo.name}, quiero hacer una consulta.`,
     '',
     `Nombre: ${fields.name.trim()}`,
     ...optional('Empresa', fields.company),
@@ -255,7 +255,7 @@ export function ContactForm() {
               type="email"
               inputMode="email"
               autoComplete="email"
-              placeholder="vos@empresa.com"
+              placeholder="vos@ejemplo.com"
               value={fields.email}
               onChange={update('email')}
               aria-invalid={Boolean(errors.email)}
@@ -287,8 +287,8 @@ export function ContactForm() {
           <fieldset className="sm:col-span-2">
             <legend className={cn(formStyles.label, 'flex items-baseline gap-3')}>
               <span className="tabular text-avala-neon">05</span>
-              <span className="text-avala-paper/80">¿Qué te interesa?</span>
-              <span className="text-avala-mute/70">(podés elegir varias)</span>
+              <span className="text-avala-paper/80">Servicios de interés</span>
+              <span className="text-avala-mute/70">(opcional, podés elegir varios)</span>
             </legend>
             <div className="mt-5 flex flex-wrap gap-2">
               {services.map((service) => {
@@ -315,12 +315,12 @@ export function ContactForm() {
           </fieldset>
 
           <div className="sm:col-span-2">
-            <Field id={`${uid}-message`} index="06" label="Tu proyecto" error={errors.message}>
+            <Field id={`${uid}-message`} index="06" label="Tu mensaje" error={errors.message}>
               <textarea
                 id={`${uid}-message`}
                 name="message"
                 rows={4}
-                placeholder="Contanos qué necesitás, plazos y cualquier detalle útil."
+                placeholder="Contanos qué necesitás y cualquier detalle que nos ayude a responderte."
                 value={fields.message}
                 onChange={update('message')}
                 aria-invalid={Boolean(errors.message)}

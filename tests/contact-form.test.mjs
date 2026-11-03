@@ -68,11 +68,20 @@ test('Contact preserves native semantics, labels, optional fields and interest c
   assert.match(html, /Teléfono<\/span><span[^>]*>\(opcional\)/)
   assert.doesNotMatch(html, /<select\b|role="alert"/)
   assert.match(html, /href="\/privacidad"/)
-  assert.match(html, /<legend\b[^>]*>.*¿Qué te interesa\?/)
+  assert.match(html, /<legend\b[^>]*>.*Servicios de interés/)
   const interests = [...html.matchAll(/<button\b[^>]*aria-pressed="false"[^>]*>/g)]
   assert.ok(interests.length > 0)
   for (const [button] of interests) assert.match(button, /type="button"/)
   assert.match(html, /<button\b[^>]*type="submit"[^>]*>Enviar mensaje/)
+})
+
+test('Contact invites a general message with optional service interests', () => {
+  const html = render()
+  assert.match(html, /Tu mensaje<\/span>/)
+  assert.match(html, /placeholder="Contanos qué necesitás y cualquier detalle que nos ayude a responderte\."/)
+  assert.match(html, /placeholder="vos@ejemplo.com"/)
+  assert.match(html, /<legend\b[^>]*>.*Servicios de interés.*\(opcional, podés elegir varios\)/)
+  assert.doesNotMatch(html, /Tu proyecto|plazos|vos@empresa.com/)
 })
 
 test('Contact generic actions retain native types, labels and editorial geometry', () => {
