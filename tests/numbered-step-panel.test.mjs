@@ -20,6 +20,16 @@ test('numbered panel renders public content, muted icon and a decorative outline
   assert.doesNotMatch(html, /<a\b|<button\b|tabindex=|role=|lg:w-|group-hover:/)
 })
 
+test('opt-in compact mobile panel preserves full content and decorative stages without changing defaults', () => {
+  const html = render({ mobileCompact: true })
+  assert.match(html, /flex-col gap-3[^\"]*py-4/)
+  assert.match(html, /text-\[4rem\]/)
+  assert.match(html, /text-2xl/)
+  assert.match(html, /text-base leading-6/)
+  assert.match(html, /Paso 3[\s\S]*>03<\/p>[\s\S]*Panel title[\s\S]*Panel description/)
+  assert.doesNotMatch(html, /line-clamp|truncate|h-\[|overflow-hidden/)
+})
+
 test('numbered panel forwards caller classes without wrappers or duplicating label numbering', () => {
   const html = render({ label: 'Etapa 12', number: 12, className: 'lg:w-[min(64vw,56rem)] caller-panel' })
   assert.match(html, /^<article class="relative flex shrink-0 flex-col gap-4 border-avala-paper\/15 py-8 lg:w-\[min\(64vw,56rem\)\] caller-panel lg:border-l lg:px-8 lg:py-6">/)

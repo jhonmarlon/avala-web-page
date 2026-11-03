@@ -56,8 +56,10 @@ Home retains five stages and its continue link; eSIM has four customer steps wit
 its protected-flow intro outside the list, on a full-width track rather than a
 narrow column. Both use desktop vertical-driven horizontal travel, compact
 same-tree measurement, the existing 0.45 travel budget, sticky-height endpoint
-and instance-local HUD. Mobile, reduced-motion and insufficient-height layouts
-remain readable vertically; resize/font measurements allow desktop reentry.
+and instance-local HUD. Fitting, motion-allowed mobile uses this same document-Y
+pin (not a finger-lateral swiper). Mobile reduced-motion or insufficient-height
+layouts use a native horizontal row; desktop fallbacks remain vertical.
+Resize/font measurements allow reentry using the same frame/track refs.
 No duplicate accessible tree, hover fill or per-page scroll effects are needed.
 
 ## Contact purpose
@@ -171,8 +173,9 @@ section counter-transforms, duplicate content or native-scroll replacement exist
 PageDown, scrollbar, touch and existing Lenis remain document-driven.
 
 Same-tree compact measurement restores layout in finally. Whole-frame/core/track
-resize and font/viewport events are coalesced and cleaned up. Mobile, reduced
-motion and oversized cores have normal flow without a reserve. Unscoped Home
+resize and font/viewport events are coalesced and cleaned up. Reduced motion
+and oversized cores have normal flow without a reserve (mobile horizontally
+scrollable, desktop vertical). Fitting mobile uses the full-page pin too. Unscoped Home
 Process keeps its local timeline, track minimum, 620px mock frame,
 root1970/end620 and continue link; the Home route now uses the shared scope.
 Automated evidence covers public layout containment and modeled geometry, not
@@ -237,3 +240,78 @@ Ink Card alone now uses Tailwind `rounded-lg` (.5rem / 8px), sourced from
 match; alternatives 02/03 and legacy Card/ServiceCard radii are unchanged.
 All six texts, icons, passive semantics and motion-safe 300ms translate transition
 remain intact. No tuning controls were needed for this approved fixed value.
+
+### Mobile horizontal steps — corrected primary gesture
+
+Latest user correction (verbatim): “en mobile debe conservar el mismo efecto de detener la pag y hacer el sscroll horizontal , el scroll debe tener el mismo efecto que tiene en desktop”.
+This supersedes the previous native-swiper-primary interpretation. Home's five
+stages and eSIM's four steps use the **same vertical document-scroll → horizontal
+track** interaction on fitting, motion-allowed phones. A vertical finger pan
+advances ordinary document Y; CSS sticky visually holds the whole main/Footer
+frame while progress translates the track, then releases every tail boundary
+together. No new touch/wheel owner, preventDefault, body lock, scrollTo writes,
+counter-transforms or following-section gap changes were introduced.
+
+Eligibility is motion preference, not a desktop breakpoint. The existing scope
+measures the actual same-tree horizontal core (including header clearance,
+HUD/hint and optional Continue), requiring 0 < core height <= viewport height
+and positive horizontal distance. No forced fit, fake CSS height, viewport
+minimum, flex growth or clipped panel copy is used. Scope alone retains F+D×0.45,
+top −A and the full-budget endpoint/resolver; it is unchanged. Panels and intro
+are bounded to min(82vw,32rem) below 1024px. An opt-in `mobileCompact` panel uses
+4rem decorative numbers, 24px headings, 16px/24px body and smaller spacing;
+all labels, icons and copy remain. Default/desktop article classes stay exact.
+The mobile HUD has a fixed-height bounded title slot, nonshrinking counter and
+flexible progress; its height does not vary with the current stage.
+
+**Accessibility fallback is not the primary gesture.** Reduced-motion mobile or
+an actually oversized/zoomed core stays in native horizontal flow, never a
+vertical stack: all panels remain reachable, with a named focusable scroller,
+visible focus, `touch-auto`, trailing room and the lateral Spanish hint. Only
+this fallback gets `data-lenis-prevent`; active pin keeps ordinary document
+input. Header/footer remain outside the customer ol; intro is on the row but
+outside that list. Native and pinned layouts share mounted frame/track refs so
+resize, orientation, font completion and preference changes can leave/reenter
+without a second reserve. Desktop reduced/short fallbacks remain vertical.
+
+Automated proof is deterministic SSR/media policy and the existing hook/geometry
+model, not browser pixel measurement. Modeled widths: 320/375/390/768/1023/1024;
+375×720 with actual fixture core 620 registers F=4000, A=600, D=3000, B=1350,
+root=5350, top=−600. Forward/reverse progress 0/.25/.5/.75/1 and release preserve
+all modeled downstream gaps for Home/eSIM. Tests retain desktop/default panels,
+fit boundaries (720 fits, 721 falls back), fallback/reentry, local contexts,
+anchor cleanup and absence of page-position writes. The fixture supplies geometry;
+it does not establish that production CSS computes 620px on a physical phone.
+
+Latest correction verification: **35 focused / 148 full-suite tests passed, no
+skips**, followed by TypeScript, envDir:false production build and lint (exit 0).
+The existing >500 kB bundle warning remains. The explicitly mobile eSIM fixture
+now expects the authorized compact classes while preserving its copy, ordering,
+icons, semantic and native-action checks; default Panel assertions remain exact.
+Two Home model cases now accept React SSR's nonzero `x:-750px` serialization;
+this was a fixture correction, not a production timeline/math change.
+
+Manual phone protocol on `/` and `/esim` at 320/375/390/768px:
+1. With motion allowed and a fitting core, **swipe vertically**, not laterally.
+   Check the whole scene visually holds, all 5/4 panels are reached, HUD tracks
+   forward/reverse, Continue remains reachable and all following gaps stay fixed
+   through the final release. Site Header must not cover the stage.
+2. Enable reduced motion, use a short landscape viewport and pinch/text zoom.
+   Check oversized cores switch to an unclipped native horizontal row, last panel
+   and focus outline remain reachable, and vertical page panning still works.
+3. Restore fit/motion, rotate/resize through 1024px, wait for fonts, and revisit
+   Home/eSIM. Check reentry, full-budget anchors/Continue, no stale focus or
+   doubled reserve, and unchanged desktop behavior.
+
+Real gestures, pinch/focus, compositor behavior and actual React commit/remount
+lifecycle are unverified here. No visual acceptance or new independent/native
+approval is claimed; the parent owns fresh candidate verification and disposition.
+
+Publication disposition: the independent verifier's isolation setup failed at
+`mktemp` (exit 1) before creating a directory or running any tests. No independent
+runtime verdict or source/snapshot digest was produced for this corrected pin
+candidate. The parent separately repeated all 35 focused tests successfully.
+After disclosure, the user explicitly chose “Subir solo la rama para revisión, indicando el faltante”.
+Publish only `feat/mobile-horizontal-steps` for human
+review with independent execution and physical-phone acceptance still pending;
+this is not permission to merge, update develop, deploy, or claim native approval.
