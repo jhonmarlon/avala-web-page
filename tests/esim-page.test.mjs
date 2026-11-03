@@ -5,8 +5,19 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter } from 'react-router'
 
+globalThis.__esimReducedMotion = false
 registerHooks({
+  resolve(specifier, context, nextResolve) {
+    if (specifier === '@/lib/use-media-query' && context.parentURL?.endsWith('/ui/NumberedStepSequence.tsx')) {
+      return { url: 'esim:media', shortCircuit: true }
+    }
+    return nextResolve(specifier, context)
+  },
   load(url, context, nextLoad) {
+    if (url === 'esim:media') return {
+      format: 'module', shortCircuit: true,
+      source: "export const useMediaQuery = query => query.includes('reduced-motion') ? globalThis.__esimReducedMotion : false;",
+    }
     if (url.endsWith('.png')) return { format: 'module', source: 'export default "fixture.png"', shortCircuit: true }
     const result = nextLoad(url, context)
     return url.endsWith('/config/site.ts')
@@ -88,7 +99,7 @@ test('Home services preserve their normal hover paint, title movement and links'
   }
 })
 
-test('protected steps reuse the Home fill and reveal without becoming interactive', () => {
+test('protected steps use Home-style outlined panels without becoming interactive', () => {
   const html = render()
   const list = html.match(/<ol\b[^>]*>([\s\S]*?)<\/ol>/)[1]
   const rows = [...list.matchAll(/<li\b[^>]*>[\s\S]*?<\/li>/g)].map(([row]) => row)
@@ -96,13 +107,32 @@ test('protected steps reuse the Home fill and reveal without becoming interactiv
   assert.equal(list.replace(/<li\b[^>]*>[\s\S]*?<\/li>/g, '').trim(), '')
   rows.forEach((row, index) => {
     assert.ok(row.includes(`Paso ${index + 1}`))
-    assert.match(row, /<div class="group relative isolate grid grid-cols-\[4rem_1fr\][^"]*overflow-hidden[^"]*" style="opacity:0;transform:translateY\(28px\)"/)
-    assert.match(row, /<span aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 origin-bottom scale-y-0 bg-avala-neon/)
-    assert.match(row, /group-hover:scale-y-100 motion-reduce:transition-none/)
-    assert.match(row, /motion-safe:group-hover:translate-x-3/)
-    assert.equal((row.match(/group-hover:text-avala-ink(?:\/80)?/g) ?? []).length, 4)
+    assert.match(row, /<article class="relative flex shrink-0 flex-col gap-4 border-avala-paper\/15 py-8 lg:w-\[min\(64vw,56rem\)\] lg:border-l lg:px-8 lg:py-6">/)
+    assert.doesNotMatch(row, /opacity:0|translateY/)
+    assert.match(row, /<div class="hud-label flex justify-between"><span class="tabular text-avala-neon">Paso /)
+    assert.match(row, /stroke-width="1.25"[^>]*class="[^"]*size-5 text-avala-paper\/60/)
+    assert.match(row, /<p aria-hidden="true" class="display-tight text-outline tabular [^"]*\[--stroke-w:2px\][^"]*\[--stroke-c:rgba\(238,242,255,0.85\)\][^"]*drop-shadow[^>]*>/)
+    assert.ok(row.includes(`>${String(index + 1).padStart(2, '0')}</p>`))
+    assert.match(row, /<h3 class="display-tight text-\[clamp\(1.75rem,3vw,2.5rem\)\] leading-\[1.15\] text-avala-paper">/)
+    assert.match(row, /<p class="text-base leading-7 text-avala-paper\/65 sm:text-lg sm:leading-8">/)
+    assert.ok(row.includes(`lucide-${['smartphone', 'shield-check', 'lock-keyhole', 'qr-code'][index]}`))
+    assert.doesNotMatch(row, /group-hover:|origin-bottom|sticky|pinning/)
     assert.doesNotMatch(row, /<a\b|<button\b|tabindex=|role="button"|cursor-pointer|group-hover:opacity|group-hover:block/)
   })
+})
+
+test('protected panels remain visible and stationary for reduced motion', () => {
+  globalThis.__esimReducedMotion = true
+  try {
+    const html = render()
+    const list = html.match(/<ol\b[^>]*>([\s\S]*?)<\/ol>/)[1]
+    assert.equal((list.match(/<article\b/g) ?? []).length, 4)
+    assert.deepEqual([...list.matchAll(/Paso (\d)/g)].map((match) => match[1]), ['1', '2', '3', '4'])
+    assert.doesNotMatch(list, /style="[^"]*(?:opacity|transform)/)
+    assert.doesNotMatch(list, /opacity:0|translateY|group-hover:|sticky/)
+  } finally {
+    globalThis.__esimReducedMotion = false
+  }
 })
 
 test('eSIM previews the physical voucher with a native disabled coming-soon control', () => {
@@ -141,6 +171,8 @@ test('eSIM uses an editorial split header, flat numbered rows and shared CTA fam
     assert.match(anchor, /group inline-flex h-12/)
     for (const [svg] of anchor.matchAll(/<svg\b[^>]*>/g)) assert.match(svg, /aria-hidden="true"/)
   }
-  assert.doesNotMatch(html, /bg-gradient|radial-gradient|shadow-|blur-|rounded-full|rounded-\[|text-slate-|text-white|text-brand-|bg-white|bg-amber|bg-cyan/)
+  // Section 04 now intentionally uses the approved compact ink Card family.
+  const unchangedSections = html.replace(/<section\b[^>]*>(?:(?!<section\b)[\s\S])*?Operación y trazabilidad[\s\S]*?<\/section>/, '')
+  assert.doesNotMatch(unchangedSections, /bg-gradient|radial-gradient|shadow-|blur-|rounded-full|rounded-\[|text-slate-|text-white|text-brand-|bg-white|bg-amber|bg-cyan/)
   assert.doesNotMatch(html, /<main\b/)
 })

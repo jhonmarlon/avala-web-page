@@ -2,6 +2,11 @@ import {
   BadgeCheck,
   CreditCard,
   FileCheck2,
+  Layers,
+  NotebookText,
+  Printer,
+  ShieldAlert,
+  Workflow,
   LockKeyhole,
   QrCode,
   ShieldCheck,
@@ -9,13 +14,13 @@ import {
   Store,
   TicketCheck,
 } from 'lucide-react'
-import { MotionConfig, useReducedMotion } from 'motion/react'
-import { RowHoverFill } from '@/components/fx/RowHoverFill'
-import { Reveal } from '@/components/ui/Reveal'
+import { motion, MotionConfig, useReducedMotion } from 'motion/react'
+import { NumberedStepSequence } from '@/components/ui/NumberedStepSequence'
 import { CtaLink } from '@/components/fx/CtaLink'
 import { SplitReveal } from '@/components/fx/SplitReveal'
 import { SectionLabel } from '@/components/fx/SectionLabel'
 import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
 import { Section } from '@/components/ui/Section'
 import { esimExperienceLinks } from '@/config/site'
 
@@ -43,12 +48,12 @@ const customerSteps = [
 ]
 
 const businessCapabilities = [
-  'Inventario interno de eSIMs con consecutivos controlados.',
-  'Lotes administrativos de vouchers físicos.',
-  'Impresión diferida e individual de vouchers.',
-  'Confirmación operativa de impresión.',
-  'Validaciones por OTP y código raspable.',
-  'Trazabilidad desde voucher o compra web hasta QR final.',
+  { title: 'Inventario interno de eSIMs con consecutivos controlados.', Icon: NotebookText },
+  { title: 'Lotes administrativos de vouchers físicos.', Icon: Layers },
+  { title: 'Impresión diferida e individual de vouchers.', Icon: Printer },
+  { title: 'Confirmación operativa de impresión.', Icon: FileCheck2 },
+  { title: 'Validaciones por OTP y código raspable.', Icon: ShieldAlert },
+  { title: 'Trazabilidad desde voucher o compra web hasta QR final.', Icon: Workflow },
 ]
 
 const flows = [
@@ -74,19 +79,21 @@ const flows = [
   },
 ] as const
 
-const staticStepVariants = {
-  hidden: { opacity: 1, y: 0 },
-  visible: { opacity: 1, y: 0 },
-}
-
 export function EsimPage() {
-  const reduceMotion = useReducedMotion()
+  const reducedMotion = useReducedMotion()
+  const entrance = {
+    initial: reducedMotion ? false as const : { opacity: 0, y: 16 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.3 },
+    transition: { duration: reducedMotion ? 0 : 0.7, delay: 0, ease: [0.76, 0, 0.24, 1] as const },
+  }
 
   return (
     <MotionConfig reducedMotion="user">
       <div className="relative isolate bg-avala-ink text-avala-paper [overflow-x:clip]">
       <div aria-hidden="true" className="grid-lines absolute inset-0 -z-10 [mask-image:linear-gradient(180deg,black,transparent_60%)]" />
-      <Section withSpacing={false} className="pt-10 pb-16 lg:pt-16 lg:pb-24">
+      <section className="pt-10 lg:pt-16">
+        <div className="page-container">
         <header>
           <SectionLabel index="01" label="SIEMBRA eSIM · Activación digital segura" />
           <h1 className="display-tight max-w-5xl pt-12 text-title-hero text-avala-paper lg:pt-16">
@@ -95,7 +102,7 @@ export function EsimPage() {
           </h1>
         </header>
 
-        <div className="mt-12 grid gap-8 border-t border-avala-paper/15 pt-8 lg:grid-cols-12">
+        <motion.div {...entrance} className="mt-12 grid gap-8 border-t border-avala-paper/15 pt-8 lg:grid-cols-12">
           <p className="text-base leading-8 text-avala-paper/75 lg:col-span-7 lg:text-lg">
             SIEMBRA conecta compra web, voucher físico, validación OTP y entrega del QR final de instalación en una experiencia simple, segura y trazable.
           </p>
@@ -104,40 +111,27 @@ export function EsimPage() {
             <li>Activación con voucher físico</li>
             <li className="text-avala-neon">QR final de instalación</li>
           </ul>
-        </div>
+        </motion.div>
 
-        <div className="mt-12 grid gap-8 lg:grid-cols-12 lg:gap-12">
-          <div className="lg:col-span-4">
-            <BadgeCheck aria-hidden="true" className="mb-4 size-6 text-avala-neon" />
-            <p className="hud-label">Flujo protegido</p>
-            <h2 className="mt-2 display-tight text-2xl">Del ingreso al QR final</h2>
-          </div>
-          <ol className="border-t border-avala-paper/15 lg:col-span-7 lg:col-start-6">
-            {customerSteps.map(({ title, description, Icon }, index) => (
-              <li key={title} className="border-b border-avala-paper/15">
-                <Reveal
-                  className="group relative isolate grid grid-cols-[4rem_1fr] gap-x-3 overflow-hidden py-5"
-                  variants={reduceMotion ? staticStepVariants : undefined}
-                  delay={reduceMotion ? 0 : index * 0.06}
-                >
-                  <RowHoverFill />
-                  <span className="hud-label tabular pt-1 text-avala-neon transition-colors duration-500 group-hover:text-avala-ink motion-reduce:transition-none">Paso {index + 1}</span>
-                  <div>
-                    <h3 className="display-tight flex items-center gap-3 text-xl transition-[color,transform] duration-500 motion-safe:group-hover:translate-x-3 group-hover:text-avala-ink motion-reduce:transition-none">
-                      <Icon aria-hidden="true" className="size-4 shrink-0 text-avala-neon transition-colors duration-500 group-hover:text-avala-ink motion-reduce:transition-none" />
-                      {title}
-                    </h3>
-                    <p className="mt-1 text-sm leading-6 text-avala-paper/75 transition-colors duration-500 group-hover:text-avala-ink/80 motion-reduce:transition-none">{description}</p>
-                  </div>
-                </Reveal>
-              </li>
-            ))}
-          </ol>
         </div>
-      </Section>
+        <div className="mt-12 pb-6 lg:pb-10">
+          <NumberedStepSequence
+            compactTrack
+            ordered
+            steps={customerSteps.map((step, index) => ({ ...step, label: `Paso ${index + 1}` }))}
+            intro={
+              <div className="flex shrink-0 flex-col justify-center gap-4 py-6 lg:w-[min(42vw,36rem)] lg:pr-8">
+                <BadgeCheck aria-hidden="true" className="size-6 text-avala-neon" />
+                <p className="hud-label">Flujo protegido</p>
+                <h2 className="display-tight text-2xl">Del ingreso al QR final</h2>
+              </div>
+            }
+          />
+        </div>
+      </section>
 
       <Section withSpacing={false} className="pb-12 lg:pb-20">
-        <div className="space-y-5">
+        <motion.div {...entrance} className="space-y-5">
           <SectionLabel index="02" label="Dos entradas, una experiencia segura" />
           <h2 className="max-w-4xl display-tight text-2xl sm:text-3xl">
             SIEMBRA separa compra web y activación por voucher para que cada flujo valide lo que corresponde.
@@ -145,12 +139,12 @@ export function EsimPage() {
           <p className="max-w-3xl text-base leading-8 text-avala-paper/75">
             No mezclamos reglas de negocio: el usuario que compra online no necesita voucher, y quien ya tiene voucher no pasa por pago. Cada camino tiene sus validaciones, estados y controles.
           </p>
-        </div>
+        </motion.div>
       </Section>
 
       <Section withSpacing={false} className="pb-16 lg:pb-24">
         <div className="grid gap-10">
-          <div className="space-y-4">
+          <motion.div {...entrance} className="space-y-4">
             <SectionLabel index="03" label="Elegí tu camino" />
             <h2 className="max-w-xl display-tight text-2xl sm:text-3xl">
               Dos acciones distintas, una misma experiencia segura.
@@ -158,11 +152,11 @@ export function EsimPage() {
             <p className="max-w-2xl text-base leading-8 text-avala-paper/75">
               Comprá online si todavía no tenés voucher, o activá tu voucher físico si ya lo adquiriste en un punto de venta. Cada botón inicia el flujo correcto sin mezclar validaciones.
             </p>
-          </div>
+          </motion.div>
 
           <ol className="border-t border-avala-paper/15">
             {flows.map(({ title, eyebrow, description, cta, available, href, Icon }, index) => (
-              <li key={title} className="grid gap-5 border-b border-avala-paper/15 py-6 sm:grid-cols-[2.5rem_1fr] lg:grid-cols-[2.5rem_1fr_auto] lg:items-center">
+              <motion.li key={title} {...entrance} transition={{ ...entrance.transition, delay: reducedMotion ? 0 : Math.min(index, 4) * 0.08 }} className="grid gap-5 border-b border-avala-paper/15 py-6 sm:grid-cols-[2.5rem_1fr] lg:grid-cols-[2.5rem_1fr_auto] lg:items-center">
                 <span className="hud-label tabular text-avala-neon">0{index + 1}</span>
                 <div>
                   <p className="hud-label flex items-center gap-3">
@@ -178,7 +172,7 @@ export function EsimPage() {
                     {cta}
                   </Button>
                 )}
-              </li>
+              </motion.li>
             ))}
           </ol>
         </div>
@@ -186,7 +180,7 @@ export function EsimPage() {
 
       <Section withSpacing={false} className="pb-16 lg:pb-24">
         <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-          <div className="space-y-5">
+          <motion.div {...entrance} className="space-y-5">
             <SectionLabel index="04" label="Operación y trazabilidad" />
             <h2 className="display-tight text-2xl sm:text-3xl">
               Una línea de negocio preparada para usuarios, tiendas y operación interna.
@@ -194,21 +188,31 @@ export function EsimPage() {
             <p className="text-base leading-8 text-avala-paper/75">
               SIEMBRA no es solo una pantalla de activación. La plataforma soporta inventario, lotes de vouchers, impresión controlada, validaciones parciales y entrega final de eSIM.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid gap-x-6 sm:grid-cols-2">
-            {businessCapabilities.map((capability) => (
-              <div key={capability} className="flex gap-3 border-t border-avala-paper/15 py-5">
-                <FileCheck2 aria-hidden="true" className="mt-1 size-4 shrink-0 text-avala-neon" />
-                <p className="text-sm leading-7 text-avala-paper/75">{capability}</p>
-              </div>
+          <ul aria-label="Capacidades operativas" className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {businessCapabilities.map(({ title, Icon }, index) => (
+              <motion.li key={title} {...entrance} transition={{ ...entrance.transition, delay: reducedMotion ? 0 : Math.min(index, 4) * 0.08 }} className="min-w-0">
+                <Card
+                  surface="ink"
+                  className="h-full min-w-0 motion-safe:transition-[transform,translate,background-color,border-color] motion-safe:duration-300 [@media(any-hover:hover)]:hover:border-avala-neon/45 [@media(any-hover:hover)]:hover:bg-avala-neon/10 motion-safe:[@media(any-hover:hover)]:hover:-translate-y-1 motion-reduce:transform-none motion-reduce:transition-none"
+                >
+                  <div className="mb-5 flex items-center justify-between">
+                    <span className="grid size-12 place-items-center rounded-[1rem] bg-white/5">
+                      <Icon aria-hidden="true" className="size-6 text-avala-neon" strokeWidth={1.8} />
+                    </span>
+                    <span aria-hidden="true" className="hud-label tabular">0{index + 1}</span>
+                  </div>
+                  <h3 className="text-sm font-medium leading-7 wrap-break-word">{title}</h3>
+                </Card>
+              </motion.li>
             ))}
-          </div>
+          </ul>
         </div>
       </Section>
 
       <Section withSpacing={false} className="pb-16 lg:pb-24">
-        <div className="grid gap-8 lg:grid-cols-[1fr_0.85fr] lg:items-center">
+        <motion.div {...entrance} className="grid gap-8 lg:grid-cols-[1fr_0.85fr] lg:items-center">
           <div className="space-y-4">
             <SectionLabel index="05" label="Para puntos de venta y aliados" />
             <h2 className="display-tight text-2xl sm:text-3xl">Voucher físico con control digital de punta a punta.</h2>
@@ -227,7 +231,7 @@ export function EsimPage() {
               Contactar a AvalaGroup
             </CtaLink>
           </div>
-        </div>
+        </motion.div>
       </Section>
       </div>
     </MotionConfig>

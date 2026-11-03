@@ -19,6 +19,7 @@ export const router = createBrowserRouter([
       {
         index: true,
         Component: HomePage,
+        handle: { pageScrollPin: true },
       },
       {
         path: 'estimar-proyecto',
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
       {
         path: 'esim',
         Component: EsimPage,
+        handle: { pageScrollPin: true },
       },
       {
         path: 'comprar',

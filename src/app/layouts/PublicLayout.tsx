@@ -1,6 +1,7 @@
 import { MotionConfig } from 'motion/react'
 import { useEffect } from 'react'
-import { Outlet } from 'react-router'
+import { Outlet, useMatches } from 'react-router'
+import { PageScrollPinScope } from '@/components/ui/PageScrollPinScope'
 import { Cursor } from '@/components/fx/Cursor'
 import { Grain } from '@/components/fx/Grain'
 import { Footer } from '@/components/layout/Footer'
@@ -10,6 +11,8 @@ import { startSmoothScroll, stopSmoothScroll } from '@/lib/smooth-scroll'
 import { useMediaQuery } from '@/lib/use-media-query'
 
 export function PublicLayout() {
+  const pageScrollPin = useMatches().some(match => (match.handle as { pageScrollPin?: boolean } | undefined)?.pageScrollPin)
+  const content = <><main><Outlet /></main><Footer /></>
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
   useEffect(() => {
     if (!reducedMotion) startSmoothScroll()
@@ -21,10 +24,7 @@ export function PublicLayout() {
       <div className="app-shell">
         <ScrollToTop />
         <Header />
-        <main>
-          <Outlet />
-        </main>
-        <Footer />
+        {pageScrollPin ? <PageScrollPinScope>{content}</PageScrollPinScope> : content}
         <Cursor />
         <Grain />
       </div>
