@@ -3,6 +3,7 @@ import { FaInstagram, FaLinkedinIn, FaWhatsapp } from 'react-icons/fa6'
 import background3 from '@/assets/background_3.png'
 import logoImage from '@/assets/avala_logo.png'
 import { companyInfo, footerLinkGroups, legalLinks, socialLinks } from '@/config/site'
+import { Button } from '@/components/ui/Button'
 
 const socialIcons = {
   LinkedIn: FaLinkedinIn,
@@ -15,7 +16,7 @@ export function Footer() {
     <footer
       className="border-t border-white/10 text-white"
       style={{
-        backgroundImage: `linear-gradient(180deg, rgba(4, 11, 30, 0.72) 0%, rgba(5, 13, 34, 0.82) 100%), url(${background3})`,
+        backgroundImage: `linear-gradient(180deg, rgba(4, 11, 30, 0.92) 0%, rgba(5, 13, 34, 0.95) 100%), url(${background3})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center bottom',
         backgroundRepeat: 'no-repeat',
@@ -25,12 +26,8 @@ export function Footer() {
         <div className="grid gap-8 xl:grid-cols-[1.15fr_0.9fr_0.8fr_1fr]">
           <div className="max-w-sm space-y-5">
             <div>
-              <div className="flex items-center gap-3">
-                <img src={logoImage} alt="Sistemas AG" className="h-13 w-auto object-contain h-30 absolute -translate-x-8 translate-y-1"/>
-                <div className="flex flex-col translate-x-17 -translate-y-0.5">
-                  <p className="text-xs uppercase tracking-[0.28em] text-slate-400">Sistemas</p>
-                  <p className="text-base font-semibold text-white">AG</p>
-                </div>
+              <div className="flex items-center">
+                <img src={logoImage} alt="Avala Group" className="h-14 w-auto object-contain" />
               </div>
               <p className="mt-3 text-sm leading-6 text-slate-300">{companyInfo.description}</p>
             </div>
@@ -40,15 +37,17 @@ export function Footer() {
                 const Icon = socialIcons[link.label as keyof typeof socialIcons]
 
                 return (
-                  <a
+                  <Button
                     key={link.label}
+                    variant="outline"
+                    size="icon"
                     href={link.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-200 transition-colors hover:border-brand-400/40 hover:text-white"
+                    aria-label={link.label}
                   >
-                    <Icon className="size-4" />
-                  </a>
+                    <Icon aria-hidden="true" className="size-4" />
+                  </Button>
                 )
               })}
             </div>
@@ -84,24 +83,20 @@ export function Footer() {
               <li className="flex items-start gap-2.5"><Clock3 className="mt-0.5 size-4 shrink-0 text-brand-300" />{companyInfo.hours}</li>
             </ul>
 
-            <a
-              href="https://wa.me/573021234567"
+            <Button
+              variant="outline"
+              href="https://wa.me/573126573502"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-h-[3.15rem] min-w-[12.8rem] items-center justify-between gap-3 rounded-[0.9rem] border border-[#30d273]/55 bg-[linear-gradient(180deg,#16a34a_0%,#0b7a3a_100%)] px-4 text-sm font-medium text-white shadow-[0_16px_32px_rgba(22,163,74,0.28)] transition-all duration-200 hover:brightness-110"
             >
-              <span className="flex items-center gap-2.5">
-                <span className="flex size-7 items-center justify-center rounded-full bg-white/12">
-                  <FaWhatsapp className="size-[0.95rem]" />
-                </span>
-                <span>Chatear ahora</span>
-              </span>
-            </a>
+              <FaWhatsapp aria-hidden="true" className="size-5 shrink-0 text-green-400" />
+              Hablemos por WhatsApp
+            </Button>
           </div>
         </div>
 
         <div className="mt-8 flex flex-col gap-4 border-t border-white/10 pt-5 text-sm text-slate-400 lg:flex-row lg:items-center lg:justify-between">
-          <p className="text-xs text-slate-400">{companyInfo.legalName}</p>
+          <p className="text-xs text-slate-400">{companyInfo.legalName} · NIT {companyInfo.nit}</p>
 
           <div className="flex flex-wrap gap-4">
             {legalLinks.map((link) => (

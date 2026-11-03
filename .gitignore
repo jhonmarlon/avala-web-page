@@ -27,3 +27,8 @@ dist-ssr
 
 # Local quotation examples
 /ejemplo_cotizacion.pdf
+
+# Local environment files; publish only the documented example.
+.env
+.env.*
+!.env.example

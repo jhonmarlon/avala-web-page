@@ -2,6 +2,12 @@ import { useEffect, useRef } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { CheckCircle2, LoaderCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Honeypot } from "@/components/ui/Honeypot";
+import { estimatorStyles } from "@/features/estimator/components/estimator-styles";
+import { PhoneField } from "@/components/ui/phone/PhoneField";
+import type { PhoneCountryId } from "@/lib/phone";
+import { cn } from "@/lib/utils";
+import { companyInfo } from "@/config/site";
 import type { EstimatorLead } from "@/features/estimator/types/estimator.types";
 
 interface LeadErrors {
@@ -13,11 +19,17 @@ interface LeadErrors {
 
 interface ProposalDetailsModalProps {
 	lead: EstimatorLead;
+	phoneCountry: PhoneCountryId;
+	phoneDigits: string;
+	onPhoneCountryChange: (country: PhoneCountryId) => void;
 	leadErrors: LeadErrors;
 	leadTouched: boolean;
 	isLeadValid: boolean;
 	isLeadSubmitted: boolean;
 	isLeadSubmitting: boolean;
+	submitError: string | null;
+	honeypot: string;
+	onHoneypotChange: (value: string) => void;
 	onClose: () => void;
 	onLeadChange: (field: keyof EstimatorLead, value: string) => void;
 	onLeadBlur: () => void;
@@ -26,11 +38,17 @@ interface ProposalDetailsModalProps {
 
 export function ProposalDetailsModal({
 	lead,
+	phoneCountry,
+	phoneDigits,
+	onPhoneCountryChange,
 	leadErrors,
 	leadTouched,
 	isLeadValid,
 	isLeadSubmitted,
 	isLeadSubmitting,
+	submitError,
+	honeypot,
+	onHoneypotChange,
 	onClose,
 	onLeadChange,
 	onLeadBlur,
@@ -71,7 +89,7 @@ export function ProposalDetailsModal({
 			if (event.key !== "Tab" || !dialogRef.current) return;
 
 			const focusableElements = dialogRef.current.querySelectorAll<HTMLElement>(
-				'button:not(:disabled), input:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
+				'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
 			);
 			const firstElement = focusableElements[0];
 			const lastElement = focusableElements[focusableElements.length - 1];
@@ -96,9 +114,9 @@ export function ProposalDetailsModal({
 		};
 	}, []);
 
-	function renderFieldError(error: string) {
+	function renderFieldError(error: string, id: string) {
 		if (!error) return null;
-		return <p className="text-xs leading-5 text-red-600">{error}</p>;
+		return <p id={id} className={estimatorStyles.error}>{error}</p>;
 	}
 
 	return (
@@ -110,7 +128,7 @@ export function ProposalDetailsModal({
 				duration: shouldReduceMotion ? 0.01 : 0.28,
 				ease: "easeOut",
 			}}
-			className="fixed inset-0 z-50 flex items-center justify-center bg-[#030814]/75 p-4 backdrop-blur-sm sm:p-6"
+			className="fixed inset-0 z-50 flex items-center justify-center bg-avala-ink/90 p-4 sm:p-6"
 		>
 			<motion.div
 				ref={dialogRef}
@@ -120,77 +138,82 @@ export function ProposalDetailsModal({
 				aria-describedby="proposal-details-description"
 				initial={{
 					opacity: 0,
-					y: shouldReduceMotion ? 0 : 18,
-					scale: shouldReduceMotion ? 1 : 0.985,
+					y: shouldReduceMotion ? 0 : 28,
+					scale: shouldReduceMotion ? 1 : 0.97,
 				}}
 				animate={{ opacity: 1, y: 0, scale: 1 }}
 				exit={{
 					opacity: 0,
-					y: shouldReduceMotion ? 0 : 12,
-					scale: shouldReduceMotion ? 1 : 0.99,
+					y: shouldReduceMotion ? 0 : 16,
+					scale: shouldReduceMotion ? 1 : 0.985,
 				}}
 				transition={{
-					duration: shouldReduceMotion ? 0.01 : 0.4,
+					duration: shouldReduceMotion ? 0.01 : 0.45,
 					ease: [0.22, 1, 0.36, 1],
 				}}
-				className="flex max-h-[min(760px,calc(100vh-2rem))] w-full max-w-3xl flex-col overflow-hidden rounded-[1.9rem] border border-[#d8e4f4] bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] shadow-[0_30px_90px_rgba(3,8,20,0.3)]"
+				className={cn(
+					estimatorStyles.panel,
+					"flex max-h-[min(760px,calc(100dvh-2rem))] w-full max-w-3xl flex-col overflow-hidden rounded-none",
+				)}
 			>
-				<header className="relative shrink-0 overflow-hidden border-b border-brand-200/70 bg-[linear-gradient(135deg,#071226_0%,#102d58_58%,#1298ff_150%)] px-6 py-6 text-white sm:px-8">
-					<div className="pointer-events-none absolute -right-20 -top-24 size-64 rounded-full bg-brand-400/20 blur-3xl" />
-					<div className="relative flex items-start justify-between gap-5">
+				<header className="shrink-0 border-b border-avala-paper/15 px-4 py-4 sm:px-6">
+					<div className="flex items-start justify-between gap-3">
 						<div className="space-y-2">
-							<p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-100">
+							<p className={cn(estimatorStyles.label, "text-avala-neon")}>
 								Recibir propuesta detallada
 							</p>
 							<h2
 								id="proposal-details-title"
-								className="text-[1.8rem] font-bold leading-[1.1] text-white"
+								className="font-display text-2xl font-semibold leading-tight text-avala-paper sm:text-3xl"
 							>
 								{isLeadSubmitted
-									? "Solicitud preparada"
+									? "Solicitud enviada"
 									: "Cuéntanos cómo podemos contactarte"}
 							</h2>
 							<p
 								id="proposal-details-description"
-								className="max-w-2xl text-base leading-7 text-slate-200"
+								className="max-w-2xl text-sm leading-6 text-avala-mute sm:text-base"
 							>
 								{isLeadSubmitted
-									? "Tus datos están listos para el siguiente paso."
+									? "Recibimos tu estimación y tus datos."
 									: "Esta propuesta se basa en la configuración que realizaste en el estimador. Déjanos tus datos y te contactamos para convertirla en una propuesta técnica y económica personalizada."}
 							</p>
 						</div>
-						<button
+						<Button
 							ref={closeButtonRef}
 							type="button"
 							onClick={onClose}
 							aria-label="Cerrar formulario de propuesta"
-							className="relative flex size-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:border-brand-300 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60"
+							variant="neonSecondary"
+							size="icon"
+							className="flex transition-colors duration-150"
 						>
 							<X className="size-5" />
-						</button>
+						</Button>
 					</div>
 				</header>
 
 				{isLeadSubmitted ? (
 					<section
-						className="flex min-h-[18rem] flex-1 flex-col items-center justify-center px-6 py-12 text-center sm:px-8"
+						className="flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-4 py-8 text-center sm:px-6"
+						data-lenis-prevent
 						aria-live="polite"
 					>
-						<div className="flex size-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+						<div className="flex size-16 shrink-0 items-center justify-center border border-avala-neon/50 text-avala-neon">
 							<CheckCircle2 className="size-9" aria-hidden="true" />
 						</div>
-						<h3 className="mt-5 text-2xl font-bold text-[#0d1730]">
+						<h3 className="mt-5 font-display text-2xl font-semibold text-avala-paper">
 							¡Todo listo!
 						</h3>
-						<p className="mt-3 max-w-lg text-base leading-7 text-slate-600">
-							Esta funcionalidad todavía está en desarrollo. Tus datos se
-							prepararon solo en este navegador y aún no se enviaron ni se
-							almacenaron en nuestros servidores.
+						<p className="mt-3 max-w-lg text-base leading-7 text-avala-mute">
+							Nuestro equipo comercial revisará tu proyecto y te contactará en
+							menos de 24 h hábiles con una propuesta personalizada.
 						</p>
 					</section>
 				) : (
 					<div
-						className="min-h-0 overflow-y-auto px-6 py-6 sm:px-8"
+						className="min-h-0 overflow-y-auto px-4 py-5 sm:px-6"
+						data-lenis-prevent
 						aria-busy={isLeadSubmitting}
 					>
 						{isLeadSubmitting ? (
@@ -200,19 +223,19 @@ export function ProposalDetailsModal({
 								aria-live="polite"
 							>
 								<LoaderCircle
-									className="size-10 animate-spin text-brand-600 motion-reduce:animate-none"
+									className="size-10 animate-spin text-avala-neon motion-reduce:animate-none"
 									aria-hidden="true"
 								/>
-								<p className="mt-5 text-lg font-semibold text-[#0d1730]">
-									Preparando tu solicitud…
+								<p className="mt-5 font-display text-lg font-semibold text-avala-paper">
+									Enviando tu solicitud…
 								</p>
-								<p className="mt-2 text-sm text-slate-500">
-									Estamos organizando los datos de tu estimación en este
-									navegador.
+								<p className="mt-2 text-sm text-avala-mute">
+									Estamos enviando tu estimación a nuestro equipo comercial.
 								</p>
 							</div>
 						) : (
-							<div className="grid gap-4 sm:grid-cols-2">
+							<div className="relative grid gap-4 sm:grid-cols-2">
+								<Honeypot value={honeypot} onChange={onHoneypotChange} />
 								{[
 									["fullName", "Nombre completo", "Ej. Ana González", "name"],
 									["company", "Empresa", "Ej. Avala Group", "organization"],
@@ -222,16 +245,17 @@ export function ProposalDetailsModal({
 										"Ej. nombre@empresa.com",
 										"email",
 									],
-									["phone", "Teléfono", "Ej. +57 300 000 0000", "tel"],
 								].map(([field, label, placeholder, autoComplete]) => (
 									<label
 										key={field}
 										className={`block space-y-2 ${field === "fullName" || field === "company" ? "sm:col-span-1" : "sm:col-span-2"}`}
 									>
-										<span className="text-sm font-medium text-[#0d1730]">
+										<span className={estimatorStyles.label}>
 											{label}
 										</span>
 										<input
+											type={field === "email" ? "text" : undefined}
+											inputMode={field === "email" ? "email" : undefined}
 											value={lead[field as keyof EstimatorLead] ?? ""}
 											onChange={(event) =>
 												onLeadChange(
@@ -243,38 +267,84 @@ export function ProposalDetailsModal({
 											placeholder={placeholder}
 											autoComplete={autoComplete}
 											disabled={isLeadSubmitting}
-											className="w-full rounded-[1rem] border border-[#dfe8f6] bg-white px-4 py-3 text-sm text-[#0d1730] outline-none transition-all focus:border-brand-400 focus:shadow-[0_0_0_4px_rgba(18,152,255,0.08)] disabled:cursor-not-allowed disabled:bg-slate-50"
+											aria-invalid={leadTouched && Boolean(leadErrors[field as keyof LeadErrors])}
+											aria-describedby={
+												leadTouched && leadErrors[field as keyof LeadErrors]
+													? `proposal-${field}-error`
+													: undefined
+											}
+											className={cn(
+												estimatorStyles.input,
+												"min-h-11",
+												leadTouched && leadErrors[field as keyof LeadErrors]
+													? estimatorStyles.inputError
+													: undefined,
+											)}
 										/>
 										{leadTouched
-											? renderFieldError(leadErrors[field as keyof LeadErrors])
+											? renderFieldError(leadErrors[field as keyof LeadErrors], `proposal-${field}-error`)
 											: null}
 									</label>
 								))}
+								<PhoneField
+									country={phoneCountry}
+									nationalDigits={phoneDigits}
+									onCountryChange={onPhoneCountryChange}
+									onDigitsChange={(digits) => onLeadChange("phone", digits)}
+									onBlur={onLeadBlur}
+									disabled={isLeadSubmitting}
+									error={leadTouched ? leadErrors.phone : ""}
+								/>
 							</div>
 						)}
 					</div>
 				)}
 
-				<footer className="shrink-0 border-t border-[#dfe8f6] bg-white/80 px-6 py-5 sm:px-8">
+				<footer className="shrink-0 border-t border-avala-paper/15 bg-avala-ink px-4 py-4 sm:px-6">
 					{isLeadSubmitted ? (
-						<Button fullWidth onClick={onClose}>
+						<Button type="button" fullWidth variant="neon" onClick={onClose}>
 							Cerrar
 						</Button>
 					) : (
 						<>
-							<p className="text-xs leading-5 text-slate-500">
-								Funcionalidad en desarrollo: el envío de datos todavía no está
-								habilitado.
-							</p>
+							{submitError ? (
+								<p role="alert" className={estimatorStyles.error}>
+									{submitError} También puedes escribirnos a{" "}
+									<a
+										href={`mailto:${companyInfo.email}`}
+										className="font-medium underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-avala-neon"
+									>
+										{companyInfo.email}
+									</a>
+									.
+								</p>
+							) : (
+								<p className="text-sm leading-5 text-avala-mute">
+									Al enviar autorizas el tratamiento de tus datos para preparar
+									tu propuesta, según nuestra{" "}
+									<a
+										href="/privacidad"
+										target="_blank"
+										rel="noopener"
+										className="underline underline-offset-2 hover:text-avala-paper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-avala-neon"
+									>
+										política de privacidad
+									</a>
+									.
+								</p>
+							)}
 							<div className="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
 								<Button
-									variant="ghost"
+									type="button"
+									variant="neonSecondary"
 									onClick={onClose}
 									disabled={isLeadSubmitting}
 								>
 									Volver al estimador
 								</Button>
 								<Button
+									type="button"
+									variant="neon"
 									disabled={
 										isLeadSubmitting ||
 										!lead.fullName ||
@@ -284,7 +354,7 @@ export function ProposalDetailsModal({
 									onClick={onSubmit}
 								>
 									{isLeadSubmitting
-										? "Preparando…"
+										? "Enviando…"
 										: "Quiero una propuesta personalizada"}
 								</Button>
 							</div>

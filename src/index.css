@@ -1,9 +1,26 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@700;800&display=swap");
 @import "tailwindcss";
 
 @theme {
   --font-sans: Inter, system-ui, sans-serif;
   --font-heading: Manrope, Inter, system-ui, sans-serif;
+  --font-display: 'Inter Tight', Inter, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --text-title-hero: clamp(2.75rem, 4.3vw, 4rem);
+  --text-title-hero--line-height: 1.02;
+  --text-title-page: clamp(3.5rem, 6vw, 5.5rem);
+  --text-title-page--line-height: 1.02;
+  --text-contact-value: clamp(1rem, 2vw, 1.5rem);
+  --text-contact-value--line-height: 1.25;
+  --text-nav-mobile-item: clamp(1.5rem, 4vw, 1.75rem);
+  --color-avala-ink: #05081a;
+  --color-avala-ink-2: #0a1030;
+  --color-avala-paper: #eef2ff;
+  --color-avala-mute: #8a93b5;
+  --color-avala-neon: #2fb8ff;
+  --color-avala-gold: #d4a94f;
+  --color-avala-cyan: #3fd0ff;
+  --color-avala-violet: #7b5cff;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
@@ -23,6 +40,12 @@
   --shadow-soft: 0 18px 60px rgba(7, 18, 38, 0.12);
   --shadow-glow: 0 0 0 1px rgba(43, 179, 255, 0.18), 0 20px 80px rgba(18, 152, 255, 0.16);
   --radius-5xl: 2.5rem;
+  --animate-section-continue: section-continue 1.9s ease-in-out infinite;
+
+  @keyframes section-continue {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-100%); }
+  }
 }
 
 @layer base {
@@ -60,6 +83,63 @@
 
   html {
     scroll-behavior: smooth;
+    scrollbar-color: var(--color-brand-700) var(--color-avala-ink);
+    scrollbar-width: auto;
+  }
+
+  /* Keep viewport colors from inheriting into nested scroll containers. */
+  body {
+    scrollbar-color: auto;
+  }
+
+  @supports selector(::-webkit-scrollbar) {
+    html { scrollbar-color: auto; }
+  }
+
+  html::-webkit-scrollbar { width: 14px; height: 14px; }
+  html::-webkit-scrollbar-track { background: var(--color-avala-ink); }
+  html::-webkit-scrollbar-thumb {
+    background: var(--color-brand-700);
+    border: 3px solid var(--color-avala-ink);
+    border-radius: 999px;
+  }
+  html::-webkit-scrollbar-thumb:hover { background: var(--color-brand-500); }
+
+  @media (forced-colors: active) {
+    html { scrollbar-color: auto; scrollbar-width: auto; }
+    html::-webkit-scrollbar { width: auto; height: auto; }
+    html::-webkit-scrollbar-track { background: revert; }
+    html::-webkit-scrollbar-thumb,
+    html::-webkit-scrollbar-thumb:hover {
+      background: revert;
+      border: revert;
+      border-radius: revert;
+    }
+  }
+
+  /* Lenis (scroll suave) */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-stopped,
+  html.is-loading {
+    overflow: hidden;
+  }
+
+  html.has-cursor,
+  html.has-cursor * {
+    cursor: none !important;
+  }
+
+  ::selection {
+    background: var(--color-avala-neon);
+    color: var(--color-avala-ink);
   }
 
   body {
@@ -107,6 +187,12 @@
     @apply py-16 lg:py-24;
   }
 
+  /* Home boundaries use two 24/40px halves; single-owner and decorative
+     boundaries declare their exceptions on the section itself. */
+  .home-section-spacing {
+    @apply py-6 lg:py-10;
+  }
+
   .panel-surface {
     @apply rounded-5xl border border-border bg-card text-card-foreground shadow-soft;
   }
@@ -140,7 +226,73 @@
     @apply transition-transform duration-300 will-change-transform hover:-translate-y-1;
   }
 
-  .section-copy {
-    @apply max-w-3xl text-base leading-8 text-muted-foreground sm:text-lg;
+  /* Apply to a stationary image viewport, with captions outside the mask. */
+  .image-edge-fade {
+    --image-edge-ramp: clamp(16px, 3vw, 40px);
+    -webkit-mask-image:
+      linear-gradient(to right, transparent, #000 var(--image-edge-ramp), #000 calc(100% - var(--image-edge-ramp)), transparent),
+      linear-gradient(to bottom, transparent, #000 var(--image-edge-ramp), #000 calc(100% - var(--image-edge-ramp)), transparent);
+    mask-image:
+      linear-gradient(to right, transparent, #000 var(--image-edge-ramp), #000 calc(100% - var(--image-edge-ramp)), transparent),
+      linear-gradient(to bottom, transparent, #000 var(--image-edge-ramp), #000 calc(100% - var(--image-edge-ramp)), transparent);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
   }
+
+  .section-copy {
+    @apply max-w-3xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8;
+  }
+
+  /* Texto hueco con contorno */
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: var(--stroke-w, 1.5px) var(--stroke-c, var(--color-avala-paper));
+  }
+
+  .text-outline-neon {
+    --stroke-c: var(--color-avala-neon);
+    filter: drop-shadow(0 0 14px rgba(47, 184, 255, 0.45));
+  }
+
+  /* Brillo neón: acompaña al acento azul en textos, líneas y rellenos */
+  .text-avala-neon {
+    text-shadow: 0 0 18px rgba(47, 184, 255, 0.45);
+  }
+
+  .bg-avala-neon {
+    box-shadow: 0 0 22px rgba(47, 184, 255, 0.45), 0 0 60px rgba(123, 92, 255, 0.18);
+  }
+
+  .hud-label {
+    @apply font-mono text-[0.75rem] leading-normal uppercase tracking-[0.14em] text-avala-mute;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .display-tight {
+    @apply font-display font-semibold tracking-[-0.055em];
+  }
+
+  .grid-lines {
+    background-image:
+      linear-gradient(rgba(238, 242, 255, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(238, 242, 255, 0.045) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@keyframes grain-shift {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-6%, 4%); }
+  40% { transform: translate(5%, -7%); }
+  60% { transform: translate(-3%, 8%); }
+  80% { transform: translate(7%, 3%); }
 }

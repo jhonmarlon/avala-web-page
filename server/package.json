@@ -1,0 +1,13 @@
+{
+  "name": "avala-landing-api",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Recibe los formularios de la landing y los reenvía por correo (Google Workspace).",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "nodemailer": "^7.0.10"
+  }
+}

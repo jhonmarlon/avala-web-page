@@ -1,0 +1,27 @@
+{
+  "title": "eSIM · Operación y trazabilidad",
+  "brief": "Make the six existing operational capabilities easier to scan and more responsive to interaction while preserving the current dark-blue eSIM language and exact source sentences. Scope: section 04 only; no production implementation, new business promises, links, contact form or flow redesign. System-font previews, responsive to 320px, no external resources.",
+  "artboards": [
+    {
+      "file": "01-uniform-cards.html",
+      "title": "Recommended · Uniform capability cards",
+      "tradeoff": "Editorial introduction on the left; six equally weighted cards in two columns on desktop and one on mobile. All information stays visible, with decorative hover feedback only and selected 8px card corners (Tailwind rounded-lg). Best scan consistency; takes more vertical room on mobile.",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "02-bento-cards.html",
+      "title": "Alternative · Traceability-led bento",
+      "tradeoff": "Wide editorial introduction above five compact capability tiles and a full-width final traceability card. Preserves source order and visible text; stronger final emphasis but less uniform scanning and an intentionally unequal hierarchy.",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "03-disclosure.html",
+      "title": "Alternative · Native disclosure accordion",
+      "tradeoff": "Editorial introduction beside six native details/summary disclosures, first open and others independently expandable with keyboard or touch. Compact and genuinely interactive, but requires expansion to see every original sentence; no invented extra detail.",
+      "width": 1440,
+      "height": 900
+    }
+  ]
+}

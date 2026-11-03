@@ -6,8 +6,10 @@ import { EstimatorPage } from '@/pages/EstimatorPage'
 import { EsimComingSoonPage } from '@/pages/EsimComingSoonPage'
 import { EsimPage } from '@/pages/EsimPage'
 import { HomePage } from '@/pages/HomePage'
+import { PrivacyPage } from '@/pages/PrivacyPage'
 import { ServicesPage } from '@/pages/ServicesPage'
 import { SuccessCasesPage } from '@/pages/SuccessCasesPage'
+import { TermsPage } from '@/pages/TermsPage'
 
 export const router = createBrowserRouter([
   {
@@ -17,6 +19,7 @@ export const router = createBrowserRouter([
       {
         index: true,
         Component: HomePage,
+        handle: { pageScrollPin: true },
       },
       {
         path: 'estimar-proyecto',
@@ -25,6 +28,7 @@ export const router = createBrowserRouter([
       {
         path: 'esim',
         Component: EsimPage,
+        handle: { pageScrollPin: true },
       },
       {
         path: 'comprar',
@@ -49,6 +53,14 @@ export const router = createBrowserRouter([
       {
         path: 'contacto',
         Component: ContactPage,
+      },
+      {
+        path: 'privacidad',
+        Component: PrivacyPage,
+      },
+      {
+        path: 'terminos',
+        Component: TermsPage,
       },
     ],
   },

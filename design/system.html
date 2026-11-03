@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avala — source-backed system</title>
+<style>
+:root{color-scheme:dark;--ink:#05081a;--ink2:#0a1030;--paper:#eef2ff;--mute:#8a93b5;--neon:#2fb8ff;--glow:0 0 0 1px rgba(43,179,255,.18),0 20px 80px rgba(18,152,255,.16)}
+*{box-sizing:border-box}body{margin:0;background:var(--ink);color:var(--paper);font-family:system-ui,sans-serif}main{max-width:1440px;margin:auto;padding:3rem 2rem}h1,h2,p{margin:0}h1{font-size:1.875rem;letter-spacing:-.055em;font-weight:600}h2{font-size:1.25rem;margin:2rem 0 1rem}p{line-height:1.75}small,.label{font-family:ui-monospace,monospace;font-size:.75rem;letter-spacing:.14em}.label{color:var(--mute);text-transform:uppercase;margin-bottom:1rem}.palette{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:1rem}.swatch{height:4rem;border-radius:1rem;border:1px solid rgba(238,242,255,.15);margin-bottom:.5rem}.palette p{font-size:.875rem}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem}.panel{background:var(--ink2);border:1px solid rgba(238,242,255,.15);padding:1.5rem;border-radius:1.35rem}.selected{border-radius:.5rem}.glass{border-radius:2.5rem;background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);box-shadow:var(--glow)}.soft{box-shadow:0 18px 60px rgba(7,18,38,.12)}.legacy{box-shadow:0 16px 45px rgba(7,18,38,.08)}.steps{display:flex;gap:1rem;align-items:end;flex-wrap:wrap}.step{background:var(--neon);height:.5rem;margin-bottom:.5rem}.accent{color:var(--neon)}.display{font-size:1.875rem;line-height:1.2;letter-spacing:-.055em;font-weight:600}.body{font-size:1rem;line-height:2}.muted{color:var(--mute)}.lift{transition:transform 300ms,background 300ms}.tokens{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}.tokens p{font-size:.875rem}.tokens strong{color:var(--neon)}:focus-visible{outline:2px solid var(--neon);outline-offset:4px}@media(any-hover:hover){.lift:hover{transform:translateY(-4px);background:rgba(47,184,255,.1)}}@media(max-width:64rem){.palette{grid-template-columns:repeat(4,minmax(0,1fr))}.grid{grid-template-columns:1fr}.tokens{grid-template-columns:1fr}}@media(max-width:40rem){main{padding:2rem 1rem}.palette{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(prefers-reduced-motion:reduce){*{transition:none!important;transform:none!important}}
+</style>
+</head>
+<body><main>
+<p class="label">Avala / design system sync</p>
+<h1>Dark eSIM language. Source-backed foundations.</h1>
+<p class="muted">Preview uses system fallbacks only. Full token values and source attribution: design/system.md.</p>
+<section aria-labelledby="palette-title"><h2 id="palette-title">01 / Avala palette</h2><div class="palette">
+<div><div class="swatch" style="background:#05081a"></div><p>Ink</p><small>#05081a</small></div>
+<div><div class="swatch" style="background:#0a1030"></div><p>Ink 2</p><small>#0a1030</small></div>
+<div><div class="swatch" style="background:#eef2ff"></div><p>Paper</p><small>#eef2ff</small></div>
+<div><div class="swatch" style="background:#8a93b5"></div><p>Mute</p><small>#8a93b5</small></div>
+<div><div class="swatch" style="background:#2fb8ff"></div><p>Neon</p><small>#2fb8ff</small></div>
+<div><div class="swatch" style="background:#d4a94f"></div><p>Gold</p><small>#d4a94f</small></div>
+<div><div class="swatch" style="background:#3fd0ff"></div><p>Cyan</p><small>#3fd0ff</small></div>
+<div><div class="swatch" style="background:#7b5cff"></div><p>Violet</p><small>#7b5cff</small></div>
+</div><div class="tokens"><p><strong>Legacy brand / surface</strong><br>#eef6ff · #d9ebff · #2bb3ff · #1298ff · #0b63d1<br>#f8fbff · #eef3fb · #071226 · #030814</p><p><strong>Semantic light → dark</strong><br>background #ffffff → #030814; foreground #0f172a → #e2e8f0<br>muted #f8fbff → #071226; muted text #475569 → #94a3b8<br>card #ffffff → #081427; card text #0f172a → #f8fafc<br>border #dbe5f2 → rgba(148,163,184,.18)</p></div></section>
+<section aria-labelledby="type-title"><h2 id="type-title">02 / Typography and component samples</h2><div class="grid">
+<div class="panel"><p class="label">HUD · .75rem / .14em</p><p class="display">Operación y trazabilidad</p><p class="body">System sans · 1rem / 2rem</p><p class="muted">Mono: ui-monospace, monospace.<br>All other text: system-ui, sans-serif.</p></div>
+<div class="panel glass lift"><p class="label">Dark glass · 2.5rem</p><p class="display">Shared primitive, dark treatment.</p><p>White/5 fill · white/10 border · exact glow shadow. Passive hover lift: −4px / 300ms, motion preference respected.</p></div>
+<div class="panel soft selected"><p class="label">Selected ink card · .5rem / 8px</p><p class="accent">Neon accent / paper text</p><p>1rem icon radius. Exact soft shadow here; legacy ServiceCard shadow below.</p><p class="legacy">Legacy light gradients are not the eSIM direction.</p></div>
+</div><p class="muted">Utility type: .75 / .875 / 1 / 1.125 / 1.25 / 1.5 / 1.875rem. Hero: clamp(2.75rem, 4.3vw, 4rem); page: clamp(3.5rem, 6vw, 5.5rem). Contact: clamp(1rem, 2vw, 1.5rem); mobile nav: clamp(1.5rem, 4vw, 1.75rem).</p></section>
+<section aria-labelledby="space-title"><h2 id="space-title">03 / Spacing, radius and layout</h2><div class="steps">
+<div><div class="step" style="width:.25rem"></div><small>1 / .25</small></div><div><div class="step" style="width:.5rem"></div><small>2 / .5</small></div><div><div class="step" style="width:.75rem"></div><small>3 / .75</small></div><div><div class="step" style="width:1rem"></div><small>4 / 1</small></div><div><div class="step" style="width:1.25rem"></div><small>5 / 1.25</small></div><div><div class="step" style="width:1.5rem"></div><small>6 / 1.5</small></div><div><div class="step" style="width:2rem"></div><small>8 / 2</small></div><div><div class="step" style="width:2.5rem"></div><small>10 / 2.5</small></div><div><div class="step" style="width:3rem"></div><small>12 / 3</small></div><div><div class="step" style="width:4rem"></div><small>16 / 4</small></div><div><div class="step" style="width:5rem"></div><small>20 / 5</small></div><div><div class="step" style="width:6rem"></div><small>24 / 6rem</small></div>
+</div><p class="muted">Container 1280px · gutters 1 / 1.5 / 2rem · breakpoints 40 / 64rem. Original radii 1 / 1.35 / 2 / 2.5rem. Selected uniform / ink Card: .5rem (Tailwind rounded-lg). Section spacing 4 / 6rem; Home 1.5 / 2.5rem.</p></section>
+</main></body></html>

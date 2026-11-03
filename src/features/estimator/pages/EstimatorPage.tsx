@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
 	ArrowRight,
 	CheckCircle2,
@@ -6,18 +6,20 @@ import {
 	Clock3,
 	Sparkles,
 } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
-import background2 from "@/assets/background_2.png";
-import backgroundProjectsPrice from "@/assets/background_projects_price.png";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { SectionLabel } from "@/components/fx/SectionLabel";
+import { SplitReveal } from "@/components/fx/SplitReveal";
+import { companyInfo } from "@/config/site";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { Heading } from "@/components/ui/Heading";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
 import { ProposalDetailsModal } from "@/features/estimator/components/ProposalDetailsModal";
+import { estimatorStyles } from "@/features/estimator/components/estimator-styles";
 import { estimatorSteps } from "@/features/estimator/data/catalog";
 import { calculateEstimate } from "@/features/estimator/utils/calculateEstimate";
+import { composePhone, DEFAULT_PHONE_COUNTRY, isValidNationalPhone, sanitizePhoneDigits, type PhoneCountryId } from "@/lib/phone";
 import type {
+	EstimateResult,
 	EstimatorAnswers,
 	EstimatorLead,
 	EstimatorQuestion,
@@ -26,7 +28,8 @@ import type {
 	SingleSelectQuestion,
 	TextareaQuestion,
 } from "@/features/estimator/types/estimator.types";
-import { fadeLeft, fadeUp, subtleHoverOnly } from "@/lib/motion";
+import { submitForm } from "@/lib/forms";
+import { fadeLeft, fadeUp } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 const complexityLabels = {
@@ -65,15 +68,13 @@ const initialAnswers: EstimatorAnswers = {
 	features: [],
 };
 
-const initialLead: EstimatorLead = {
+const initialLead: Omit<EstimatorLead, "phone"> = {
 	fullName: "",
 	company: "",
 	email: "",
-	phone: "",
 };
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const phoneRegex = /^[+]?[(]?[0-9\s-()]{7,}$/;
 
 function formatCop(value: number) {
 	return new Intl.NumberFormat("es-CO", {
@@ -83,7 +84,57 @@ function formatCop(value: number) {
 	}).format(value);
 }
 
-function validateLead(lead: EstimatorLead) {
+// Respuestas y estimación en texto legible, para el correo que recibe ventas@
+function describeEstimate(
+	answers: EstimatorAnswers,
+	result: EstimateResult | null,
+): Array<[string, string]> {
+	const rows: Array<[string, string]> = [];
+
+	for (const step of estimatorSteps) {
+		for (const question of step.questions) {
+			let value: string;
+			if (question.type === "multi-select") {
+				value = (question as MultiSelectQuestion).options
+					.filter((option) => answers.features.includes(option.value))
+					.map((option) => option.label)
+					.join(", ");
+			} else if (question.type === "single-select") {
+				const selected = answers[question.id as keyof EstimatorAnswers];
+				value =
+					(question as SingleSelectQuestion).options.find(
+						(option) => option.value === selected,
+					)?.label ?? "";
+			} else {
+				value = String(answers[question.id as keyof EstimatorAnswers] ?? "");
+			}
+			if (value.trim()) rows.push([question.title, value.trim()]);
+		}
+	}
+
+	if (result) {
+		rows.push(
+			["Complejidad", complexityLabels[result.complexity]],
+			["Enfoque recomendado", approachLabels[result.recommendedApproach]],
+			[
+				"Duración estimada",
+				`${result.estimatedMonths.min}–${result.estimatedMonths.max} meses (${result.estimatedHours.min}–${result.estimatedHours.max} h)`,
+			],
+			[
+				"Inversión estimada",
+				`${formatCop(result.estimatedCostCop.min)} – ${formatCop(result.estimatedCostCop.max)}`,
+			],
+		);
+		if (result.detectedModules.length > 0)
+			rows.push(["Módulos detectados", result.detectedModules.join(", ")]);
+		if (result.warnings.length > 0)
+			rows.push(["Advertencias", result.warnings.join(" · ")]);
+	}
+
+	return rows;
+}
+
+function validateLead(lead: EstimatorLead, nationalDigits: string) {
 	return {
 		fullName:
 			lead.fullName.trim().length < 3
@@ -99,23 +150,33 @@ function validateLead(lead: EstimatorLead) {
 			? "Ingresa un correo electrónico válido."
 			: "",
 		phone:
-			lead.phone &&
-			lead.phone.trim().length > 0 &&
-			!phoneRegex.test(lead.phone.trim())
+			!isValidNationalPhone(nationalDigits)
 				? "Ingresa un número de teléfono válido."
 				: "",
 	};
 }
 
 export function EstimatorPage() {
+	const shouldReduceMotion = useReducedMotion();
 	const [currentStepIndex, setCurrentStepIndex] = useState(0);
 	const [answers, setAnswers] = useState<EstimatorAnswers>(initialAnswers);
-	const [lead, setLead] = useState<EstimatorLead>(initialLead);
+	const [leadFields, setLead] = useState(initialLead);
+	const [phoneCountry, setPhoneCountry] = useState<PhoneCountryId>(DEFAULT_PHONE_COUNTRY);
+	const [phoneDigits, setPhoneDigits] = useState("");
+	const lead: EstimatorLead = useMemo(() => ({
+		...leadFields,
+		phone: composePhone(phoneCountry, phoneDigits),
+	}), [leadFields, phoneCountry, phoneDigits]);
 	const [isLeadSubmitted, setIsLeadSubmitted] = useState(false);
 	const [isLeadSubmitting, setIsLeadSubmitting] = useState(false);
 	const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
 	const [leadTouched, setLeadTouched] = useState(false);
-	const submissionTimerRef = useRef<number | null>(null);
+	const [leadSubmitError, setLeadSubmitError] = useState<string | null>(null);
+	const [honeypot, setHoneypot] = useState("");
+	// Cada cierre del modal invalida el envío en curso para no pisar el estado
+	const submissionIdRef = useRef(0);
+	// Momento de apertura del modal: la API rechaza envíos instantáneos (bots)
+	const leadStartedAtRef = useRef(0);
 	const resetAfterCloseRef = useRef(false);
 
 	const hasCoreProjectData =
@@ -129,7 +190,7 @@ export function EstimatorPage() {
 	const currentStep = estimatorSteps[currentStepIndex];
 	const isLastStep = currentStepIndex === estimatorSteps.length - 1;
 	const stepProgress = ((currentStepIndex + 1) / estimatorSteps.length) * 100;
-	const leadErrors = useMemo(() => validateLead(lead), [lead]);
+	const leadErrors = useMemo(() => validateLead(lead, phoneDigits), [lead, phoneDigits]);
 	const isLeadValid =
 		!leadErrors.fullName &&
 		!leadErrors.company &&
@@ -195,6 +256,8 @@ export function EstimatorPage() {
 	}
 
 	function handleContinueToLead() {
+		leadStartedAtRef.current = Date.now();
+		setLeadSubmitError(null);
 		setIsProposalModalOpen(true);
 	}
 
@@ -202,16 +265,15 @@ export function EstimatorPage() {
 		setCurrentStepIndex(0);
 		setAnswers(initialAnswers);
 		setLead(initialLead);
+		setPhoneCountry(DEFAULT_PHONE_COUNTRY);
+		setPhoneDigits("");
 		setIsLeadSubmitted(false);
 		setIsLeadSubmitting(false);
 		setLeadTouched(false);
 	}
 
 	function handleProposalModalClose() {
-		if (submissionTimerRef.current !== null) {
-			window.clearTimeout(submissionTimerRef.current);
-			submissionTimerRef.current = null;
-		}
+		submissionIdRef.current += 1;
 		setIsLeadSubmitting(false);
 		resetAfterCloseRef.current = isLeadSubmitted;
 		setIsProposalModalOpen(false);
@@ -224,30 +286,30 @@ export function EstimatorPage() {
 	}
 
 	function handleLeadChange(field: keyof EstimatorLead, value: string) {
-		setLead((current) => ({ ...current, [field]: value }));
+		if (field === "phone") setPhoneDigits(sanitizePhoneDigits(value));
+		else setLead((current) => ({ ...current, [field]: value }));
 		setIsLeadSubmitted(false);
 		setIsLeadSubmitting(false);
 	}
 
-	function handleLeadSubmit() {
+	async function handleLeadSubmit() {
 		setLeadTouched(true);
 		if (!isLeadValid || isLeadSubmitting) return;
 
+		const submissionId = ++submissionIdRef.current;
 		setIsLeadSubmitting(true);
-		submissionTimerRef.current = window.setTimeout(() => {
-			submissionTimerRef.current = null;
-			setIsLeadSubmitting(false);
-			setIsLeadSubmitted(true);
-		}, 700);
-	}
+		setLeadSubmitError(null);
+		const response = await submitForm(
+			"/api/lead",
+			{ ...lead, details: describeEstimate(answers, result) },
+			{ startedAt: leadStartedAtRef.current, honeypot },
+		);
+		if (submissionId !== submissionIdRef.current) return;
 
-	useEffect(() => {
-		return () => {
-			if (submissionTimerRef.current !== null) {
-				window.clearTimeout(submissionTimerRef.current);
-			}
-		};
-	}, []);
+		setIsLeadSubmitting(false);
+		if (response.ok) setIsLeadSubmitted(true);
+		else setLeadSubmitError(response.error);
+	}
 
 	function renderQuestion(question: EstimatorQuestion) {
 		if (question.type === "single-select") {
@@ -264,19 +326,18 @@ export function EstimatorPage() {
 								key={option.value}
 								type="button"
 								onClick={() => setSingleValue(question.id, option.value)}
+								aria-pressed={isSelected}
 								className={cn(
-									"rounded-[1.4rem] border p-5 text-left transition-all duration-200 hover:-translate-y-0.5",
-									isSelected
-										? "border-brand-500 bg-[linear-gradient(180deg,#eef6ff_0%,#ffffff_100%)] shadow-[0_18px_40px_rgba(43,179,255,0.14)]"
-										: "border-[#dfe8f6] bg-white hover:border-brand-300",
+									estimatorStyles.option,
+									isSelected ? estimatorStyles.optionSelected : estimatorStyles.optionIdle,
 								)}
 							>
 								<div className="space-y-2">
-									<p className="text-base font-semibold text-[#0d1730]">
+									<p className="font-display text-lg font-semibold text-avala-paper">
 										{option.label}
 									</p>
 									{option.description ? (
-										<p className="text-sm leading-6 text-muted-foreground">
+										<p className="text-base leading-6 text-avala-mute">
 											{option.description}
 										</p>
 									) : null}
@@ -316,11 +377,11 @@ export function EstimatorPage() {
 
 						return (
 							<div key={category} className="space-y-3">
-								<span className="inline-flex rounded-full border border-brand-100 bg-brand-50 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brand-700">
+								<span className={estimatorStyles.label}>
 									{featureCategoryLabels[category]}
 								</span>
 
-								<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+								<div className="grid gap-3 md:grid-cols-2">
 									{options.map((option) => {
 										const isSelected = answers.features.includes(option.value);
 
@@ -329,25 +390,24 @@ export function EstimatorPage() {
 												key={option.value}
 												type="button"
 												onClick={() => toggleFeature(option.value)}
+												aria-pressed={isSelected}
 												className={cn(
-													"rounded-[1.35rem] border p-4 text-left transition-all duration-200 hover:-translate-y-0.5",
-													isSelected
-														? "border-brand-500 bg-[linear-gradient(180deg,#eef6ff_0%,#ffffff_100%)] shadow-[0_18px_40px_rgba(43,179,255,0.14)]"
-														: "border-[#dfe8f6] bg-white hover:border-brand-300",
+													estimatorStyles.option,
+													isSelected ? estimatorStyles.optionSelected : estimatorStyles.optionIdle,
 												)}
 											>
 												<div className="flex items-start justify-between gap-3">
 													<div className="space-y-2">
-														<p className="text-base font-semibold text-[#0d1730]">
+														<p className="font-display text-lg font-semibold text-avala-paper">
 															{option.label}
 														</p>
 													</div>
 													<span
 														className={cn(
-															"flex size-6 items-center justify-center rounded-full border",
+															"flex size-6 shrink-0 items-center justify-center border",
 															isSelected
-																? "border-brand-500 bg-brand-500 text-white"
-																: "border-[#d5e1f2]",
+																? "border-avala-neon bg-[var(--color-avala-neon)] text-avala-ink"
+																: "border-avala-paper/30",
 														)}
 													>
 														{isSelected ? (
@@ -371,49 +431,35 @@ export function EstimatorPage() {
 		return (
 			<textarea
 				key={question.id}
+				aria-labelledby={`${question.id}-label`}
 				value={answers.projectDescription ?? ""}
 				onChange={(event) => setTextValue(question.id, event.target.value)}
 				placeholder={typedQuestion.placeholder}
 				maxLength={typedQuestion.maxLength}
 				rows={6}
-				className="w-full rounded-[1.4rem] border border-[#dfe8f6] bg-white px-4 py-4 text-sm text-[#0d1730] outline-none transition-colors focus:border-brand-400"
+				className={estimatorStyles.input}
 			/>
 		);
 	}
 
 	return (
 		<>
-			<Section
-				className="relative overflow-hidden pb-18 text-white lg:pb-20"
-				style={{
-					backgroundImage: `linear-gradient(180deg, rgba(4, 11, 30, 0.82) 0%, rgba(5, 17, 44, 0.7) 100%), url(${backgroundProjectsPrice})`,
-					backgroundSize: "cover",
-					backgroundPosition: "center top",
-				}}
-			>
-				<motion.div
-					aria-hidden="true"
-					className="pointer-events-none absolute inset-y-0 left-[-12%] -z-10 w-[56%] bg-[radial-gradient(circle_at_center,rgba(43,179,255,0.12),transparent_58%)] blur-2xl"
-					animate={{ x: [0, 16, 0], opacity: [0.42, 0.7, 0.42] }}
-					transition={{ duration: 13, repeat: Infinity, ease: "easeInOut" }}
-				/>
-				<motion.div
-					aria-hidden="true"
-					className="pointer-events-none absolute inset-x-0 top-[48%] -z-10 h-28 bg-[linear-gradient(90deg,transparent_0%,rgba(43,179,255,0.16)_48%,transparent_100%)] blur-2xl"
-					animate={{ x: ["-8%", "8%", "-8%"], opacity: [0.22, 0.4, 0.22] }}
-					transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
-				/>
-
-				<div className="max-w-4xl space-y-5 pt-8 lg:pt-12">
-					<Heading
-						title="Configura tu proyecto y recibe una estimación inicial"
-						description="Responde algunas preguntas y obtén una visión preliminar de alcance, complejidad, tiempo e inversión para tu solución de software, automatización o integración."
-						className="[&_h2]:text-[2.3rem] [&_h2]:leading-[1.08] [&_h2]:text-white [&_p]:max-w-3xl [&_p]:text-slate-300"
-					/>
+			<Section withSpacing={false} className="bg-avala-ink py-8 text-avala-paper lg:py-10">
+				<SectionLabel index="(E)" label="Estimador" meta={companyInfo.hours} />
+				<div className="space-y-4 pt-8 lg:pt-12">
+					<h1 className="display-tight max-w-[20ch] text-title-page text-avala-paper">
+						<SplitReveal text="Configura tu proyecto" stagger={0.018} play />{" "}
+						<SplitReveal text="y recibe una estimación inicial" stagger={0.018} delay={0.25} play className="text-avala-neon" />
+					</h1>
+					<Reveal variants={fadeUp}>
+						<p className="max-w-3xl text-base leading-7 text-avala-mute sm:text-lg">
+							Responde algunas preguntas y obtén una visión preliminar de alcance, complejidad, tiempo e inversión para tu solución de software, automatización o integración.
+						</p>
+					</Reveal>
 
 					<Reveal variants={fadeUp}>
-						<div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 backdrop-blur-sm">
-							<span className="flex size-8 items-center justify-center rounded-full bg-brand-500/18 font-semibold text-brand-100">
+						<div className="inline-flex items-center gap-3 border-l-2 border-avala-neon pl-3 text-base text-avala-paper">
+							<span className="font-mono text-avala-neon">
 								{currentStepIndex + 1}
 							</span>
 							<span>Paso actual: {currentStep.title}</span>
@@ -421,8 +467,8 @@ export function EstimatorPage() {
 					</Reveal>
 
 					<Reveal variants={fadeUp}>
-						<div className="inline-flex items-center gap-3 rounded-[1.2rem] border border-brand-400/20 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] px-4 py-3 text-sm text-slate-200 shadow-[0_16px_40px_rgba(5,17,44,0.22)] backdrop-blur-sm">
-							<span className="flex size-9 items-center justify-center rounded-full bg-brand-500/20 text-brand-100">
+						<div className="inline-flex items-center gap-3 text-base text-avala-mute">
+							<span className="text-avala-neon">
 								<Sparkles className="size-4" />
 							</span>
 							<span>
@@ -436,72 +482,69 @@ export function EstimatorPage() {
 
 			<Section
 				withSpacing={false}
-				className="relative z-20 -mt-10 pb-16 lg:-mt-12 lg:pb-20"
+				className="bg-avala-ink pb-10 text-avala-paper lg:pb-16"
 			>
-				<div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-					<Card className="rounded-[1.9rem] border-[#d8e4f4] bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-6 shadow-[0_24px_60px_rgba(8,20,39,0.12)] lg:p-8">
-							<div className="space-y-8">
+				<div className="grid items-start gap-5 xl:grid-cols-[1.15fr_0.85fr]">
+					<div className={cn(estimatorStyles.panel, "min-w-0 p-4 sm:p-6")}>
+							<div className="space-y-6">
 								<div className="space-y-4">
-									<div className="h-2 overflow-hidden rounded-full bg-[#dfe8f6]">
+									<div className="h-px overflow-hidden bg-avala-paper/20">
 										<div
-											className="h-full rounded-full bg-[linear-gradient(90deg,#1298ff_0%,#6d5cff_100%)] transition-all duration-300"
+											className="h-full bg-[var(--color-avala-neon)] transition-[width] duration-300 motion-reduce:transition-none"
 											style={{ width: `${stepProgress}%` }}
 										/>
 									</div>
 
-									<motion.div
-										className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										transition={{ duration: 0.6, ease: "easeOut" }}
-									>
+									<div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
 										{estimatorSteps.map((step, index) => (
-											<div
+											<motion.div
 												key={step.id}
 												title={step.title}
+												initial={shouldReduceMotion ? false : { opacity: 0, x: -16 }}
+												whileInView={{ opacity: 1, x: 0 }}
+												viewport={{ once: true, amount: 0.1 }}
+												transition={{ duration: shouldReduceMotion ? 0 : 0.4, delay: shouldReduceMotion ? 0 : index * 0.07, ease: "easeOut" }}
 												className={cn(
-													"min-h-[5rem] rounded-[1.25rem] border px-4 py-3 transition-all duration-200",
+													"border px-3 py-2",
 													index === currentStepIndex
-														? "border-brand-500 bg-[linear-gradient(180deg,#1298ff_0%,#2555ff_100%)] text-white shadow-[0_18px_38px_rgba(37,85,255,0.22)]"
+														? "border-avala-neon bg-avala-neon/10 text-avala-paper"
 														: index < currentStepIndex
-															? "border-brand-200 bg-[linear-gradient(180deg,#eef6ff_0%,#ffffff_100%)] text-brand-700 shadow-[0_12px_28px_rgba(43,179,255,0.08)]"
-															: "border-[#dbe5f2] bg-white text-slate-500",
+															? "border-avala-paper/25 text-avala-paper"
+															: "border-avala-paper/10 text-avala-mute",
 												)}
 											>
 												<div className="flex items-start gap-3">
 													<span
 														className={cn(
-															"flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold",
-															index === currentStepIndex
-																? "bg-white/18 text-white"
-																: index < currentStepIndex
-																	? "bg-brand-100 text-brand-700"
-																	: "bg-slate-100 text-slate-500",
+															"flex size-8 shrink-0 items-center justify-center font-mono text-xs",
+															index <= currentStepIndex
+																? "text-avala-neon"
+																: "text-avala-mute",
 														)}
 													>
 														{index + 1}
 													</span>
 
 													<div className="min-w-0 flex-1">
-														<p className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] opacity-75">
+														<p className="font-mono text-xs uppercase tracking-[0.14em] opacity-75">
 															Paso {index + 1}
 														</p>
-														<p className="mt-1 text-[0.92rem] leading-5 font-semibold break-words whitespace-normal">
+														<p className="mt-1 font-display text-base leading-5 font-semibold break-words whitespace-normal">
 															{step.title}
 														</p>
 													</div>
 												</div>
-											</div>
+											</motion.div>
 										))}
-									</motion.div>
+									</div>
 								</div>
 
 								<div className="space-y-3">
-									<h2 className="text-[2rem] font-bold leading-[1.1] text-[#0d1730]">
+									<h2 className="display-tight text-3xl leading-tight text-avala-paper sm:text-4xl">
 										{currentStep.title}
 									</h2>
 									{currentStep.description ? (
-										<p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+										<p className="max-w-2xl text-base leading-7 text-avala-mute">
 											{currentStep.description}
 										</p>
 									) : null}
@@ -511,11 +554,11 @@ export function EstimatorPage() {
 									{currentStep.questions.map((question) => (
 										<div className="space-y-3" key={question.id}>
 											<div className="space-y-1">
-												<p className="text-base font-semibold text-[#0d1730]">
+												<p id={`${question.id}-label`} className="font-display text-lg font-semibold text-avala-paper">
 													{question.title}
 												</p>
 												{question.description ? (
-													<p className="text-sm leading-6 text-muted-foreground">
+													<p className="text-base leading-6 text-avala-mute">
 														{question.description}
 													</p>
 												) : null}
@@ -525,10 +568,10 @@ export function EstimatorPage() {
 									))}
 								</div>
 
-								<div className="flex flex-col gap-3 border-t border-[#dfe8f6] pt-6 sm:flex-row sm:justify-between">
+								<div className="flex flex-col gap-3 border-t border-avala-paper/15 pt-4 sm:flex-row sm:justify-between">
 									<Button
-										variant="ghost"
-										className="justify-start"
+										type="button"
+										variant="neonSecondary"
 										onClick={handleBack}
 										disabled={currentStepIndex === 0}
 									>
@@ -537,6 +580,8 @@ export function EstimatorPage() {
 
 									{canShowLeadForm ? (
 										<Button
+											type="button"
+											variant="neon"
 											onClick={handleContinueToLead}
 											disabled={!canAdvance()}
 										>
@@ -544,59 +589,52 @@ export function EstimatorPage() {
 											<ArrowRight className="size-4" />
 										</Button>
 									) : (
-										<Button onClick={handleNext} disabled={!canAdvance()}>
+										<Button type="button" variant="neon" onClick={handleNext} disabled={!canAdvance()}>
 											Siguiente paso
 											<ArrowRight className="size-4" />
 										</Button>
 									)}
 								</div>
 							</div>
-					</Card>
+					</div>
 
-					<Reveal variants={fadeLeft} className="space-y-6 xl:sticky xl:top-24">
-						<motion.div {...subtleHoverOnly}>
-							<Card className="overflow-hidden rounded-[1.9rem] border-[#d8e4f4] bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-0 shadow-[0_24px_60px_rgba(8,20,39,0.12)]">
-								<div
-									className="border-b border-white/10 px-6 py-6 text-white lg:px-8"
-									style={{
-										backgroundImage: `linear-gradient(180deg, rgba(4, 11, 30, 0.84) 0%, rgba(5, 17, 44, 0.78) 100%), url(${background2})`,
-										backgroundSize: "cover",
-										backgroundPosition: "center",
-									}}
-								>
+					<Reveal variants={fadeLeft} className="min-w-0 xl:sticky xl:top-24">
+						<div>
+							<div className={estimatorStyles.panel}>
+								<div className="border-b border-avala-paper/15 p-4 sm:p-6">
 									<div className="space-y-2">
-										<p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-100">
+										<p className={estimatorStyles.label}>
 											Estimación preliminar
 										</p>
-										<h3 className="text-[1.8rem] font-bold leading-[1.1] text-white">
+										<h3 className="display-tight text-3xl leading-tight text-avala-paper">
 											Tu proyecto ya tiene una primera lectura comercial.
 										</h3>
 									</div>
 								</div>
 
-								<div className="space-y-6 p-6 lg:p-8">
+								<div className="space-y-4 p-4 sm:p-6">
 									{hasMinimumData && result ? (
 										<>
-											<div className="grid gap-4 sm:grid-cols-2">
-												<div className="rounded-[1.35rem] border border-[#dfe8f6] bg-white p-4 shadow-[0_12px_30px_rgba(8,20,39,0.04)]">
-													<p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+											<div className="grid gap-3 sm:grid-cols-2">
+												<div className={estimatorStyles.metric}>
+													<p className={estimatorStyles.label}>
 														Complejidad
 													</p>
-													<p className="mt-2 text-lg font-semibold text-[#0d1730]">
+													<p className="display-tight mt-2 text-2xl text-avala-paper">
 														{complexityLabels[result.complexity]}
 													</p>
-													<p className="mt-2 text-sm leading-6 text-muted-foreground">
+													<p className="mt-2 text-base leading-6 text-avala-mute">
 														{complexityDescriptions[result.complexity]}
 													</p>
 												</div>
-												<div className="rounded-[1.35rem] border border-[#dfe8f6] bg-white p-4 shadow-[0_12px_30px_rgba(8,20,39,0.04)]">
-													<p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+												<div className={estimatorStyles.metric}>
+													<p className={estimatorStyles.label}>
 														Enfoque recomendado
 													</p>
-													<p className="mt-2 text-lg font-semibold text-[#0d1730]">
+													<p className="display-tight mt-2 text-2xl text-avala-paper">
 														{approachLabels[result.recommendedApproach]}
 													</p>
-													<p className="mt-2 text-sm leading-6 text-muted-foreground">
+													<p className="mt-2 text-base leading-6 text-avala-mute">
 														{result.recommendedApproach === "MVP"
 															? "Recomendado para validar hipótesis, lanzar rápido y aprender con una primera versión."
 															: result.recommendedApproach === "PROFESSIONAL"
@@ -606,45 +644,45 @@ export function EstimatorPage() {
 												</div>
 											</div>
 
-											<div className="space-y-3 rounded-[1.5rem] border border-[#dfe8f6] bg-white p-5 shadow-[0_12px_30px_rgba(8,20,39,0.04)]">
-												<div className="flex items-center gap-2 text-[#0d1730]">
-													<Clock3 className="size-4 text-brand-500" />
-													<p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+											<div className={cn(estimatorStyles.metric, "space-y-3")}>
+												<div className="flex items-center gap-2 text-avala-paper">
+													<Clock3 className="size-4 text-avala-neon" />
+													<p className={estimatorStyles.label}>
 														Tiempo estimado
 													</p>
 												</div>
-												<p className="text-sm font-medium text-brand-700">
+												<p className="text-base text-avala-mute">
 													Entre
 												</p>
-												<p className="text-lg font-semibold text-[#0d1730]">
+												<p className="display-tight tabular text-2xl text-avala-paper">
 													{result.estimatedMonths.min} y{" "}
 													{result.estimatedMonths.max} meses
 												</p>
-												<p className="text-sm leading-6 text-muted-foreground">
+												<p className="text-base leading-6 text-avala-mute">
 													Aproximadamente entre {result.estimatedHours.min} y{" "}
 													{result.estimatedHours.max} horas de trabajo.
 												</p>
 											</div>
 
-											<div className="space-y-3 rounded-[1.5rem] border border-brand-200 bg-[linear-gradient(180deg,#eef6ff_0%,#ffffff_100%)] p-5 shadow-[0_16px_35px_rgba(43,179,255,0.1)]">
-												<div className="flex items-center gap-2 text-[#0d1730]">
-													<CircleDollarSign className="size-4 text-brand-500" />
-													<p className="text-xs uppercase tracking-[0.16em] text-brand-700">
+											<div className="space-y-3 border border-avala-neon/50 bg-avala-neon/5 p-4">
+												<div className="flex items-center gap-2 text-avala-paper">
+													<CircleDollarSign className="size-4 text-avala-neon" />
+													<p className={estimatorStyles.label}>
 														Inversión estimada
 													</p>
 												</div>
-												<p className="text-sm font-medium text-brand-700">
+												<p className="text-base text-avala-mute">
 													Entre
 												</p>
-												<p className="text-[1.9rem] font-extrabold leading-none text-[#0d1730]">
+												<p className="display-tight tabular text-3xl leading-tight text-avala-neon [overflow-wrap:anywhere]">
 													{formatCop(result.estimatedCostCop.min)} y{" "}
 													{formatCop(result.estimatedCostCop.max)}
 												</p>
-												<p className="text-sm leading-6 text-muted-foreground">
+												<p className="text-base leading-6 text-avala-mute">
 													Esta cifra es una referencia preliminar basada en el
 													alcance, complejidad y funcionalidades seleccionadas.
 												</p>
-												<div className="rounded-[1rem] border border-brand-100 bg-white/80 px-4 py-3 text-sm leading-6 text-slate-600">
+												<div className="border-t border-avala-paper/15 pt-3 text-base leading-6 text-avala-mute">
 													Esta estimación no constituye una cotización
 													definitiva. Un especialista de Avala Group revisará tu
 													caso para entregarte una propuesta técnica y económica
@@ -653,7 +691,7 @@ export function EstimatorPage() {
 											</div>
 
 											<div className="space-y-3">
-												<p className="text-sm font-semibold text-[#0d1730]">
+												<p className="font-display text-lg font-semibold text-avala-paper">
 													Módulos detectados
 												</p>
 												<div className="flex flex-wrap gap-2">
@@ -661,13 +699,13 @@ export function EstimatorPage() {
 														result.detectedModules.map((module) => (
 															<span
 																key={module}
-																className="rounded-full border border-[#dbe5f2] bg-white px-3 py-2 text-xs font-medium text-slate-600"
+																className="border border-avala-paper/20 px-3 py-2 text-base text-avala-paper"
 															>
 																{module}
 															</span>
 														))
 													) : (
-														<span className="text-sm text-muted-foreground">
+														<span className="text-base text-avala-mute">
 															Selecciona funcionalidades para ver los módulos
 															detectados.
 														</span>
@@ -675,12 +713,12 @@ export function EstimatorPage() {
 												</div>
 											</div>
 
-											<div className="rounded-[1.4rem] border border-[#dfe8f6] bg-white p-5 shadow-[0_12px_30px_rgba(8,20,39,0.04)]">
+											<div className={estimatorStyles.metric}>
 												<div className="space-y-2">
-													<p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-700">
+													<p className={estimatorStyles.label}>
 														¿Qué sigue?
 													</p>
-													<p className="text-sm leading-6 text-slate-600">
+													<p className="text-base leading-6 text-avala-mute">
 														Si esta estimación se acerca a lo que necesitás,
 														dejanos tus datos y te ayudamos a convertirla en una
 														propuesta real, alineada con tu operación y tus
@@ -690,7 +728,7 @@ export function EstimatorPage() {
 											</div>
 
 											{result.warnings.length > 0 ? (
-												<div className="space-y-2 rounded-[1.3rem] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+												<div className="space-y-2 border border-amber-300/35 bg-amber-300/5 p-4 text-base leading-6 text-amber-200">
 													{result.warnings.map((warning) => (
 														<p key={warning}>{warning}</p>
 													))}
@@ -698,15 +736,15 @@ export function EstimatorPage() {
 											) : null}
 										</>
 									) : (
-										<div className="space-y-4 rounded-[1.5rem] border border-dashed border-[#cfe0f6] bg-[linear-gradient(180deg,#fbfdff_0%,#f5f9ff_100%)] p-6 text-center shadow-[0_12px_30px_rgba(8,20,39,0.04)]">
-											<div className="mx-auto flex size-12 items-center justify-center rounded-full bg-brand-50 text-brand-600">
+										<div className="space-y-4 border border-dashed border-avala-paper/25 p-4 text-center sm:p-6">
+											<div className="mx-auto flex size-10 items-center justify-center text-avala-neon">
 												<Sparkles className="size-5" />
 											</div>
 											<div className="space-y-2">
-												<p className="text-lg font-semibold text-[#0d1730]">
+												<p className="display-tight text-2xl text-avala-paper">
 													Completá la configuración para ver tu estimación
 												</p>
-												<p className="text-sm leading-6 text-muted-foreground">
+												<p className="text-base leading-6 text-avala-mute">
 													Selecciona al menos el tipo de proyecto, la plataforma
 													y una funcionalidad principal para desbloquear la
 													complejidad, el tiempo y la inversión estimada.
@@ -715,8 +753,8 @@ export function EstimatorPage() {
 										</div>
 									)}
 								</div>
-							</Card>
-						</motion.div>
+							</div>
+						</div>
 					</Reveal>
 				</div>
 			</Section>
@@ -725,11 +763,17 @@ export function EstimatorPage() {
 				{isProposalModalOpen && canShowLeadForm ? (
 					<ProposalDetailsModal
 						lead={lead}
+						phoneCountry={phoneCountry}
+						phoneDigits={phoneDigits}
+						onPhoneCountryChange={setPhoneCountry}
 						leadErrors={leadErrors}
 						leadTouched={leadTouched}
 						isLeadValid={isLeadValid}
 						isLeadSubmitted={isLeadSubmitted}
 						isLeadSubmitting={isLeadSubmitting}
+						submitError={leadSubmitError}
+						honeypot={honeypot}
+						onHoneypotChange={setHoneypot}
 						onClose={handleProposalModalClose}
 						onLeadChange={handleLeadChange}
 						onLeadBlur={() => setLeadTouched(true)}
