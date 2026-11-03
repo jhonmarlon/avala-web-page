@@ -137,8 +137,8 @@ function tree(html) {
 function ancestor(node, predicate) {
   for (let parent = node.parent; parent; parent = parent.parent) if (predicate(parent)) return parent
 }
-test('eSIM whole-page pin preserves every downstream boundary during forward, reverse and released document travel', () => {
-  mount(scoped)
+for (const width of [375, 1366]) test(`eSIM ${width}px whole-page pin preserves every downstream boundary during forward, reverse and released document travel`, () => {
+  mount(scoped, { width })
   const positions = [620 - 24, 660, 980, 1800, 2900, 3600]
   for (const progress of [0, 0.25, 0.5, 0.75, 1, 0.75, 0.25, 0]) {
     b.progress = progress; b.callbacks[0](progress)
@@ -194,8 +194,8 @@ test('scope resize/font changes use core fit, coalesce work, preserve stable reg
   assert.equal(registered.frame.dataset.layout, 'vertical', 'temporary compact layout restored')
   assert.match(mount(ProcessSection), /height:1970px/, 'route exit leaves Home on its own local timeline')
 })
-test('eSIM mobile, reduced-motion and oversized core have no reserve; short core can reenter', () => {
-  for (const overrides of [{ width: 800 }, { reduced: true }, { height: 500 }]) {
+test('eSIM reduced-motion and oversized core have no reserve; short core can reenter', () => {
+  for (const overrides of [{ reduced: true }, { height: 500 }]) {
     const html = mount(scoped, overrides)
     assert.equal((html.match(/<article\b/g) ?? []).length, 4)
     assert.doesNotMatch(html, /height:5350px|position:sticky/)
@@ -221,15 +221,28 @@ test('Home and scoped eSIM keep separate progress, targets and observer lifetime
   cleanup()
   assert.equal(b.disconnected, 2)
 })
-test('scoped Home keeps all tail boundaries and five stages in the same full-page frame', () => {
-  const html = mount(scopedHome), nodes = tree(html)
-  const frame = nodes.find(n => n.attrs.includes('data-page-pin-frame'))
-  for (const node of nodes.filter(n => n.tag === 'footer' || n.tag === 'section')) assert.equal(ancestor(node, n => n === frame), frame)
-  assert.match(html, /id="home-process"[\s\S]*Continuar[\s\S]*Cases[\s\S]*Products[\s\S]*Final CTA[\s\S]*Site Footer/)
-  assert.match(html, /height:5350px/)
-  assert.deepEqual(b.offsets, [['start -600px', 'end 3400px']])
-  b.progress = 1; b.callbacks[0](1)
-  assert.match(render(), /05 \/ 05/)
+for (const width of [375, 1366]) test(`scoped Home ${width}px keeps all tail boundaries and five stages during full travel and release`, () => {
+  mount(scopedHome, { width })
+  const positions = [620, 1200, 2000, 2800, 3600]
+  for (const progress of [0, 0.25, 0.5, 0.75, 1, 0.75, 0.25, 0]) {
+    b.progress = progress; b.scroll = 700 + 1350 * progress; b.callbacks[0](progress)
+    const html = render(), nodes = tree(html)
+    const frame = nodes.find(n => n.attrs.includes('data-page-pin-frame'))
+    for (const node of nodes.filter(n => n.tag === 'footer' || n.tag === 'section')) assert.equal(ancestor(node, n => n === frame), frame)
+    assert.match(html, /id="home-process"[\s\S]*Continuar[\s\S]*Cases[\s\S]*Products[\s\S]*Final CTA[\s\S]*Site Footer/)
+    assert.match(html, /height:5350px/)
+    assert.match(frame.attrs, /position:sticky;top:-600px/)
+    assert.deepEqual(b.offsets, [['start -600px', 'end 3400px']])
+    const top = Math.min(100 - b.scroll + 1350, Math.max(100 - b.scroll, -600))
+    assert.equal(top, -600)
+    for (let i = 1; i < positions.length; i++) assert.equal((top + positions[i]) - (top + positions[i - 1]), positions[i] - positions[i - 1])
+    assert.match(html, new RegExp(`x:${-progress * 3000}${progress === 0 ? '' : 'px'}(?:;|")`))
+    if (progress === 1) assert.match(html, /05 \/ 05/)
+    assert.deepEqual(b.scrollCalls, [], 'document progress never writes document Y')
+  }
+  b.scroll = 2150
+  const releasedTop = Math.min(100 - b.scroll + 1350, Math.max(100 - b.scroll, -600))
+  assert.equal(releasedTop, -700, 'all tail boundaries release together')
 })
 test('scope owns only normal frame anchors and unregisters on fallback, stage exit and unmount', () => {
   const native = []
@@ -255,6 +268,9 @@ test('scope owns only normal frame anchors and unregisters on fallback, stage ex
   }
   scrollToTarget('#header', 88)
   assert.deepEqual(native.pop(), { behavior: 'smooth' })
+  b.width = 375; event('resize')
+  scrollToTarget('#home-cases', 88)
+  assert.equal(b.scrollCalls.pop().top, 2942, 'mobile uses the same full-budget resolver')
   b.coreHeight = 740; event('resize')
   scrollToTarget('#home-cases', 88)
   assert.deepEqual(native.pop(), { behavior: 'smooth' })
@@ -263,7 +279,7 @@ test('scope owns only normal frame anchors and unregisters on fallback, stage ex
   assert.equal(b.scrollCalls.pop().top, 2942)
   cleanup(); scrollToTarget('#home-cases')
   assert.deepEqual(native.pop(), { behavior: 'smooth' })
-  for (const overrides of [{ width: 800 }, { reduced: true }, { height: 500 }]) {
+  for (const overrides of [{ reduced: true }, { height: 500 }, { width: 375, coreHeight: 740 }]) {
     mount(scopedHome, overrides); own(); scrollToTarget('#home-cases', 88)
     assert.deepEqual(native.pop(), { behavior: overrides.reduced ? 'instant' : 'smooth' })
   }
@@ -284,6 +300,57 @@ test('Home keeps original five-step local pin, 620px frame, 1970px root and cont
     assert.match(render(), /x:-3000/)
   }
 })
+test('fitting mobile registers the same whole-page document timeline, never writes page position and crosses desktop threshold both ways', () => {
+  for (const [component, count] of [[scopedHome, 5], [scoped, 4]]) {
+    for (const width of [320, 375, 390, 768, 1023, 1024]) {
+      const html = mount(component, { width })
+      assert.equal((html.match(/<article\b/g) ?? []).length, count)
+      assert.match(html, /height:5350px/)
+      assert.match(html, /position:sticky;top:-600px/)
+      assert.match(html, /data-layout="horizontal"/)
+      assert.ok(b.refs[2].current, 'same measurable core registered on mobile')
+      assert.equal(b.observers[0].nodes.size, 3)
+      assert.deepEqual(b.offsets, [['start -600px', 'end 3400px']])
+      assert.deepEqual(b.scrollCalls, [])
+    }
+    for (const width of [375, 1024, 390]) {
+      b.width = width
+      assert.match(event('resize'), /height:5350px/)
+      assert.equal(b.observers.length, 1)
+      assert.deepEqual(b.scrollCalls, [])
+    }
+    cleanup()
+    assert.ok(Object.values(b.events).every(set => set.size === 0))
+  }
+})
+test('mobile reduced/oversized fallback retains measurable native row and reenters after fonts, resize and preference changes', () => {
+  for (const component of [scopedHome, scoped]) {
+    for (const overrides of [{ reduced: true }, { coreHeight: 740 }, { height: 500 }]) {
+      let html = mount(component, { width: 375, ...overrides })
+      assert.match(html, /data-layout="native"/)
+      assert.match(html, /data-lenis-prevent="true"/)
+      assert.match(html, /Deslizá horizontalmente/)
+      assert.doesNotMatch(html, /height:5350px|position:sticky/)
+      const stage = b.refs[7], track = b.refs[6]
+      assert.ok(stage.current); assert.ok(track.current)
+      b.reduced = false; b.coreHeight = 620; b.height = 720
+      event('loadingdone'); html = settle()
+      assert.match(html, /height:5350px/)
+      assert.equal(b.refs[7], stage); assert.equal(b.refs[6], track)
+      b.coreHeight = 720
+      assert.match(event('resize'), /height:5350px/, 'exact viewport height still fits')
+      b.coreHeight = 721
+      assert.match(event('resize'), /data-layout="native"/, 'one pixel oversized must fall back')
+      b.coreHeight = 620
+      assert.match(event('loadingdone'), /height:5350px/)
+      b.reduced = true
+      html = event('resize')
+      assert.doesNotMatch(html, /height:5350px|position:sticky/)
+      assert.equal(b.refs[2].current, null, 'reduced motion unregisters')
+      assert.deepEqual(b.scrollCalls, [])
+    }
+  }
+})
 test('Home short-height and font fallback can reenter; mobile/reduced retain readable stages', () => {
   assert.doesNotMatch(mount(ProcessSection, { height: 500 }), /height:1970/)
   b.height = 720
@@ -292,7 +359,7 @@ test('Home short-height and font fallback can reenter; mobile/reduced retain rea
   assert.doesNotMatch(event('loadingdone'), /height:1970/)
   b.coreHeight = 620
   assert.match(event('loadingdone'), /height:1970/)
-  for (const overrides of [{ width: 800 }, { reduced: true }]) {
+  for (const overrides of [{ reduced: true }]) {
     const html = mount(ProcessSection, overrides)
     assert.equal((html.match(/<article /g) ?? []).length, 5)
     assert.doesNotMatch(html, /height:1970/)

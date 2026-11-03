@@ -99,7 +99,7 @@ test('Home services preserve their normal hover paint, title movement and links'
   }
 })
 
-test('protected steps use Home-style outlined panels without becoming interactive', () => {
+test('protected mobile steps use compact Home-style outlined panels without becoming interactive', () => {
   const html = render()
   const list = html.match(/<ol\b[^>]*>([\s\S]*?)<\/ol>/)[1]
   const rows = [...list.matchAll(/<li\b[^>]*>[\s\S]*?<\/li>/g)].map(([row]) => row)
@@ -107,14 +107,15 @@ test('protected steps use Home-style outlined panels without becoming interactiv
   assert.equal(list.replace(/<li\b[^>]*>[\s\S]*?<\/li>/g, '').trim(), '')
   rows.forEach((row, index) => {
     assert.ok(row.includes(`Paso ${index + 1}`))
-    assert.match(row, /<article class="relative flex shrink-0 flex-col gap-4 border-avala-paper\/15 py-8 lg:w-\[min\(64vw,56rem\)\] lg:border-l lg:px-8 lg:py-6">/)
+    assert.match(row, /<article class="relative flex shrink-0 flex-col gap-3 border-avala-paper\/15 py-4 lg:w-\[min\(64vw,56rem\)\] lg:border-l lg:px-8 lg:py-6">/)
     assert.doesNotMatch(row, /opacity:0|translateY/)
     assert.match(row, /<div class="hud-label flex justify-between"><span class="tabular text-avala-neon">Paso /)
     assert.match(row, /stroke-width="1.25"[^>]*class="[^"]*size-5 text-avala-paper\/60/)
     assert.match(row, /<p aria-hidden="true" class="display-tight text-outline tabular [^"]*\[--stroke-w:2px\][^"]*\[--stroke-c:rgba\(238,242,255,0.85\)\][^"]*drop-shadow[^>]*>/)
+    assert.match(row, /text-\[4rem\]/)
     assert.ok(row.includes(`>${String(index + 1).padStart(2, '0')}</p>`))
-    assert.match(row, /<h3 class="display-tight text-\[clamp\(1.75rem,3vw,2.5rem\)\] leading-\[1.15\] text-avala-paper">/)
-    assert.match(row, /<p class="text-base leading-7 text-avala-paper\/65 sm:text-lg sm:leading-8">/)
+    assert.match(row, /<h3 class="display-tight text-2xl leading-\[1.15\] text-avala-paper">/)
+    assert.match(row, /<p class="text-base leading-6 text-avala-paper\/65">/)
     assert.ok(row.includes(`lucide-${['smartphone', 'shield-check', 'lock-keyhole', 'qr-code'][index]}`))
     assert.doesNotMatch(row, /group-hover:|origin-bottom|sticky|pinning/)
     assert.doesNotMatch(row, /<a\b|<button\b|tabindex=|role="button"|cursor-pointer|group-hover:opacity|group-hover:block/)
