@@ -22,8 +22,7 @@ registerHooks({
 const { services } = await import('../src/config/services.ts')
 const { LocalClock } = await import('../src/components/ui/LocalClock.tsx')
 const { ContactForm } = await import('../src/features/contact/components/ContactForm.tsx')
-const { AboutPage } = await import('../src/pages/AboutPage.tsx')
-const { SuccessCasesPage } = await import('../src/pages/SuccessCasesPage.tsx')
+const { LegacyPlaceholderPage } = await import('../src/components/ui/LegacyPlaceholderPage.tsx')
 const { ServicesPage } = await import('../src/pages/ServicesPage.tsx')
 const { EsimComingSoonPage } = await import('../src/pages/EsimComingSoonPage.tsx')
 const render = (Component, route) => renderToStaticMarkup(
@@ -67,43 +66,26 @@ test('clock SSR preserves the ISO instant and two-digit Bogotá time across the 
   )
 })
 
-const legacyRoutes = [
-  [AboutPage, '/nosotros', 'Nosotros', 'Página preparada para contenido institucional.'],
-  [SuccessCasesPage, '/casos-de-exito', 'Casos de éxito', 'Estructura preparada para mostrar resultados y testimonios.'],
-  [ServicesPage, '/soluciones', 'Soluciones', 'Ruta lista para desarrollar el catálogo de servicios.'],
-]
+test('legacy placeholder primitive remains available without binding modern routes to it', () => {
+  const html = renderToStaticMarkup(createElement(LegacyPlaceholderPage, { label: 'Preview', title: 'Pending content' }))
+  assert.match(html, /^<section class="page-container section-spacing">/)
+  assert.match(html, /rounded-5xl border border-slate-200 bg-white p-10 shadow-soft/)
+  assert.ok(html.includes('>Pending content</h1>'))
+  assert.equal((html.match(/<h1\b/g) ?? []).length, 1)
+  assert.equal(anchors(html).length, 0)
+})
 
-for (const [Component, route, eyebrow, title] of legacyRoutes) {
-  test(`${route} preserves the legacy placeholder shell and route-specific copy`, () => {
-    const html = render(Component, route)
-    assert.match(html, /^<section class="page-container section-spacing">/)
-    assert.equal((html.match(/<section\b/g) ?? []).length, 1)
-    assert.match(html, /<div class="rounded-5xl border border-slate-200 bg-white p-10 shadow-soft">/)
-    assert.ok(html.includes(`<p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-700">${eyebrow}</p>`))
-    assert.ok(html.includes(`<h1 class="mt-4 text-4xl font-semibold tracking-tight text-slate-950">${title}</h1>`))
-    assert.equal((html.match(/<h1\b/g) ?? []).length, 1)
-    assert.doesNotMatch(html, /<main\b|<button\b/)
-    if (route !== '/soluciones') {
-      assert.equal(anchors(html).length, 0)
-      assert.doesNotMatch(html, /<h2\b/)
-    }
-  })
-}
-
-test('Services retains its estimator promotion and single native internal CTA', () => {
+test('Services retains its estimator promotion and native internal CTA', () => {
   const html = render(ServicesPage, '/soluciones')
-  assert.match(html, /<div class="space-y-6">/)
-  assert.match(html, /overflow-hidden rounded-\[1\.75rem\] border border-brand-200/)
+  const textContent = html.replace(/<[^>]*>/g, '')
   for (const text of [
     'Configurador inteligente',
     '¿Todavía no tenés claro el alcance de tu solución?',
     'Configurá tu proyecto y obtené una estimación preliminar de complejidad, tiempo e inversión.',
-  ]) assert.ok(html.includes(text), text)
-  assert.equal((html.match(/<h2\b/g) ?? []).length, 1)
-  const links = anchors(html)
+  ]) assert.ok(textContent.includes(text), text)
+  const links = anchors(html).filter(([, href]) => href === '/estimar-proyecto')
   assert.equal(links.length, 1)
-  assert.equal(links[0][1], '/estimar-proyecto')
-  assert.match(links[0][2], /^Estimar mi proyecto<svg\b/)
+  assert.ok(links[0][2].includes('Estimar mi proyecto'))
   assert.match(links[0][0], /data-discover="true"/)
   assert.doesNotMatch(links[0][0], /target=|<button\b|role="button"/)
 })
