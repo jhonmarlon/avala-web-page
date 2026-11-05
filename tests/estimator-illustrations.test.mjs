@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
+import { readProjectStyles } from './style-source.mjs'
 import { registerHooks } from 'node:module'
 import { test } from 'node:test'
 import { createElement } from 'react'
@@ -59,7 +60,7 @@ for (const [kind, main, detail, gesture] of [
 test('default estimator uses strategy/discover artwork within whole informational hosts', () => {
   const html = render(EstimatorPage)
   assert.deepEqual(scenes(html), ['strategy', 'discover'])
-  const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+  const css = readProjectStyles()
   assert.match(css, /\.estimator-illustration-inline\s*\{[^}]*width: 48px;[^}]*height: 40px;/)
   assert.match(css, /\.estimator-illustration-inline \.sequence-illustration\s*\{ width: 48px; height: 40px; \}/)
   assert.match(css, /\.estimator-illustration-empty \.sequence-illustration\s*\{ width: 96px; height: 80px; \}/)

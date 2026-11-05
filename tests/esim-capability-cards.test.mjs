@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { registerHooks } from 'node:module'
-import { readFileSync } from 'node:fs'
+import { readProjectStyles } from './style-source.mjs'
 import { test } from 'node:test'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
@@ -54,7 +54,7 @@ test('operation capabilities are six readable, equally weighted semantic cards i
     assert.doesNotMatch(card, /hover:-translate|transition-\[transform/)
     assert.equal((card.match(/class="illustration-gesture"/g) ?? []).length, 2)
     assert.match(card, /p-5[^\"]*sm:p-6/)
-    const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+    const css = readProjectStyles()
     const paint = css.match(/\.esim-capability \.esim-operational-card\s*\{([^}]+)\}/)[1]
     assert.match(paint, /radial-gradient\([\s\S]*linear-gradient\(/)
     assert.match(paint, /box-shadow: inset/)

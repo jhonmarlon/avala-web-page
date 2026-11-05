@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readProjectStyles } from './style-source.mjs'
 import { registerHooks } from 'node:module'
 import { test } from 'node:test'
 import { createElement } from 'react'
@@ -134,7 +134,7 @@ test('all compact scenes render layered materials, local edge highlights and con
       }
     }
   }
-  const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+  const css = readProjectStyles()
   const parts = css.match(/\.sequence-illustration__art > \[data-scene-part\]\s*\{([^}]+)\}/)?.[1]
   assert.ok(parts)
   assert.match(parts, /drop-shadow\(0 2px 1px color-mix\(in srgb, var\(--color-avala-ink\) 65%, transparent\)\)/)
@@ -144,7 +144,7 @@ test('all compact scenes render layered materials, local edge highlights and con
 })
 
 test('compact illustration CSS stays static until hover and respects reduced motion', () => {
-  const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+  const css = readProjectStyles()
   const root = css.match(/\.sequence-illustration\s*\{([^}]+)\}/)?.[1]
   assert.ok(root)
   assert.match(root, /width: 96px;\s*height: 80px;/)
@@ -227,7 +227,7 @@ test('Solutions catalog indices are legible, zero-padded and locally styled with
   }
   assert.match(html, /lg:grid-cols-\[2\.5rem_minmax\(0,1fr\)_minmax\(0,1fr\)_6rem\]/)
   assert.match(html, /grid-cols-\[4rem_minmax\(0,1fr\)\]/)
-  const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+  const css = readProjectStyles()
   const rule = css.match(/\.solutions-page \.service-index\s*\{([^}]+)\}/)?.[1]
   assert.ok(rule)
   assert.match(rule, /font-family: var\(--font-mono\);/)
@@ -245,7 +245,7 @@ test('compact scenes add local ambient light and edge glow without layout or con
   const html = renderToStaticMarkup(createElement(SequenceIllustration, { kind: 'reserve' }))
   assert.match(html, /<radialGradient id="[^"]+-sequence-glow"/)
   assert.match(html, /<ellipse class="sequence-illustration__glow"[^>]*stroke="none"/)
-  const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+  const css = readProjectStyles()
   const glow = css.match(/\.sequence-illustration__glow\s*\{([^}]+)\}/)?.[1]
   assert.ok(glow)
   assert.match(glow, /pointer-events: none;/)

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readProjectStyles } from './style-source.mjs'
 import { registerHooks } from 'node:module'
 import { test } from 'node:test'
 import { createElement } from 'react'
@@ -63,7 +63,7 @@ for (const reduced of [false, true, null]) {
     for (const row of rows) assert.equal(row.whileHover, undefined)
     assert.doesNotMatch(operations, /hover:-translate|transition-\[transform/)
     assert.doesNotMatch(operations, /process-stage-card|data-process-icon|rotate-|tabindex=|role="button"|<a\b|<button\b/)
-    const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+    const css = readProjectStyles()
     assert.doesNotMatch(css, /\.esim-icon-badge/)
   })
 }
@@ -87,7 +87,7 @@ test('eSIM hierarchy gives both flows product illustrations without crowding mob
   assert.match(groups[0], /class="sequence-illustration-host flex shrink-0/)
   assert.match(groups[4], /¿Sos empresa o punto de venta\?/)
   assert.match(groups[4], /href="\/contacto"/)
-  const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+  const css = readProjectStyles()
   assert.match(css, /\.esim-flow-illustration\s*\{[^}]*width: 120px;[^}]*height: 104px;/)
   assert.deepEqual([...groups[0].matchAll(/data-sequence-scene="([^"]+)"/g)].map(match => match[1]), ['protected', 'entry', 'identity', 'reserve', 'qr'])
 })

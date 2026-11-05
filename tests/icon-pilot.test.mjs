@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readProjectStyles } from './style-source.mjs'
 import { registerHooks } from 'node:module'
 import { test } from 'node:test'
 import { createElement } from 'react'
@@ -76,7 +76,7 @@ test('terminal pilot is decorative, static by default and responds to its parent
   assert.match(html, /stroke="currentColor"/)
   assert.match(html, /class="icon-terminal-cursor"/)
   assert.doesNotMatch(html, /tabindex|role="button"/)
-  const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+  const css = readProjectStyles()
   assert.match(css, /\[data-icon-pilot="terminal"\]:focus-visible \.icon-terminal-cursor/)
   assert.match(css, /@media \(hover: hover\)[\s\S]*\[data-icon-pilot="terminal"\]:hover \.icon-terminal-cursor/)
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.icon-terminal-cursor,[\s\S]*?animation: none/)
@@ -95,7 +95,7 @@ test('confirmation draws once on mount and retains a visible static reduced-moti
   assert.match(html, /class="icon-confirmation-stroke"/)
   assert.match(html, /pathLength="1"/)
   assert.match(html, /stroke-dashoffset="0"/)
-  const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+  const css = readProjectStyles()
   assert.match(css, /\.icon-confirmation-stroke\s*\{\s*animation: icon-confirmation-draw 400ms ease-out/)
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.icon-terminal-cursor,\s*\.icon-confirmation-stroke\s*\{\s*animation: none/)
 })

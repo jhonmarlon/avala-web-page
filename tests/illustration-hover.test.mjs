@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readProjectStyles } from './style-source.mjs'
 import { registerHooks } from 'node:module'
 import { test } from 'node:test'
 import { createElement } from 'react'
@@ -9,7 +9,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 registerHooks({
   resolve(specifier, context, nextResolve) {
     if (specifier === 'illustration-hover:jsx' || (specifier === 'react/jsx-runtime' &&
-      /\/icons\/(SequenceIllustration|EsimFlowIllustration)\.tsx$/.test(context.parentURL ?? ''))) {
+      /\/icons\/(SequenceIllustration|EsimFlowIllustration|IllustrationSvg)\.tsx$/.test(context.parentURL ?? ''))) {
       return { url: new URL('./illustration-hover-jsx.mjs', import.meta.url).href, shortCircuit: true }
     }
     return nextResolve(specifier, context)
@@ -32,7 +32,7 @@ registerHooks({
 const { SequenceIllustration } = await import('../src/components/icons/SequenceIllustration.tsx')
 const { EsimFlowIllustration } = await import('../src/components/icons/EsimFlowIllustration.tsx')
 const { roots } = await import('illustration-hover:jsx')
-const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+const css = readProjectStyles()
 const compact = ['discover', 'design', 'build', 'launch', 'optimize', 'entry', 'identity', 'reserve', 'qr',
   'protected', 'automate', 'integrate', 'stock', 'batches', 'print', 'confirmation', 'otp', 'trace', 'retail',
   'appspace', 'neuralmesh', 'cloudstack', 'strategy', 'campaign', 'delivery', 'signalnet', 'timeline', 'budget']

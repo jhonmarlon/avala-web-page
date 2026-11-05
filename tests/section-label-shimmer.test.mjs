@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readProjectStyles } from './style-source.mjs'
 import { registerHooks } from 'node:module'
 import { test } from 'node:test'
 import { createElement } from 'react'
@@ -34,7 +34,7 @@ registerHooks({
 })
 const { calls } = await import('divider-motion:stub')
 const { SectionLabel } = await import('../src/components/fx/SectionLabel.tsx')
-const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+const css = readProjectStyles()
 function render(meta = 'Información adicional') {
   calls.length = 0
   return renderToStaticMarkup(createElement(SectionLabel, {

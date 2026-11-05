@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { registerHooks } from 'node:module'
-import { readFileSync } from 'node:fs'
+import { readProjectStyles } from './style-source.mjs'
 import { test } from 'node:test'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
@@ -133,7 +133,7 @@ test('frames use 12px corners and restrained 200ms lift, tilt, contrast and glow
     assert.match(html, /class="process-stage-icon__frame"><span class="process-stage-icon__orbit"><\/span><\/span><span class="process-stage-icon__glyph"/)
     assert.doesNotMatch(html, /process-stage-icon__border|tabindex=|role="button"/)
   }
-  const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+  const css = readProjectStyles()
   assert.doesNotMatch(css, /stage-border-angle|stage-border-trace|conic-gradient/)
   assert.match(css, /\.process-stage-icon__frame\s*\{[^}]*border: 1px solid[^}]*background:[^}]*box-shadow:/)
   assert.doesNotMatch(css, /stage-frame-jelly|--stage-frame-phase|data-motion-active/)
@@ -152,7 +152,7 @@ test('frames use 12px corners and restrained 200ms lift, tilt, contrast and glow
 })
 
 test('each badge is decorative and exposes no extra interaction or accessible name', () => {
-  const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+  const css = readProjectStyles()
   assert.match(css, /\.process-stage-icon\s*\{[^}]*width: 64px;[^}]*height: 64px;/)
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.process-stage-icon,\s*\.process-stage-icon__frame,\s*\.process-stage-icon__halo\s*\{ transition: none;/)
   setReduced(true)
@@ -172,7 +172,7 @@ test('Solutions has no framed glyphs while About retains all five method frames'
   const about = renderToStaticMarkup(createElement(MemoryRouter, null, createElement(AboutPage)))
   assert.match(solutions, /^<div class="solutions-page /)
   assert.doesNotMatch(about, /solutions-page/)
-  const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+  const css = readProjectStyles()
   assert.doesNotMatch(solutions, /process-stage-icon|data-process-icon=/)
   assert.equal((about.match(/class="process-stage-icon__frame"/g) ?? []).length, 5)
   assert.match(css, /\.process-stage-card:hover \.process-stage-icon\s*\{\s*transform: translateY\(-2px\) rotate\(-2deg\);/)

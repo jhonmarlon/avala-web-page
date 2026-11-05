@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readProjectStyles } from './style-source.mjs'
 import { registerHooks } from 'node:module'
 import { test } from 'node:test'
 import { createElement } from 'react'
@@ -74,7 +74,7 @@ test('menu and legal ordinals keep native routes, headings and controls', () => 
 })
 
 test('ordinal type and glow are utility-layer scoped, leaving contextual hover colors available', () => {
-  const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+  const css = readProjectStyles()
   const rule = css.match(/@layer utilities\s*\{\s*\.ordinal-index\s*\{([^}]+)\}/)?.[1]
   assert.ok(rule)
   assert.match(rule, /font-size: 1\.25rem;/)

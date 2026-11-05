@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readProjectStyles } from './style-source.mjs'
 import { registerHooks } from 'node:module'
 import { test } from 'node:test'
 import { createElement } from 'react'
@@ -17,7 +17,7 @@ registerHooks({
 })
 const { EsimPage } = await import('../src/pages/EsimPage.tsx')
 const { AboutPage } = await import('../src/pages/AboutPage.tsx')
-const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+const css = readProjectStyles()
 const render = Page => renderToStaticMarkup(createElement(MemoryRouter, null, createElement(Page)))
 const prominence = () => css.match(/\.esim-capability-index,\s*\.about-method-index\s*\{([^}]+)\}/)?.[1] ?? ''
 

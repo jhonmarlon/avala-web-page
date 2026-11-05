@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readProjectStyles } from './style-source.mjs'
 import { registerHooks } from 'node:module'
 import { test } from 'node:test'
 import { createElement } from 'react'
@@ -30,7 +30,7 @@ test('five passive estimator step cards retain state, small cyan numbers and exi
 })
 
 test('estimator surfaces keep depth and enlarge only the active step, never hover', () => {
-  const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8')
+  const css = readProjectStyles()
   const surface = css.match(/\.estimator-step-card\s*\{([^}]+)\}/)?.[1]
   assert.ok(surface)
   assert.match(surface, /radial-gradient[\s\S]*linear-gradient/)
