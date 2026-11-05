@@ -117,7 +117,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
             <ul className="border-t border-avala-paper/15">
               {navigationItems.map((item, i) => {
                 const number = (
-                  <span className="hud-label tabular w-8 shrink-0 pt-2 text-avala-neon">
+                  <span className="hud-label tabular ordinal-index w-8 shrink-0 pt-2 text-avala-neon">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                 )

@@ -1,5 +1,6 @@
-import { ArrowUpRight, Check, LoaderCircle, MessageCircle } from 'lucide-react'
-import { AnimatePresence, motion } from 'motion/react'
+import { ArrowUpRight, LoaderCircle, MessageCircle } from 'lucide-react'
+import { ConfirmationIcon } from '@/components/icons/ConfirmationIcon'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useId, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import { Button } from '@/components/ui/Button'
@@ -99,6 +100,7 @@ const inputClass = cn(formStyles.input, 'mt-3')
 
 export function ContactForm() {
   const uid = useId()
+  const reducedMotion = useReducedMotion()
   const [fields, setFields] = useState<Fields>(emptyFields)
   const [phoneCountry, setPhoneCountry] = useState<PhoneCountryId>(DEFAULT_PHONE_COUNTRY)
   const [interests, setInterests] = useState<string[]>([])
@@ -171,15 +173,15 @@ export function ContactForm() {
       {sentVia ? (
         <motion.div
           key="done"
-          initial={{ opacity: 0, y: 24 }}
+          initial={reducedMotion ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -24 }}
-          transition={{ duration: 0.7, ease }}
+          exit={reducedMotion ? { opacity: 1 } : { opacity: 0, y: -12 }}
+          transition={{ duration: reducedMotion ? 0 : 0.2, ease }}
           className="flex min-h-[28rem] flex-col justify-center border border-avala-paper/15 p-8 sm:p-12"
           role="status"
         >
           <span className="flex size-14 items-center justify-center bg-avala-neon text-avala-ink">
-            <Check className="size-6" strokeWidth={2} />
+            <ConfirmationIcon className="size-6" />
           </span>
           <h2 className="display-tight mt-8 text-[clamp(2rem,4vw,3.2rem)] leading-none text-avala-paper">
             ¡Gracias, {fields.name.trim().split(' ')[0]}!
@@ -217,10 +219,10 @@ export function ContactForm() {
           key="form"
           noValidate
           onSubmit={onSubmit}
-          initial={{ opacity: 0, y: 24 }}
+          initial={reducedMotion ? false : { opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -24 }}
-          transition={{ duration: 0.7, ease }}
+          exit={reducedMotion ? { opacity: 1 } : { opacity: 0, y: -24 }}
+          transition={{ duration: reducedMotion ? 0 : 0.7, ease }}
           className="relative grid gap-x-10 gap-y-12 sm:grid-cols-2"
         >
           <Honeypot value={honeypot} onChange={setHoneypot} />

@@ -29,8 +29,8 @@ registerHooks({
         }
         const components = new Map()
         export const motion = new Proxy({}, { get(_, tag) {
-          if (!components.has(tag)) components.set(tag, function Motion({ initial, whileInView, viewport, transition, animate, ...props }) {
-            calls.push({ tag, initial, whileInView, viewport, transition, animate, className: props.className, containsSequence: containsSequence(props.children) })
+          if (!components.has(tag)) components.set(tag, function Motion({ initial, whileInView, viewport, transition, animate, whileHover, ...props }) {
+            calls.push({ tag, initial, whileInView, viewport, transition, animate, whileHover, className: props.className, containsSequence: containsSequence(props.children) })
             return createElement(tag, props)
           })
           return components.get(tag)
@@ -111,6 +111,10 @@ for (const [name, tags, delays, headingLines] of configurations) {
         assert.deepEqual(call.whileInView, { opacity: 1, y: 0 })
         assert.deepEqual(call.viewport, { once: true, amount: 0.3 })
         assert.equal(call.animate, undefined, 'waits for viewport, not mount')
+        const classes = call.className?.split(' ') ?? []
+        // Miniillustration hover is CSS-only; only framed glyphs inherit a Motion variant.
+        const hoverVariant = classes.includes('process-stage-card') ? 'icon-hover' : undefined
+        assert.equal(call.whileHover, reduced ? undefined : hoverVariant)
         assert.equal(call.transition.duration, reduced ? 0 : 0.7)
         assert.equal(call.transition.delay, reduced ? 0 : delays[index])
         assert.deepEqual(call.transition.ease, [0.76, 0, 0.24, 1])

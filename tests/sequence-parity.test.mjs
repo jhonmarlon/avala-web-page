@@ -49,7 +49,6 @@ test('real Home and eSIM fallback panels share presentation and preserve separat
   for (const step of steps) {
     const actual = classes(step)
     const expected = classes(stages[0])
-    actual[3] = expected[3] // Icon identity belongs to its feature.
     assert.deepEqual(actual, expected)
     assert.doesNotMatch(step, /<a\b|<button\b|tabindex=|opacity:0/)
   }

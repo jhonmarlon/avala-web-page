@@ -25,8 +25,8 @@ registerHooks({
         export function useReducedMotion() { return reduced }
         const components = new Map()
         export const motion = new Proxy({}, { get(_, tag) {
-          if (!components.has(tag)) components.set(tag, function Motion({ initial, whileInView, viewport, transition, animate, ...props }) {
-            calls.push({ tag, initial, whileInView, viewport, transition, animate })
+          if (!components.has(tag)) components.set(tag, function Motion({ initial, whileInView, viewport, transition, animate, whileHover, ...props }) {
+            calls.push({ tag, initial, whileInView, viewport, transition, animate, whileHover, className: props.className })
             return createElement(tag, props)
           })
           return components.get(tag)
@@ -74,6 +74,7 @@ for (const reduced of [false, true]) {
       assert.deepEqual(call.whileInView, { opacity: 1, y: 0 })
       assert.deepEqual(call.viewport, { once: true, amount: 0.3 })
       assert.equal(call.animate, undefined, 'entrance waits for viewport entry')
+      assert.equal(call.whileHover, !reduced && call.className?.split(' ').includes('process-stage-card') ? 'icon-hover' : undefined)
       assert.equal(call.transition.duration, reduced ? 0 : 0.7)
       assert.equal(call.transition.delay, reduced ? 0 : delays[index])
     }

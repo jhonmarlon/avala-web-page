@@ -289,10 +289,440 @@
   }
 }
 
+/* About method: prominent illuminated icons; passive cards remain non-interactive. */
+.process-stage-icon {
+  --stage-accent: var(--color-avala-cyan);
+  position: relative;
+  display: inline-grid;
+  flex: none;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  isolation: isolate;
+  color: var(--stage-accent);
+  transition: transform 200ms ease-out;
+}
+
+.process-stage-icon[data-process-icon="2"] { --stage-accent: var(--color-avala-violet); }
+.process-stage-icon[data-process-icon="3"] { --stage-accent: var(--color-avala-neon); }
+.process-stage-icon[data-process-icon="4"] { --stage-accent: var(--color-avala-gold); }
+
+/* Stable illuminated frame; only hover changes its border and glow. */
+.process-stage-icon__frame {
+  position: absolute;
+  inset: 0;
+  border: 1px solid color-mix(in srgb, var(--stage-accent) 45%, transparent);
+  border-radius: 12px;
+  background: radial-gradient(circle at 25% 10%, color-mix(in srgb, var(--stage-accent) 24%, transparent), transparent 75%), var(--color-avala-ink-2);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stage-accent) 25%, transparent), 0 8px 24px color-mix(in srgb, var(--stage-accent) 12%, transparent);
+  pointer-events: none;
+  transition: border-color 200ms ease-out, background-color 200ms ease-out, box-shadow 200ms ease-out;
+}
+
+.process-stage-icon__halo {
+  position: absolute;
+  z-index: -1;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--stage-accent) 24%, transparent), transparent 70%);
+  opacity: 0.6;
+  pointer-events: none;
+  transition: opacity 200ms ease-out;
+}
+
+.process-stage-icon__orbit {
+  position: absolute;
+  inset: 6px;
+  border-top: 1px solid color-mix(in srgb, var(--stage-accent) 55%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--stage-accent) 20%, transparent);
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+.process-stage-icon__glyph {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--stage-accent) 45%, transparent));
+}
+
+[data-process-icon="5"] .process-stage-icon__glyph { transform-origin: center 70%; }
+
+@media (hover: hover) {
+  .process-stage-card:hover .process-stage-icon { transform: translateY(-2px) rotate(-2deg); }
+  .process-stage-card:hover .process-stage-icon__frame {
+    border-color: var(--stage-accent);
+    background-color: color-mix(in srgb, var(--stage-accent) 8%, var(--color-avala-ink-2));
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stage-accent) 45%, transparent), 0 8px 32px color-mix(in srgb, var(--stage-accent) 25%, transparent);
+  }
+  .process-stage-card:hover .process-stage-icon__halo { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .process-stage-icon,
+  .process-stage-icon__frame,
+  .process-stage-icon__halo { transition: none; }
+  .process-stage-card:hover .process-stage-icon { transform: none; }
+}
+
+.solutions-page .service-index {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  color: var(--color-avala-cyan);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--color-avala-cyan) 35%, transparent);
+}
+
+/* Product illustrations sit above text on phones, alongside it from sm. */
+.esim-flow-illustration {
+  display: block;
+  width: 120px;
+  height: 104px;
+  flex: none;
+  overflow: visible;
+  filter: drop-shadow(0 8px 14px color-mix(in srgb, var(--color-avala-neon) 14%, transparent));
+}
+
+/* Compact explanatory scenes: no new height on the slider's HUD row. */
+.sequence-illustration {
+  display: block;
+  width: 96px;
+  height: 80px;
+  flex: none;
+  overflow: visible;
+}
+
+.sequence-illustration__glow {
+  opacity: 0.72;
+  pointer-events: none;
+  transition: opacity 180ms ease-out;
+}
+
+.sequence-illustration__art {
+  filter: drop-shadow(0 0 1px color-mix(in srgb, var(--color-avala-neon) 24%, transparent))
+    drop-shadow(0 4px 3px color-mix(in srgb, var(--color-avala-ink) 40%, transparent));
+}
+
+/* Tight contact shadows separate overlapping pieces, not a brighter scene halo. */
+.sequence-illustration__art > [data-scene-part] {
+  --illustration-contact-shadow: drop-shadow(0 2px 1px color-mix(in srgb, var(--color-avala-ink) 65%, transparent));
+  filter: var(--illustration-contact-shadow);
+}
+
+/* Two local spatial actors per scene; static on touch. */
+.illustration-gesture {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.illustration-gesture[data-gesture="main"] { --illustration-gesture: illustration-main; }
+.illustration-gesture[data-gesture="slide"] { --illustration-gesture: illustration-slide; }
+.illustration-gesture[data-gesture="lift"] { --illustration-gesture: illustration-lift; }
+.illustration-gesture[data-gesture="tilt"] { --illustration-gesture: illustration-tilt; }
+.illustration-gesture[data-gesture="light"] { --illustration-gesture: illustration-light; }
+.illustration-gesture[data-gesture="grow"] {
+  --illustration-gesture: illustration-grow;
+  transform-origin: center bottom;
+}
+
+/* Only the two large flows restore their original independent curves. */
+.esim-flow-illustration .illustration-gesture[data-gesture="flow-main"] { --illustration-gesture: illustration-flow-main; }
+.esim-flow-illustration .illustration-gesture[data-gesture="flow-detail"] { --illustration-gesture: illustration-flow-detail; }
+
+/* Replay names are equivalent; SVG entry switches phase without layout reads. */
+.illustration-gesture[data-gesture="main"][data-illustration-replay="replay"] { --illustration-gesture: illustration-main-replay; }
+.illustration-gesture[data-gesture="flow-main"][data-illustration-replay="replay"] { --illustration-gesture: illustration-flow-main-replay; }
+.illustration-gesture[data-gesture="flow-detail"][data-illustration-replay="replay"] { --illustration-gesture: illustration-flow-detail-replay; }
+.illustration-gesture[data-gesture="slide"][data-illustration-replay="replay"] { --illustration-gesture: illustration-slide-replay; }
+.illustration-gesture[data-gesture="lift"][data-illustration-replay="replay"] { --illustration-gesture: illustration-lift-replay; }
+.illustration-gesture[data-gesture="tilt"][data-illustration-replay="replay"] { --illustration-gesture: illustration-tilt-replay; }
+.illustration-gesture[data-gesture="light"][data-illustration-replay="replay"] { --illustration-gesture: illustration-light-replay; }
+.illustration-gesture[data-gesture="grow"][data-illustration-replay="replay"] { --illustration-gesture: illustration-grow-replay; }
+
+@keyframes illustration-flow-main {
+  0%, 100% { transform: translateY(0); }
+  35%, 65% { transform: translateY(-4px); }
+}
+@keyframes illustration-flow-detail {
+  0%, 100% { transform: translateX(0); }
+  35%, 65% { transform: translateX(5px); }
+}
+@keyframes illustration-flow-main-replay {
+  0%, 100% { transform: translateY(0); }
+  35%, 65% { transform: translateY(-4px); }
+}
+@keyframes illustration-flow-detail-replay {
+  0%, 100% { transform: translateX(0); }
+  35%, 65% { transform: translateX(5px); }
+}
+
+@keyframes illustration-main {
+  0%, 100% { transform: translateY(0); }
+  35%, 65% { transform: translateY(-2px); }
+}
+@keyframes illustration-main-replay {
+  0%, 100% { transform: translateY(0); }
+  35%, 65% { transform: translateY(-2px); }
+}
+
+@keyframes illustration-slide {
+  0%, 100% { transform: translateX(0); }
+  35%, 65% { transform: translateX(5px); }
+}
+@keyframes illustration-lift {
+  0%, 100% { transform: translateY(0); }
+  35%, 65% { transform: translateY(-5px); }
+}
+@keyframes illustration-tilt {
+  0%, 100% { transform: rotate(0); }
+  35%, 65% { transform: rotate(10deg); }
+}
+/* Keep the replay vocabulary; formerly light-only details now lift spatially. */
+@keyframes illustration-light {
+  0%, 100% { transform: translateY(0); }
+  35%, 65% { transform: translateY(-5px); }
+}
+@keyframes illustration-grow {
+  0%, 100% { transform: scaleY(1); }
+  35%, 65% { transform: scaleY(1.12); }
+}
+
+@keyframes illustration-slide-replay {
+  0%, 100% { transform: translateX(0); }
+  35%, 65% { transform: translateX(5px); }
+}
+@keyframes illustration-lift-replay {
+  0%, 100% { transform: translateY(0); }
+  35%, 65% { transform: translateY(-5px); }
+}
+@keyframes illustration-tilt-replay {
+  0%, 100% { transform: rotate(0); }
+  35%, 65% { transform: rotate(10deg); }
+}
+@keyframes illustration-light-replay {
+  0%, 100% { transform: translateY(0); }
+  35%, 65% { transform: translateY(-5px); }
+}
+@keyframes illustration-grow-replay {
+  0%, 100% { transform: scaleY(1); }
+  35%, 65% { transform: scaleY(1.12); }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .sequence-illustration-host:hover .illustration-gesture,
+  .esim-capability:hover .illustration-gesture,
+  .esim-flow:hover .illustration-gesture,
+  .sequence-illustration:hover .illustration-gesture,
+  .esim-flow-illustration:hover .illustration-gesture {
+    animation: var(--illustration-gesture) 550ms ease-in-out;
+  }
+
+  .sequence-illustration .illustration-gesture[data-gesture="main"] { animation-duration: 650ms; }
+  .esim-flow-illustration .illustration-gesture[data-gesture="flow-main"] { animation-duration: 650ms; }
+}
+
+/* Whole-scene hover light is independent of spatial motion and preserves idle depth. */
+@media (hover: hover) {
+  .sequence-illustration,
+  .esim-flow-illustration { transition: filter 200ms ease-out; }
+
+  .sequence-illustration-host:hover .sequence-illustration,
+  .esim-capability:hover .sequence-illustration,
+  .esim-flow:hover .sequence-illustration,
+  .sequence-illustration:hover {
+    filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-avala-cyan) 55%, transparent));
+  }
+
+  .sequence-illustration-host:hover .esim-flow-illustration,
+  .esim-capability:hover .esim-flow-illustration,
+  .esim-flow:hover .esim-flow-illustration,
+  .esim-flow-illustration:hover {
+    filter: drop-shadow(0 8px 14px color-mix(in srgb, var(--color-avala-neon) 14%, transparent))
+      drop-shadow(0 0 8px color-mix(in srgb, var(--color-avala-cyan) 55%, transparent));
+  }
+
+  .sequence-illustration:hover .sequence-illustration__glow,
+  .sequence-illustration-host:hover .sequence-illustration__glow,
+  .esim-capability:hover .sequence-illustration__glow { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .illustration-gesture { animation: none; transform: none; }
+  .sequence-illustration__glow { transition: none; }
+  .sequence-illustration,
+  .esim-flow-illustration { transition: none; }
+}
+
+.estimator-illustration-inline {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 48px;
+  height: 40px;
+}
+.estimator-illustration-inline .sequence-illustration { width: 48px; height: 40px; }
+.estimator-illustration-empty .sequence-illustration { width: 96px; height: 80px; }
+
+.service-scene .sequence-illustration { width: 64px; height: 54px; }
+
+@media (min-width: 64rem) {
+  .service-scene .sequence-illustration { width: 96px; height: 80px; }
+}
+
+/* Icon pilot: no continuous decorative motion, no icon-only tab stops. */
+@keyframes icon-terminal-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+[data-icon-pilot="terminal"]:focus-visible .icon-terminal-cursor {
+  animation: icon-terminal-cursor 360ms ease-out;
+}
+
+@media (hover: hover) {
+  [data-icon-pilot="terminal"]:hover .icon-terminal-cursor {
+    animation: icon-terminal-cursor 360ms ease-out;
+  }
+}
+
+@keyframes icon-confirmation-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+.icon-confirmation-stroke {
+  animation: icon-confirmation-draw 400ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-terminal-cursor,
+  .icon-confirmation-stroke {
+    animation: none;
+  }
+}
+
 @keyframes grain-shift {
   0%, 100% { transform: translate(0, 0); }
   20% { transform: translate(-6%, 4%); }
   40% { transform: translate(5%, -7%); }
   60% { transform: translate(-3%, 8%); }
   80% { transform: translate(7%, 3%); }
+}
+
+/* Editorial indices: only eSIM operations and About's five method items. */
+.esim-capability-index,
+.about-method-index {
+  --stroke-w: 1.5px;
+  --stroke-c: color-mix(in srgb, var(--color-avala-paper) 85%, var(--color-avala-neon));
+  font-size: clamp(2.75rem, 5vw, 3.5rem);
+  line-height: 1;
+}
+
+/* Passive operational cards: layered paint, never container or text movement. */
+.esim-capability .esim-operational-card {
+  background-color: var(--color-avala-ink);
+  background-image:
+    radial-gradient(ellipse at 15% 0%, color-mix(in srgb, var(--color-avala-neon) 9%, transparent), transparent 70%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-avala-ink-2) 88%, transparent), color-mix(in srgb, var(--color-avala-ink) 95%, transparent));
+  border-color: color-mix(in srgb, var(--color-avala-paper) 18%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-avala-paper) 7%, transparent), 0 12px 28px color-mix(in srgb, var(--color-avala-ink) 35%, transparent);
+  transition: border-color 300ms ease-out, background-color 300ms ease-out, box-shadow 300ms ease-out, transform 200ms ease-out;
+}
+
+@media (hover: hover) {
+  .esim-capability:hover .esim-operational-card {
+    border-color: color-mix(in srgb, var(--color-avala-neon) 45%, transparent);
+    background-color: var(--color-avala-ink-2);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-avala-neon) 20%, transparent), 0 16px 36px color-mix(in srgb, var(--color-avala-ink) 50%, transparent), 0 0 18px color-mix(in srgb, var(--color-avala-neon) 6%, transparent);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .esim-capability:hover .esim-operational-card { transform: scale(1.02); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .esim-capability .esim-operational-card { transition: none; transform: none; }
+}
+
+/* SectionLabel alone: the readable baseline remains while the in-view sweep repeats. */
+.section-divider-baseline {
+  background-color: color-mix(in srgb, var(--color-avala-cyan) 28%, transparent);
+  box-shadow: 0 0 5px color-mix(in srgb, var(--color-avala-cyan) 18%, transparent);
+}
+
+@keyframes section-divider-sweep {
+  from { transform: translateX(-70%); }
+  to { transform: translateX(70%); }
+}
+.section-divider-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent 30%, color-mix(in srgb, var(--color-avala-cyan) 85%, transparent) 45%, color-mix(in srgb, var(--color-avala-paper) 95%, transparent) 50%, color-mix(in srgb, var(--color-avala-cyan) 85%, transparent) 55%, transparent 70%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .section-divider-shine {
+    animation: section-divider-sweep 2.4s linear infinite;
+    animation-play-state: var(--divider-play-state, paused);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-divider-shine { animation: none; display: none; }
+}
+
+/* Plain ordinal labels only; keep contextual group hover/active colors in this layer. */
+@layer utilities {
+  .ordinal-index {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+    color: var(--color-avala-cyan);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--color-avala-cyan) 35%, transparent);
+  }
+}
+
+/* Estimator progress tiles are passive indicators, not new navigation controls. */
+.estimator-step-card {
+  background-color: var(--color-avala-ink);
+  background-image:
+    radial-gradient(ellipse at 15% 0%, color-mix(in srgb, var(--color-avala-neon) 9%, transparent), transparent 70%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-avala-ink-2) 88%, transparent), color-mix(in srgb, var(--color-avala-ink) 95%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-avala-paper) 7%, transparent), 0 8px 20px color-mix(in srgb, var(--color-avala-ink) 30%, transparent);
+  transition: border-color 200ms ease-out, box-shadow 200ms ease-out, scale 200ms ease-out;
+  scale: 1;
+}
+
+.estimator-step-card[data-step-state="active"] {
+  scale: 1.03;
+  border-color: var(--color-avala-cyan);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-avala-cyan) 22%, transparent), 0 0 12px color-mix(in srgb, var(--color-avala-cyan) 10%, transparent);
+}
+
+.estimator-step-card[data-step-state="complete"] {
+  border-color: color-mix(in srgb, var(--color-avala-cyan) 32%, transparent);
+}
+
+.estimator-step-index {
+  color: var(--color-avala-cyan);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--color-avala-cyan) 35%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .estimator-step-card { transition: none; }
+}
+
+/* Section names read as titles; indices and responsive metadata keep their compact roles. */
+.section-label-title {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.08em;
 }

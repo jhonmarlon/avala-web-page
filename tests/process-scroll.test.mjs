@@ -39,14 +39,14 @@ globalThis.ResizeObserver = class {
 }
 registerHooks({
   resolve(specifier, context, next) {
-    if (specifier === 'motion/react' && context.parentURL?.endsWith('/pages/EsimPage.tsx')) return { url: 'process:page-motion', shortCircuit: true }
+    if (specifier === 'motion/react' && ['/pages/EsimPage.tsx', '/icons/EsimFlowIllustration.tsx'].some(path => context.parentURL?.endsWith(path))) return { url: 'process:page-motion', shortCircuit: true }
     if (['react', 'motion/react', '@/lib/use-media-query', '@/components/fx/SectionLabel', '@/features/home/data/content'].includes(specifier) && /ProcessSection|NumberedStepSequence|PageScrollPinScope/.test(context.parentURL ?? '')) return { url: `process:${specifier}`, shortCircuit: true }
     if (specifier === '@/config/site' && context.parentURL?.includes('EsimPage')) return { url: 'process:site', shortCircuit: true }
     return next(specifier, context.parentURL?.startsWith('process:') ? { ...context, parentURL: import.meta.url } : context)
   },
   load(url, context, next) {
     const sources = {
-      // Page entrances read the fixture preference without adding real Motion listeners
+      // Page entrances and animated product scenes read the fixture preference without real Motion listeners
       // to this sequence-only geometry model. Keep its rendered elements unchanged.
       'process:page-motion': `export { motion, MotionConfig } from 'motion/react'; export const useReducedMotion = () => globalThis.__processBoundary.reduced;`,
       'process:site': `export const esimExperienceLinks = { buy: 'https://siembradigital.avalashop.com/' };`,

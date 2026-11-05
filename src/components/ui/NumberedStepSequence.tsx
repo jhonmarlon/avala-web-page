@@ -7,7 +7,7 @@ import { useMediaQuery } from '@/lib/use-media-query'
 
 const ease = [0.76, 0, 0.24, 1] as const
 
-type Step = { title: string; description: string; Icon: LucideIcon; label: string }
+type Step = { title: string; description: string; Icon: LucideIcon; label: string; illustration?: ReactNode }
 type NumberedStepSequenceProps = {
   id?: string
   steps: readonly Step[]

@@ -78,7 +78,7 @@ export function ContactPage() {
                   {...entrance}
                   transition={{ ...entrance.transition, delay: reducedMotion ? 0 : i * 0.08 }}
                 >
-                  <span className="hud-label tabular pt-1 text-avala-neon">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="hud-label tabular ordinal-index pt-1 text-avala-neon">{String(i + 1).padStart(2, '0')}</span>
                   <div>
                     <p className="display-tight text-xl tracking-[-0.03em] text-avala-paper">{step.title}</p>
                     <p className="mt-1 text-sm leading-6 text-avala-paper/60">{step.description}</p>

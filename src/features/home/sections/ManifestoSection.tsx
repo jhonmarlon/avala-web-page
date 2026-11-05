@@ -49,7 +49,7 @@ export function ManifestoSection() {
                 viewport={{ once: true, amount: 0.8 }}
                 transition={{ duration: 0.8, delay: i * 0.08, ease: [0.76, 0, 0.24, 1] }}
               >
-                <span className="hud-label tabular pt-1 text-avala-neon">{String(i + 1).padStart(2, '0')}</span>
+                <span className="hud-label tabular ordinal-index pt-1 text-avala-neon">{String(i + 1).padStart(2, '0')}</span>
                 {item}
               </motion.li>
             ))}
