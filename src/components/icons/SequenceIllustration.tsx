@@ -1,5 +1,8 @@
 import { useId } from 'react'
 import { IllustrationSvg } from './IllustrationSvg'
+import { processScenes } from './scenes/processScenes'
+import { estimatorScenes } from './scenes/estimatorScenes'
+import type { SceneMaterials, SceneRenderer } from './scenes/types'
 
 export type SequenceScene = 'discover' | 'design' | 'build' | 'launch' | 'optimize'
   | 'entry' | 'identity' | 'reserve' | 'qr' | 'protected' | 'automate' | 'integrate'
@@ -7,42 +10,12 @@ export type SequenceScene = 'discover' | 'design' | 'build' | 'launch' | 'optimi
   | 'appspace' | 'neuralmesh' | 'cloudstack' | 'strategy' | 'campaign' | 'delivery' | 'signalnet'
   | 'timeline' | 'budget'
 
-function Scene({ kind, surface, accent, edge }: { kind: SequenceScene; surface: string; accent: string; edge: string }) {
+const extractedScenes: Partial<Record<SequenceScene, SceneRenderer>> = { ...processScenes, ...estimatorScenes }
+
+function Scene({ kind, surface, accent, edge }: { kind: SequenceScene } & SceneMaterials) {
+  const renderScene = extractedScenes[kind]
+  if (renderScene) return renderScene({ surface, accent, edge })
   switch (kind) {
-    case 'timeline': return <>
-      <g data-scene-part="clock" className="illustration-gesture" data-gesture="main">
-        <circle cx="36" cy="36" r="25" fill={surface} />
-        <path data-material-detail="edge" d="M15 36a21 21 0 0 1 21-21m0 42a21 21 0 0 0 16-7" stroke={edge} />
-        <path d="M36 18v4m18 14h-4M18 36h4m14 18v-4" strokeOpacity="0.5" />
-        <path d="M36 26v11l10 6" stroke="var(--color-avala-cyan)" strokeWidth="3" />
-        <circle cx="36" cy="36" r="3" fill={accent} />
-      </g>
-      <g data-scene-part="schedule" className="illustration-gesture" data-gesture="slide">
-        <rect x="50" y="37" width="35" height="31" rx="5" fill={surface} />
-        <path d="M50 47h35M59 33v8m17-8v8" strokeOpacity="0.6" />
-        <path d="M57 53h8m-8 8h5" strokeOpacity="0.5" />
-        <rect x="70" y="52" width="9" height="10" rx="2" fill={accent} />
-        <path d="m72 57 2 2 3-4" stroke="var(--color-avala-paper)" />
-        <path d="M53 44v-1a3 3 0 0 1 3-3h9" stroke={edge} />
-      </g>
-    </>
-    case 'budget': return <>
-      <g data-scene-part="calculator" className="illustration-gesture" data-gesture="main">
-        <rect x="16" y="10" width="43" height="58" rx="7" fill={surface} />
-        <path data-material-detail="edge" d="M19 29V18a5 5 0 0 1 5-5h24M19 54v6a5 5 0 0 0 5 5" stroke={edge} />
-        <rect x="24" y="20" width="27" height="13" rx="3" fill={accent} fillOpacity="0.35" />
-        <path d="M31 26h13M26 42h3m8 0h3m8 0h3M26 51h3m8 0h3M26 60h3m8 0h3" strokeOpacity="0.7" strokeWidth="3" />
-        <rect x="46" y="49" width="6" height="13" rx="2" fill={accent} />
-      </g>
-      <g data-scene-part="coins" className="illustration-gesture" data-gesture="lift">
-        <path d="M57 54v10c0 7 28 7 28 0V54Z" fill={surface} />
-        <ellipse cx="71" cy="54" rx="14" ry="6" fill={accent} />
-        <path d="M60 61c5 3 17 3 22 0" stroke={edge} />
-        <circle cx="70" cy="40" r="12" fill={accent} />
-        <path d="M62 40a8 8 0 0 1 8-8" stroke={edge} />
-        <path d="M74 35h-6a3 3 0 0 0 0 6h3a3 3 0 0 1 0 6h-6m5-15v18" stroke="var(--color-avala-ink)" />
-      </g>
-    </>
     case 'appspace': return <>
       <g data-scene-part="handset" className="illustration-gesture" data-gesture="main">
         <rect x="16" y="8" width="35" height="61" rx="8" fill={surface} />
@@ -137,74 +110,6 @@ function Scene({ kind, surface, accent, edge }: { kind: SequenceScene; surface: 
         <path d="M34 12a16 16 0 0 0 0 22m24-22a16 16 0 0 1 0 22M25 7a27 27 0 0 0 0 35M67 7a27 27 0 0 1 0 35" stroke={accent} strokeWidth="3" />
         <path d="M77 49h9v15h-9Z" fill={surface} />
         <path d="M80 54h3m-3 5h3" strokeOpacity="0.6" />
-      </g>
-    </>
-    case 'discover': return <>
-      <g data-scene-part="document" className="illustration-gesture" data-gesture="main">
-        <rect x="14" y="10" width="45" height="56" rx="7" fill={surface} />
-        <path data-material-detail="edge" d="M17 29V18a5 5 0 0 1 5-5h26" stroke={edge} />
-        <path d="M23 23h26M23 31h20M23 39h25M23 47h12" strokeOpacity="0.45" />
-        <rect x="22" y="53" width="15" height="5" rx="2" fill={accent} stroke="none" />
-      </g>
-      <g data-scene-part="magnifier" className="illustration-gesture" data-gesture="lift">
-        <circle cx="60" cy="45" r="17" fill={surface} stroke="var(--color-avala-cyan)" strokeWidth="2" />
-        <circle cx="60" cy="45" r="11" fill={accent} fillOpacity="0.18" strokeOpacity="0.3" />
-        <path d="m72 58 12 12" strokeWidth="5" />
-        <path d="m56 45 3 3 6-7" stroke="var(--color-avala-paper)" />
-      </g>
-    </>
-    case 'design': return <>
-      <g data-scene-part="blueprint" className="illustration-gesture" data-gesture="main">
-        <rect x="9" y="14" width="62" height="48" rx="7" fill={surface} />
-        <path data-material-detail="edge" d="M12 32V22a5 5 0 0 1 5-5h42" stroke={edge} />
-        <path d="M9 24h62M30 24v38" strokeOpacity="0.3" />
-        <rect x="16" y="31" width="8" height="22" rx="2" fill={accent} fillOpacity="0.5" />
-        <rect x="37" y="31" width="25" height="9" rx="2" fill={accent} fillOpacity="0.2" />
-        <path d="M37 47h24M37 53h16" strokeOpacity="0.45" />
-      </g>
-      <g data-scene-part="pen" className="illustration-gesture" data-gesture="tilt">
-        <path d="m58 61 18-34 9 5-18 34-11 6Z" fill={accent} />
-        <path d="m73 33 9 5M58 61l9 5" stroke="var(--color-avala-ink)" strokeOpacity="0.6" />
-      </g>
-    </>
-    case 'build': return <>
-      <g data-scene-part="browser" className="illustration-gesture" data-gesture="main">
-        <rect x="9" y="13" width="74" height="51" rx="7" fill={surface} />
-        <path data-material-detail="edge" d="M12 22v-1a5 5 0 0 1 5-5h53" stroke={edge} />
-        <path d="M9 25h74" strokeOpacity="0.35" />
-        <path d="M17 19h2m5 0h2m5 0h2" strokeWidth="2.5" />
-        <rect x="65" y="53" width="22" height="16" rx="4" fill={accent} />
-      </g>
-      <g data-scene-part="code" className="illustration-gesture" data-gesture="light" stroke="var(--color-avala-paper)" strokeWidth="2">
-        <path d="m32 35-9 9 9 9m27-18 9 9-9 9m-13-20-6 22" />
-      </g>
-    </>
-    case 'launch': return <>
-      <g data-scene-part="server" className="illustration-gesture" data-gesture="main">
-        <rect x="12" y="16" width="42" height="47" rx="6" fill={surface} />
-        <path data-material-detail="edge" d="M15 28v-4a5 5 0 0 1 5-5h25M15 35h27M15 50h27" stroke={edge} />
-        <path d="M12 32h42M12 47h42" strokeOpacity="0.4" />
-        <path d="M20 24h15M20 40h15M20 55h15" strokeOpacity="0.5" />
-        <circle cx="44" cy="24" r="2" fill={accent} /><circle cx="44" cy="40" r="2" fill={accent} /><circle cx="44" cy="55" r="2" fill={accent} />
-      </g>
-      <g data-scene-part="deploy" className="illustration-gesture" data-gesture="lift">
-        <path d="M65 63V39H54l19-24 17 24H79v24Z" fill={accent} stroke="var(--color-avala-cyan)" />
-        <path d="M64 70h17" strokeOpacity="0.4" />
-      </g>
-    </>
-    case 'optimize': return <>
-      <g data-scene-part="chart">
-        <rect x="10" y="14" width="65" height="49" rx="7" fill={surface} />
-        <path data-material-detail="edge" d="M13 31v-9a5 5 0 0 1 5-5h44" stroke={edge} />
-        <path d="M19 25v29h43" strokeOpacity="0.4" />
-        <g data-scene-part="bars" className="illustration-gesture" data-gesture="grow">
-          <path d="M28 50V40m12 10V33m12 17V25" stroke="var(--color-avala-cyan)" strokeWidth="7" />
-        </g>
-      </g>
-      <g data-scene-part="insight" className="illustration-gesture" data-gesture="main">
-        <circle cx="70" cy="51" r="14" fill={surface} strokeWidth="2" />
-        <path d="m80 62 9 9" strokeWidth="4" />
-        <path d="m62 54 6-6 5 3 6-8" stroke="var(--color-avala-paper)" />
       </g>
     </>
     case 'entry': return <>
