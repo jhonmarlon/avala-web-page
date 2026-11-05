@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { CheckCircle2, LoaderCircle, X } from "lucide-react";
+import { LoaderCircle, X } from "lucide-react";
+import { SequenceIllustration } from "@/components/icons/SequenceIllustration";
 import { Button } from "@/components/ui/Button";
 import { Honeypot } from "@/components/ui/Honeypot";
 import { estimatorStyles } from "@/features/estimator/components/estimator-styles";
@@ -195,12 +196,12 @@ export function ProposalDetailsModal({
 
 				{isLeadSubmitted ? (
 					<section
-						className="flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-4 py-8 text-center sm:px-6"
+						className="sequence-illustration-host flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-4 py-8 text-center sm:px-6"
 						data-lenis-prevent
 						aria-live="polite"
 					>
-						<div className="flex size-16 shrink-0 items-center justify-center border border-avala-neon/50 text-avala-neon">
-							<CheckCircle2 className="size-9" aria-hidden="true" />
+						<div className="estimator-illustration-empty inline-flex shrink-0 items-center justify-center">
+							<SequenceIllustration kind="confirmation" />
 						</div>
 						<h3 className="mt-5 font-display text-2xl font-semibold text-avala-paper">
 							¡Todo listo!

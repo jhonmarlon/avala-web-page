@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { NavLink, useLocation } from 'react-router'
 import logoImage from '@/assets/avala_logo.png'
-import { CtaLink } from '@/components/fx/CtaLink'
+import { SubtleCtaLink } from '@/components/fx/SubtleCtaLink'
 import { MobileMenu } from '@/components/layout/MobileMenu'
 import { cn } from '@/lib/utils'
 import { navigationItems } from '@/config/navigation'
@@ -148,9 +148,7 @@ export function Header() {
           })}
         </nav>
 
-        <CtaLink to="/contacto" variant="line" cursor="Agendar" className="hidden h-10 border-avala-neon/70 lg:inline-flex">
-          Agendá una reunión
-        </CtaLink>
+        <SubtleCtaLink />
 
         <button
           type="button"

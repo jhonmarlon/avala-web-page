@@ -1,18 +1,8 @@
 import {
-  BadgeCheck,
-  CreditCard,
-  FileCheck2,
-  Layers,
-  NotebookText,
-  Printer,
-  ShieldAlert,
-  Workflow,
   LockKeyhole,
   QrCode,
   ShieldCheck,
   Smartphone,
-  Store,
-  TicketCheck,
 } from 'lucide-react'
 import { motion, MotionConfig, useReducedMotion } from 'motion/react'
 import { NumberedStepSequence } from '@/components/ui/NumberedStepSequence'
@@ -21,6 +11,8 @@ import { SplitReveal } from '@/components/fx/SplitReveal'
 import { SectionLabel } from '@/components/fx/SectionLabel'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
+import { EsimFlowIllustration } from '@/components/icons/EsimFlowIllustration'
+import { SequenceIllustration } from '@/components/icons/SequenceIllustration'
 import { Section } from '@/components/ui/Section'
 import { esimExperienceLinks } from '@/config/site'
 
@@ -29,32 +21,36 @@ const customerSteps = [
     title: 'Elegí cómo empezar',
     description: 'Comprá una eSIM online o activá un voucher físico adquirido en punto de venta.',
     Icon: Smartphone,
+    illustration: <SequenceIllustration kind="entry" />,
   },
   {
     title: 'Validamos tu identidad',
     description: 'Tus datos se verifican paso a paso con OTP por WhatsApp o correo.',
     Icon: ShieldCheck,
+    illustration: <SequenceIllustration kind="identity" />,
   },
   {
     title: 'Protegemos la disponibilidad',
     description: 'En compra web, reservamos inventario antes del pago para evitar sobreventa.',
     Icon: LockKeyhole,
+    illustration: <SequenceIllustration kind="reserve" />,
   },
   {
     title: 'Recibís tu QR final',
     description: 'Al finalizar, te entregamos el QR de instalación de la eSIM listo para usar.',
     Icon: QrCode,
+    illustration: <SequenceIllustration kind="qr" />,
   },
 ]
 
 const businessCapabilities = [
-  { title: 'Inventario interno de eSIMs con consecutivos controlados.', Icon: NotebookText },
-  { title: 'Lotes administrativos de vouchers físicos.', Icon: Layers },
-  { title: 'Impresión diferida e individual de vouchers.', Icon: Printer },
-  { title: 'Confirmación operativa de impresión.', Icon: FileCheck2 },
-  { title: 'Validaciones por OTP y código raspable.', Icon: ShieldAlert },
-  { title: 'Trazabilidad desde voucher o compra web hasta QR final.', Icon: Workflow },
-]
+  { title: 'Inventario interno de eSIMs con consecutivos controlados.', scene: 'stock' },
+  { title: 'Lotes administrativos de vouchers físicos.', scene: 'batches' },
+  { title: 'Impresión diferida e individual de vouchers.', scene: 'print' },
+  { title: 'Confirmación operativa de impresión.', scene: 'confirmation' },
+  { title: 'Validaciones por OTP y código raspable.', scene: 'otp' },
+  { title: 'Trazabilidad desde voucher o compra web hasta QR final.', scene: 'trace' },
+] as const
 
 const flows = [
   {
@@ -65,7 +61,7 @@ const flows = [
     cta: 'Comprar eSIM',
     available: true,
     href: esimExperienceLinks.buy,
-    Icon: CreditCard,
+    illustration: 'purchase',
   },
   {
     title: 'Activar voucher físico',
@@ -75,7 +71,7 @@ const flows = [
     cta: 'Disponible próximamente',
     available: false,
     href: undefined,
-    Icon: TicketCheck,
+    illustration: 'voucher',
   },
 ] as const
 
@@ -114,14 +110,14 @@ export function EsimPage() {
         </motion.div>
 
         </div>
-        <div className="mt-12 pb-6 lg:pb-10">
+        <div className="esim-customer-steps mt-12 pb-6 lg:pb-10">
           <NumberedStepSequence
             compactTrack
             ordered
             steps={customerSteps.map((step, index) => ({ ...step, label: `Paso ${index + 1}` }))}
             intro={
-              <div className="flex shrink-0 flex-col justify-center gap-4 py-6 lg:w-[min(42vw,36rem)] lg:pr-8">
-                <BadgeCheck aria-hidden="true" className="size-6 text-avala-neon" />
+              <div className="sequence-illustration-host flex shrink-0 flex-col justify-center gap-4 py-6 lg:w-[min(42vw,36rem)] lg:pr-8">
+                <SequenceIllustration kind="protected" />
                 <p className="hud-label">Flujo protegido</p>
                 <h2 className="display-tight text-2xl">Del ingreso al QR final</h2>
               </div>
@@ -155,15 +151,16 @@ export function EsimPage() {
           </motion.div>
 
           <ol className="border-t border-avala-paper/15">
-            {flows.map(({ title, eyebrow, description, cta, available, href, Icon }, index) => (
-              <motion.li key={title} {...entrance} transition={{ ...entrance.transition, delay: reducedMotion ? 0 : Math.min(index, 4) * 0.08 }} className="grid gap-5 border-b border-avala-paper/15 py-6 sm:grid-cols-[2.5rem_1fr] lg:grid-cols-[2.5rem_1fr_auto] lg:items-center">
-                <span className="hud-label tabular text-avala-neon">0{index + 1}</span>
-                <div>
-                  <p className="hud-label flex items-center gap-3">
-                    <Icon aria-hidden="true" className="size-4 text-avala-neon" />{eyebrow}
-                  </p>
-                  <h3 className="mt-2 display-tight text-xl">{title}</h3>
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-avala-paper/75">{description}</p>
+            {flows.map(({ title, eyebrow, description, cta, available, href, illustration }, index) => (
+              <motion.li key={title} {...entrance} transition={{ ...entrance.transition, delay: reducedMotion ? 0 : Math.min(index, 4) * 0.08 }} className="esim-flow grid gap-5 border-b border-avala-paper/15 py-6 sm:grid-cols-[2.5rem_1fr] lg:grid-cols-[2.5rem_1fr_auto] lg:items-center">
+                <span className="hud-label tabular ordinal-index text-avala-neon">0{index + 1}</span>
+                <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start">
+                  <EsimFlowIllustration kind={illustration} />
+                  <div className="min-w-0">
+                    <p className="hud-label">{eyebrow}</p>
+                    <h3 className="mt-2 display-tight text-xl">{title}</h3>
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-avala-paper/75">{description}</p>
+                  </div>
                 </div>
                 {available ? (
                   <CtaLink href={href} className="sm:col-start-2 lg:col-start-3 lg:min-w-56">{cta}</CtaLink>
@@ -191,17 +188,15 @@ export function EsimPage() {
           </motion.div>
 
           <ul aria-label="Capacidades operativas" className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {businessCapabilities.map(({ title, Icon }, index) => (
-              <motion.li key={title} {...entrance} transition={{ ...entrance.transition, delay: reducedMotion ? 0 : Math.min(index, 4) * 0.08 }} className="min-w-0">
+            {businessCapabilities.map(({ title, scene }, index) => (
+              <motion.li key={title} {...entrance} transition={{ ...entrance.transition, delay: reducedMotion ? 0 : Math.min(index, 4) * 0.08 }} className="esim-capability min-w-0">
                 <Card
                   surface="ink"
-                  className="h-full min-w-0 motion-safe:transition-[transform,translate,background-color,border-color] motion-safe:duration-300 [@media(any-hover:hover)]:hover:border-avala-neon/45 [@media(any-hover:hover)]:hover:bg-avala-neon/10 motion-safe:[@media(any-hover:hover)]:hover:-translate-y-1 motion-reduce:transform-none motion-reduce:transition-none"
+                  className="esim-operational-card h-full min-w-0"
                 >
                   <div className="mb-5 flex items-center justify-between">
-                    <span className="grid size-12 place-items-center rounded-[1rem] bg-white/5">
-                      <Icon aria-hidden="true" className="size-6 text-avala-neon" strokeWidth={1.8} />
-                    </span>
-                    <span aria-hidden="true" className="hud-label tabular">0{index + 1}</span>
+                    <SequenceIllustration kind={scene} />
+                    <span aria-hidden="true" className="display-tight text-outline tabular esim-capability-index">0{index + 1}</span>
                   </div>
                   <h3 className="text-sm font-medium leading-7 wrap-break-word">{title}</h3>
                 </Card>
@@ -221,8 +216,8 @@ export function EsimPage() {
             </p>
           </div>
 
-          <div className="border-t border-avala-paper/15 pt-6 lg:pl-8">
-            <Store aria-hidden="true" className="mb-5 size-7 text-avala-neon" />
+          <div className="sequence-illustration-host border-t border-avala-paper/15 pt-6 lg:pl-8">
+            <div className="mb-5"><SequenceIllustration kind="retail" /></div>
             <h3 className="text-xl font-semibold">¿Sos empresa o punto de venta?</h3>
             <p className="mt-3 text-sm leading-7 text-avala-paper/75">
               Hablemos para activar operación con inventario, vouchers físicos y trazabilidad comercial.

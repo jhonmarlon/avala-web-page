@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'motion/react'
 import { CtaLink } from '@/components/fx/CtaLink'
+import { ProcessStageIcon } from '@/components/icons/ProcessStageIcon'
 import { SectionLabel } from '@/components/fx/SectionLabel'
 import { SplitReveal } from '@/components/fx/SplitReveal'
 import { aboutSectionContent, processSteps } from '@/features/home/data/content'
@@ -44,7 +45,7 @@ export function AboutPage() {
                 transition={{ ...entrance.transition, delay: reducedMotion ? 0 : index * 0.08 }}
                 className="flex gap-5 border-b border-avala-paper/15 py-5 first:pt-0"
               >
-                <span className="hud-label tabular pt-1 text-avala-neon">{String(index + 1).padStart(2, '0')}</span>
+                <span className="hud-label tabular ordinal-index pt-1 text-avala-neon">{String(index + 1).padStart(2, '0')}</span>
                 <p className="text-lg leading-7 text-avala-paper/80">{item}</p>
               </motion.li>
             ))}
@@ -60,11 +61,12 @@ export function AboutPage() {
               key={step.step}
               {...entrance}
               transition={{ ...entrance.transition, delay: reducedMotion ? 0 : index * 0.08 }}
-              className="border-b border-avala-paper/15 py-8 sm:pr-8"
+              whileHover={reducedMotion ? undefined : 'icon-hover'}
+              className="process-stage-card border-b border-avala-paper/15 py-8 sm:pr-8"
             >
               <div className="flex items-center justify-between">
-                <span className="hud-label tabular text-avala-neon">0{step.step}</span>
-                <step.Icon aria-hidden="true" className="size-6 text-avala-mute" strokeWidth={1.25} />
+                <span className="display-tight text-outline tabular about-method-index">0{step.step}</span>
+                <ProcessStageIcon stage={step.step} Icon={step.Icon} />
               </div>
               <h3 className="display-tight mt-6 text-2xl">{step.title}</h3>
               <p className="mt-3 text-base leading-7 text-avala-paper/70">{step.description}</p>

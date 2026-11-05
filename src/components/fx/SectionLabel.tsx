@@ -8,25 +8,32 @@ type SectionLabelProps = {
   className?: string
 }
 
-// Rótulo de sección: índice, nombre y metadato sobre una línea de 1px que se dibuja al entrar
+// Section label: a readable baseline with a sweep that pauses outside the viewport.
 export function SectionLabel({ index, label, meta, className }: SectionLabelProps) {
   return (
     <div className={cn('relative pb-3', className)}>
       <div className="hud-label flex items-baseline justify-between gap-6">
-        <p className="flex gap-4">
-          <span className="tabular text-avala-neon">{index}</span>
-          <span className="text-avala-paper">{label}</span>
+        <p className="flex items-baseline gap-4">
+          <span className="tabular text-sm text-avala-neon sm:text-base">{index}</span>
+          <span className="section-label-title text-avala-paper">{label}</span>
         </p>
         {meta && <p className="hidden sm:block">{meta}</p>}
       </div>
       <motion.span
         aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 h-px origin-left bg-avala-paper/15"
-        initial={{ scaleX: 0 }}
-        whileInView={{ scaleX: 1 }}
-        viewport={{ once: true, amount: 1 }}
-        transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
-      />
+        className="section-divider-baseline pointer-events-none absolute inset-x-0 bottom-0 h-px overflow-hidden bg-avala-paper/15"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 1 }}
+      >
+        <motion.span
+          className="section-divider-shine"
+          variants={{
+            hidden: { '--divider-play-state': 'paused', transition: { duration: 0 } },
+            visible: { '--divider-play-state': 'running', transition: { duration: 0 } },
+          }}
+        />
+      </motion.span>
     </div>
   )
 }

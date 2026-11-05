@@ -1,0 +1,39 @@
+/* Icon pilot: no continuous decorative motion, no icon-only tab stops. */
+@keyframes icon-terminal-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+[data-icon-pilot="terminal"]:focus-visible .icon-terminal-cursor {
+  animation: icon-terminal-cursor 360ms ease-out;
+}
+
+@media (hover: hover) {
+  [data-icon-pilot="terminal"]:hover .icon-terminal-cursor {
+    animation: icon-terminal-cursor 360ms ease-out;
+  }
+}
+
+@keyframes icon-confirmation-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+.icon-confirmation-stroke {
+  animation: icon-confirmation-draw 400ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-terminal-cursor,
+  .icon-confirmation-stroke {
+    animation: none;
+  }
+}
+
+@keyframes grain-shift {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-6%, 4%); }
+  40% { transform: translate(5%, -7%); }
+  60% { transform: translate(-3%, 8%); }
+  80% { transform: translate(7%, 3%); }
+}

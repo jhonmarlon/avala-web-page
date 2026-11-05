@@ -73,7 +73,7 @@ export function ServicesSection() {
                 {/* Relleno que sube desde la base */}
                 <RowHoverFill />
 
-                <span className="hud-label tabular transition-colors duration-500 group-hover:text-avala-ink">
+                <span className="hud-label tabular ordinal-index transition-colors duration-500 group-hover:text-avala-ink">
                   {String(i + 1).padStart(2, '0')}
                 </span>
 

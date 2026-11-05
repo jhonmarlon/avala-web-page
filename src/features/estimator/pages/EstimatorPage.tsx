@@ -2,12 +2,10 @@ import { useMemo, useRef, useState } from "react";
 import {
 	ArrowRight,
 	CheckCircle2,
-	CircleDollarSign,
-	Clock3,
-	Sparkles,
 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { SectionLabel } from "@/components/fx/SectionLabel";
+import { SequenceIllustration } from "@/components/icons/SequenceIllustration";
 import { SplitReveal } from "@/components/fx/SplitReveal";
 import { companyInfo } from "@/config/site";
 import { Button } from "@/components/ui/Button";
@@ -467,9 +465,9 @@ export function EstimatorPage() {
 					</Reveal>
 
 					<Reveal variants={fadeUp}>
-						<div className="inline-flex items-center gap-3 text-base text-avala-mute">
-							<span className="text-avala-neon">
-								<Sparkles className="size-4" />
+						<div className="sequence-illustration-host inline-flex items-center gap-3 text-base text-avala-mute">
+							<span className="estimator-illustration-inline shrink-0">
+								<SequenceIllustration kind="strategy" />
 							</span>
 							<span>
 								Estimación preliminar guiada por módulos, complejidad y alcance
@@ -499,13 +497,14 @@ export function EstimatorPage() {
 										{estimatorSteps.map((step, index) => (
 											<motion.div
 												key={step.id}
+												data-step-state={index === currentStepIndex ? "active" : index < currentStepIndex ? "complete" : "upcoming"}
 												title={step.title}
 												initial={shouldReduceMotion ? false : { opacity: 0, x: -16 }}
 												whileInView={{ opacity: 1, x: 0 }}
 												viewport={{ once: true, amount: 0.1 }}
 												transition={{ duration: shouldReduceMotion ? 0 : 0.4, delay: shouldReduceMotion ? 0 : index * 0.07, ease: "easeOut" }}
 												className={cn(
-													"border px-3 py-2",
+													"estimator-step-card border px-3 py-2",
 													index === currentStepIndex
 														? "border-avala-neon bg-avala-neon/10 text-avala-paper"
 														: index < currentStepIndex
@@ -515,12 +514,7 @@ export function EstimatorPage() {
 											>
 												<div className="flex items-start gap-3">
 													<span
-														className={cn(
-															"flex size-8 shrink-0 items-center justify-center font-mono text-xs",
-															index <= currentStepIndex
-																? "text-avala-neon"
-																: "text-avala-mute",
-														)}
+														className="estimator-step-index flex size-8 shrink-0 items-center justify-center font-mono text-xs"
 													>
 														{index + 1}
 													</span>
@@ -644,9 +638,11 @@ export function EstimatorPage() {
 												</div>
 											</div>
 
-											<div className={cn(estimatorStyles.metric, "space-y-3")}>
+											<div className={cn(estimatorStyles.metric, "sequence-illustration-host space-y-3")}>
 												<div className="flex items-center gap-2 text-avala-paper">
-													<Clock3 className="size-4 text-avala-neon" />
+													<span className="estimator-illustration-inline shrink-0">
+													<SequenceIllustration kind="timeline" />
+												</span>
 													<p className={estimatorStyles.label}>
 														Tiempo estimado
 													</p>
@@ -664,9 +660,11 @@ export function EstimatorPage() {
 												</p>
 											</div>
 
-											<div className="space-y-3 border border-avala-neon/50 bg-avala-neon/5 p-4">
+											<div className="sequence-illustration-host space-y-3 border border-avala-neon/50 bg-avala-neon/5 p-4">
 												<div className="flex items-center gap-2 text-avala-paper">
-													<CircleDollarSign className="size-4 text-avala-neon" />
+													<span className="estimator-illustration-inline shrink-0">
+													<SequenceIllustration kind="budget" />
+												</span>
 													<p className={estimatorStyles.label}>
 														Inversión estimada
 													</p>
@@ -736,9 +734,9 @@ export function EstimatorPage() {
 											) : null}
 										</>
 									) : (
-										<div className="space-y-4 border border-dashed border-avala-paper/25 p-4 text-center sm:p-6">
-											<div className="mx-auto flex size-10 items-center justify-center text-avala-neon">
-												<Sparkles className="size-5" />
+										<div className="sequence-illustration-host space-y-4 border border-dashed border-avala-paper/25 p-4 text-center sm:p-6">
+											<div className="estimator-illustration-empty mx-auto inline-flex shrink-0 items-center justify-center">
+												<SequenceIllustration kind="discover" />
 											</div>
 											<div className="space-y-2">
 												<p className="display-tight text-2xl text-avala-paper">

@@ -51,7 +51,7 @@ export function LegalDocumentView({ document, related }: LegalDocumentViewProps)
                   }}
                   className="hud-label flex gap-3 py-1 transition-colors duration-300 hover:text-avala-paper"
                 >
-                  <span className="tabular text-avala-neon">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="tabular ordinal-index text-avala-neon">{String(i + 1).padStart(2, '0')}</span>
                   <span className="normal-case tracking-normal">{section.title}</span>
                 </a>
               </li>
@@ -67,7 +67,7 @@ export function LegalDocumentView({ document, related }: LegalDocumentViewProps)
               className="scroll-mt-28 border-t border-avala-paper/15 py-10 first:border-t-0 first:pt-0"
             >
               <h2 className="display-tight flex items-baseline gap-4 text-[clamp(1.4rem,2.4vw,2rem)] leading-tight text-avala-paper">
-                <span className="hud-label tabular text-avala-neon">{String(i + 1).padStart(2, '0')}</span>
+                <span className="hud-label tabular ordinal-index text-avala-neon">{String(i + 1).padStart(2, '0')}</span>
                 {section.title}
               </h2>
               <div className="mt-5 space-y-4 text-[0.95rem] leading-7 text-avala-paper/70">

@@ -5,12 +5,20 @@ import { test } from 'node:test'
 // Only ContactForm's hooks are controlled; its public element props and handlers stay real.
 registerHooks({
   resolve(specifier, context, nextResolve) {
+    if (specifier === 'motion/react' && context.parentURL?.endsWith('/contact/components/ContactForm.tsx')) {
+      return { url: 'contact:motion', shortCircuit: true }
+    }
     if (specifier === 'react' && context.parentURL?.endsWith('/contact/components/ContactForm.tsx')) {
       return { url: 'contact:hooks', shortCircuit: true }
     }
     return nextResolve(specifier, context)
   },
   load(url, context, nextLoad) {
+    if (url === 'contact:motion') return {
+      format: 'module', shortCircuit: true,
+      source: `export * from ${JSON.stringify(import.meta.resolve('motion/react'))};
+        export const useReducedMotion = () => globalThis.__contactHooks.reduced;`,
+    }
     if (url === 'contact:hooks') return {
       format: 'module', shortCircuit: true,
       source: `export const useId = () => 'contact-test';
@@ -46,12 +54,12 @@ function render() {
   return elements(ContactForm())
 }
 
-for (const withOptional of [false, true]) {
-  test(`WhatsApp sends a neutral inquiry with ${withOptional ? 'included' : 'omitted'} optional fields`, () => {
+for (const reduced of [false, true]) for (const withOptional of [false, true]) {
+  test(`WhatsApp sends a neutral inquiry with ${withOptional ? 'included' : 'omitted'} optional fields (reduced=${reduced})`, () => {
     const previousWindow = globalThis.window
     const calls = []
     globalThis.window = { open: (...args) => calls.push(args) }
-    globalThis.__contactHooks = { cursor: 0, values: [] }
+    globalThis.__contactHooks = { cursor: 0, values: [], reduced }
     try {
       let tree = render()
       const change = (name, value) => tree.find((node) => node.props.name === name).props.onChange({ target: { value } })
@@ -86,7 +94,11 @@ for (const withOptional of [false, true]) {
         '', 'Necesito ayuda con mi eSIM.',
       ].join('\n'))
       tree = render()
-      assert.ok(tree.some((node) => node.props.role === 'status'))
+      const status = tree.find((node) => node.props.role === 'status')
+      assert.ok(status)
+      assert.equal(status.props.transition.duration, reduced ? 0 : 0.2)
+      assert.deepEqual(status.props.initial, reduced ? false : { opacity: 0, y: 12 })
+      assert.ok(tree.some((node) => node.type.name === 'ConfirmationIcon'))
       tree.find((node) => node.props['data-cursor'] === 'Reintentar').props.onClick()
       assert.deepEqual(calls[1], calls[0])
       tree.find((node) => node.props['data-cursor'] === 'Nuevo').props.onClick()

@@ -1,0 +1,115 @@
+/* Editorial indices: only eSIM operations and About's five method items. */
+.esim-capability-index,
+.about-method-index {
+  --stroke-w: 1.5px;
+  --stroke-c: color-mix(in srgb, var(--color-avala-paper) 85%, var(--color-avala-neon));
+  font-size: clamp(2.75rem, 5vw, 3.5rem);
+  line-height: 1;
+}
+
+/* Passive operational cards: layered paint, never container or text movement. */
+.esim-capability .esim-operational-card {
+  background-color: var(--color-avala-ink);
+  background-image:
+    radial-gradient(ellipse at 15% 0%, color-mix(in srgb, var(--color-avala-neon) 9%, transparent), transparent 70%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-avala-ink-2) 88%, transparent), color-mix(in srgb, var(--color-avala-ink) 95%, transparent));
+  border-color: color-mix(in srgb, var(--color-avala-paper) 18%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-avala-paper) 7%, transparent), 0 12px 28px color-mix(in srgb, var(--color-avala-ink) 35%, transparent);
+  transition: border-color 300ms ease-out, background-color 300ms ease-out, box-shadow 300ms ease-out, transform 200ms ease-out;
+}
+
+@media (hover: hover) {
+  .esim-capability:hover .esim-operational-card {
+    border-color: color-mix(in srgb, var(--color-avala-neon) 45%, transparent);
+    background-color: var(--color-avala-ink-2);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-avala-neon) 20%, transparent), 0 16px 36px color-mix(in srgb, var(--color-avala-ink) 50%, transparent), 0 0 18px color-mix(in srgb, var(--color-avala-neon) 6%, transparent);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .esim-capability:hover .esim-operational-card { transform: scale(1.02); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .esim-capability .esim-operational-card { transition: none; transform: none; }
+}
+
+/* SectionLabel alone: the readable baseline remains while the in-view sweep repeats. */
+.section-divider-baseline {
+  background-color: color-mix(in srgb, var(--color-avala-cyan) 28%, transparent);
+  box-shadow: 0 0 5px color-mix(in srgb, var(--color-avala-cyan) 18%, transparent);
+}
+
+@keyframes section-divider-sweep {
+  from { transform: translateX(-70%); }
+  to { transform: translateX(70%); }
+}
+.section-divider-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent 30%, color-mix(in srgb, var(--color-avala-cyan) 85%, transparent) 45%, color-mix(in srgb, var(--color-avala-paper) 95%, transparent) 50%, color-mix(in srgb, var(--color-avala-cyan) 85%, transparent) 55%, transparent 70%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .section-divider-shine {
+    animation: section-divider-sweep 2.4s linear infinite;
+    animation-play-state: var(--divider-play-state, paused);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-divider-shine { animation: none; display: none; }
+}
+
+/* Plain ordinal labels only; keep contextual group hover/active colors in this layer. */
+@layer utilities {
+  .ordinal-index {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+    color: var(--color-avala-cyan);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--color-avala-cyan) 35%, transparent);
+  }
+}
+
+/* Estimator progress tiles are passive indicators, not new navigation controls. */
+.estimator-step-card {
+  background-color: var(--color-avala-ink);
+  background-image:
+    radial-gradient(ellipse at 15% 0%, color-mix(in srgb, var(--color-avala-neon) 9%, transparent), transparent 70%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-avala-ink-2) 88%, transparent), color-mix(in srgb, var(--color-avala-ink) 95%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-avala-paper) 7%, transparent), 0 8px 20px color-mix(in srgb, var(--color-avala-ink) 30%, transparent);
+  transition: border-color 200ms ease-out, box-shadow 200ms ease-out, scale 200ms ease-out;
+  scale: 1;
+}
+
+.estimator-step-card[data-step-state="active"] {
+  scale: 1.03;
+  border-color: var(--color-avala-cyan);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-avala-cyan) 22%, transparent), 0 0 12px color-mix(in srgb, var(--color-avala-cyan) 10%, transparent);
+}
+
+.estimator-step-card[data-step-state="complete"] {
+  border-color: color-mix(in srgb, var(--color-avala-cyan) 32%, transparent);
+}
+
+.estimator-step-index {
+  color: var(--color-avala-cyan);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--color-avala-cyan) 35%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .estimator-step-card { transition: none; }
+}
+
+/* Section names read as titles; indices and responsive metadata keep their compact roles. */
+.section-label-title {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.08em;
+}

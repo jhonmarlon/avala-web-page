@@ -21,7 +21,8 @@ test('estimator intro uses shared section label, company hours and accessible sp
   assert.match(intro, />\(E\)<\/span>/)
   assert.match(intro, />Estimador<\/span>/)
   assert.ok(intro.includes(companyInfo.hours))
-  assert.match(intro, /origin-left bg-avala-paper\/15/)
+  assert.match(intro, /h-px overflow-hidden bg-avala-paper\/15/)
+  assert.equal((intro.match(/class="section-divider-shine"/g) ?? []).length, 1)
   const heading = intro.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/)?.[0] ?? ''
   assert.match(heading, /max-w-\[20ch\] text-title-page text-avala-paper/)
   assert.match(heading, /aria-label="Configura tu proyecto" role="text"/)

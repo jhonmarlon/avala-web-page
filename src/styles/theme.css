@@ -1,0 +1,46 @@
+@theme {
+  --font-sans: Inter, system-ui, sans-serif;
+  --font-heading: Manrope, Inter, system-ui, sans-serif;
+  --font-display: 'Inter Tight', Inter, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --text-title-hero: clamp(2.75rem, 4.3vw, 4rem);
+  --text-title-hero--line-height: 1.02;
+  --text-title-page: clamp(3.5rem, 6vw, 5.5rem);
+  --text-title-page--line-height: 1.02;
+  --text-contact-value: clamp(1rem, 2vw, 1.5rem);
+  --text-contact-value--line-height: 1.25;
+  --text-nav-mobile-item: clamp(1.5rem, 4vw, 1.75rem);
+  --color-avala-ink: #05081a;
+  --color-avala-ink-2: #0a1030;
+  --color-avala-paper: #eef2ff;
+  --color-avala-mute: #8a93b5;
+  --color-avala-neon: #2fb8ff;
+  --color-avala-gold: #d4a94f;
+  --color-avala-cyan: #3fd0ff;
+  --color-avala-violet: #7b5cff;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-brand-50: #eef6ff;
+  --color-brand-100: #d9ebff;
+  --color-brand-400: #2bb3ff;
+  --color-brand-500: #1298ff;
+  --color-brand-700: #0b63d1;
+  --color-surface-50: #f8fbff;
+  --color-surface-100: #eef3fb;
+  --color-surface-900: #071226;
+  --color-surface-950: #030814;
+  --shadow-soft: 0 18px 60px rgba(7, 18, 38, 0.12);
+  --shadow-glow: 0 0 0 1px rgba(43, 179, 255, 0.18), 0 20px 80px rgba(18, 152, 255, 0.16);
+  --radius-5xl: 2.5rem;
+  --animate-section-continue: section-continue 1.9s ease-in-out infinite;
+
+  @keyframes section-continue {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-100%); }
+  }
+}

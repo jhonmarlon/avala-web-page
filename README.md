@@ -33,6 +33,22 @@ yarn lint
 yarn preview
 ```
 
+## Verificación del frontend
+
+Desde la raíz, en Bash, sin agregar scripts a `package.json`:
+
+```bash
+node --import ./tests/register.mjs --test tests/*.test.mjs
+node node_modules/typescript/bin/tsc -b
+node --input-type=module -e 'import { build } from "vite"; await build({ envDir: false })'
+yarn lint
+git diff --check
+```
+
+Para verificar, usar la API de Vite con `envDir: false`: no carga archivos privados `.env`.
+El script habitual `yarn build` no cambia. Las pruebas de CSS expanden los imports
+ordenados mediante `tests/style-source.mjs`, no dependen del contenido físico de `src/index.css`.
+
 ## Estructura principal
 
 ```txt
@@ -42,24 +58,34 @@ src/
 │   └── router/
 ├── assets/
 ├── components/
+│   ├── fx/
+│   ├── icons/
+│   │   └── scenes/
 │   ├── layout/
 │   └── ui/
 ├── config/
 ├── features/
-│   └── home/
+│   ├── contact/
+│   ├── estimator/
+│   ├── home/
+│   └── legal/
 ├── lib/
 ├── pages/
+├── styles/
 └── index.css
 ```
 
 ## Convenciones del proyecto
 
-- **Inter** para UI y texto
-- **Manrope** para headings
-- componentes desacoplados y reutilizables
-- contenido centralizado en `features/home/data/content.ts`
-- assets del diseño en `src/assets/`
-- estilos semánticos preparados para futura evolución a dark mode
+- **Inter** para cuerpo/UI, **Inter Tight** para display, **Manrope** para headings y **JetBrains Mono** para metadatos, según `src/styles/theme.css`
+- componentes neutrales en `components/ui`, efectos en `components/fx` y escenas decorativas en `components/icons/scenes`
+- contenido de Home en `src/features/home/data/content.ts`; contacto, estimador y legal conservan sus propios datos y acciones
+- catálogo compartido de servicios en `src/config/services.ts`, teléfono en `src/lib/phone.ts` y reloj en `src/components/ui/LocalClock.tsx`
+- assets del diseño en `src/assets/`; no borrar por ausencia de imports sin comprobar sus contratos
+- `src/index.css` contiene solo imports: mantener el orden de las siete familias de `src/styles/`
+
+Guía actual de propietarios y extensión: [Frontend architecture](docs/frontend-architecture.md).
+Inventario, decisiones de limpieza y evidencia histórica: [Frontend code audit](docs/handoff/frontend-code-audit.md).
 
 ## Assets relevantes
 
@@ -76,7 +102,6 @@ En `src/assets/` ya están disponibles:
 
 ## Próximos pasos sugeridos
 
-- terminar de clavar fidelidad visual exacta contra el mockup
-- revisar responsive fino por breakpoint
-- limpiar contenido placeholder restante
-- preparar commits finales y PR
+- validar en navegador la apariencia, el responsive y la percepción de los efectos
+- comprobar manualmente foco, navegación por teclado y flujos completos de formularios
+- revisar los commits locales antes de decidir cualquier push o PR; la publicación sigue siendo una decisión humana

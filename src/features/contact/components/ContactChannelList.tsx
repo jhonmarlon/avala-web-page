@@ -24,7 +24,7 @@ export function ContactChannelList({ className }: { className?: string }) {
             className="group relative isolate grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 border-b border-avala-paper/15 px-4 py-4 sm:grid-cols-[3rem_9rem_minmax(0,1fr)_auto] lg:px-6 lg:py-5"
           >
             <RowHoverFill active />
-            <span className="hud-label tabular text-avala-neon transition-colors duration-500 group-hover:text-avala-ink group-active:text-avala-ink">
+            <span className="hud-label tabular ordinal-index text-avala-neon transition-colors duration-500 group-hover:text-avala-ink group-active:text-avala-ink">
               {String(i + 1).padStart(2, '0')}
             </span>
             <span className="hud-label transition-colors duration-500 group-hover:text-avala-ink/70 group-active:text-avala-ink/70">
