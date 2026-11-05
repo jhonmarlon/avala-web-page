@@ -1,9 +1,20 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
+import { createElement } from 'react'
+import { SequenceIllustration } from '../src/components/icons/SequenceIllustration.tsx'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { processScenes } from '../src/components/icons/scenes/processScenes.tsx'
 import { estimatorScenes } from '../src/components/icons/scenes/estimatorScenes.tsx'
 import { serviceScenes } from '../src/components/icons/scenes/serviceScenes.tsx'
+
+test('unrecognized runtime kinds retain the original empty artwork fallback', () => {
+  for (const kind of ['toString', ['discover']]) {
+    const html = renderToStaticMarkup(createElement(SequenceIllustration, { kind }))
+    assert.match(html, /aria-hidden="true" focusable="false"/)
+    assert.match(html, /<g class="sequence-illustration__art"><\/g>/)
+    assert.doesNotMatch(html, /\[object |class="illustration-gesture"/)
+  }
+})
 
 const expected = {
   discover: [['document', 'main'], ['magnifier', 'lift']],

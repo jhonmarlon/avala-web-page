@@ -14,7 +14,9 @@ export type SequenceScene = 'discover' | 'design' | 'build' | 'launch' | 'optimi
 const extractedScenes: Partial<Record<SequenceScene, SceneRenderer>> = { ...processScenes, ...estimatorScenes, ...serviceScenes }
 
 function Scene({ kind, surface, accent, edge }: { kind: SequenceScene } & SceneMaterials) {
-  const renderScene = extractedScenes[kind]
+  const renderScene = typeof kind === 'string' && Object.hasOwn(extractedScenes, kind)
+    ? extractedScenes[kind]
+    : undefined
   if (renderScene) return renderScene({ surface, accent, edge })
   switch (kind) {
     case 'entry': return <>
