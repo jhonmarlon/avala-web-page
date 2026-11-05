@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import { replayIllustrationOnEnter } from './illustrationHover'
+import { IllustrationSvg } from './IllustrationSvg'
 
 type EsimFlowIllustrationProps = { kind: 'purchase' | 'voucher' }
 
@@ -10,7 +10,7 @@ export function EsimFlowIllustration({ kind }: EsimFlowIllustrationProps) {
   const accent = `${id}-accent`
 
   return (
-    <svg onPointerEnter={replayIllustrationOnEnter} aria-hidden="true" focusable="false" data-flow-illustration={kind} className="esim-flow-illustration" viewBox="0 0 120 104" fill="none">
+    <IllustrationSvg data-flow-illustration={kind} className="esim-flow-illustration" viewBox="0 0 120 104" fill="none">
       <defs>
         <linearGradient id={surface} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop stopColor="var(--color-avala-ink-2)" />
@@ -76,6 +76,6 @@ export function EsimFlowIllustration({ kind }: EsimFlowIllustrationProps) {
           </g>
         </>
       )}
-    </svg>
+    </IllustrationSvg>
   )
 }

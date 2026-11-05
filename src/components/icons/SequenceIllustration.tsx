@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import { replayIllustrationOnEnter } from './illustrationHover'
+import { IllustrationSvg } from './IllustrationSvg'
 
 export type SequenceScene = 'discover' | 'design' | 'build' | 'launch' | 'optimize'
   | 'entry' | 'identity' | 'reserve' | 'qr' | 'protected' | 'automate' | 'integrate'
@@ -424,7 +424,7 @@ export function SequenceIllustration({ kind }: { kind: SequenceScene }) {
   const glowId = `${id}-sequence-glow`
   const edgeId = `${id}-sequence-edge`
   return (
-    <svg onPointerEnter={replayIllustrationOnEnter} aria-hidden="true" focusable="false" data-sequence-scene={kind} className="sequence-illustration" viewBox="0 0 96 80" fill="none" stroke="var(--color-avala-neon)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <IllustrationSvg data-sequence-scene={kind} className="sequence-illustration" viewBox="0 0 96 80" fill="none" stroke="var(--color-avala-neon)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <defs>
         <linearGradient id={surfaceId} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop stopColor="color-mix(in srgb, var(--color-avala-cyan) 28%, var(--color-avala-ink-2))" />
@@ -454,6 +454,6 @@ export function SequenceIllustration({ kind }: { kind: SequenceScene }) {
       <g className="sequence-illustration__art">
         <Scene kind={kind} surface={`url(#${surfaceId})`} accent={`url(#${accentId})`} edge={`url(#${edgeId})`} />
       </g>
-    </svg>
+    </IllustrationSvg>
   )
 }
