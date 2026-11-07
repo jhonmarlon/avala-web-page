@@ -2,6 +2,14 @@
 
 Branch: `feat/icon-microinteractions`. Two isolated feedback samples and scoped icon/miniillustration refinements improve presentation without new dependencies. The original Home terminal pilot was retired after user approval. The shared `CtaLink`, service catalog, submission payloads and confirmation wording remain unchanged.
 
+## Mobile entry follow-up — supersedes static-touch/no-autoplay policies below
+
+All compact and large miniillustrations now play their existing finite spatial gestures once per genuine viewport visit when at least half of the SVG becomes visible on primary coarse/no-hover devices. A visit re-arms only after the icon exits completely (zero intersection ratio or nonintersection), not when it merely drops below half visibility. Remaining onscreen leaves it idle after the finite gesture; there is no loop. Narrow desktop windows do not opt in. Main/detail timing remains 650/550ms, with a 60ms detail stagger. `/nosotros` reuses all five existing 800ms glyph curves with a bounded 0–120ms stagger; colored frames and palettes remain still. Desktop parent/SVG hover and pointer replay remain unchanged, including ignored touch pointer entries.
+
+The shared ref lifecycle waits on every visit for the preloader's existing `html.is-loading` marker to clear and for ancestor opacity to reach a combined 0.9 before consuming entry. Only intersecting-but-hidden artwork watches relevant ancestor attributes; there is no subtree observation, polling or timer. Full exit cancels/resets an unfinished gesture and enables the next genuine entry. Reduced motion prevents entry and cancels an in-flight gesture; changing preferences or pointer eligibility alone never re-arms a consumed visit. Viewport observation and eligibility listeners remain mounted for repeated visits; visibility retries disconnect when no longer needed, and unmount releases all resources. Ordinary ref reattachment retains the consumed visit. Per-entry ownership guards ignore old completion callbacks after cancellation, even if another visit has already started. CSS completion waits for the longer main actor, not the earlier detail ending. SSR and unsupported IntersectionObserver are safe no-ops. No tap, click handler, navigation change, loop or new dependency is involved.
+
+Deterministic rendered-component/ref, observer, media-preference and CSS tests cover these contracts, not browser playback or pixel appearance. Browser proof remains unavailable; full suite/build/lint remain parent-owned for this follow-up. Earlier verification counts are historical. The reusable TerminalIcon's availability, license and retirement history below remain unchanged.
+
 ## Latest follow-up — stronger hover and estimator artwork
 
 User feedback: “los efectos de los iconos miniilustraciones no son tan notorios cuando tienen hover” and “los iconos que hay en http://localhost:5173/estimar-proyecto tambien deben tenr estilo”. This follow-up supersedes the motion/halo values in the earlier units below.
@@ -91,9 +99,9 @@ Terminal and check geometry are adapted from [Lucide Animated](https://github.co
 
 The screenshot feedback targets `/nosotros` → “Así trabajamos”, not the header pilot. All five method icons now use 64px illuminated badges with 32px glyphs, colored inset outlines and a soft halo. Colors come from the current `src/index.css` Avala palette: cyan, violet, neon and gold.
 
-`ProcessStageIcon` uses five gesture presets: search sweep, pen tilt, code expansion, rocket lift and chart growth. Following the latest user correction, glyphs no longer animate automatically on entry or every 8–12 seconds. Each 800ms gesture plays on hover over either the icon or its entire parent item, once per hover, and returns to rest when the pointer leaves. About method cards and Solutions rows own the `icon-hover` variant; the glyph inherits it without a local animation override. Reduced-motion or an unresolved preference disables hover animation.
+`ProcessStageIcon` uses five gesture presets: search sweep, pen tilt, code expansion, rocket lift and chart growth. Each 800ms desktop gesture plays on hover over its About parent item and returns to rest. The glyph retains the inherited `icon-hover` variant; reduced-motion or an unresolved preference disables hover animation. The approved mobile follow-up above additionally plays the same glyph curve once per genuine visible visit, re-arming only after full exit and never periodically.
 
-Hovering the passive card still intensifies its halo. On touch both the glyph and frame remain static; nothing requires hover to read or identify the content. No button role or additional tab stop is added.
+Hovering the passive card still intensifies its halo. Mobile entry moves only the glyph; the frame remains static. Nothing requires hover or tapping to read or identify content. No button role or additional tab stop is added.
 
 The shared process data and the Home process presentation are unchanged. Titles, descriptions, order, page entrances and the cases CTA are preserved. Tests cover those contracts and disabled motion, not pixel appearance.
 

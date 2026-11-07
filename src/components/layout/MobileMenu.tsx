@@ -117,7 +117,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
             <ul className="border-t border-avala-paper/15">
               {navigationItems.map((item, i) => {
                 const number = (
-                  <span className="hud-label tabular ordinal-index w-8 shrink-0 pt-2 text-avala-neon">
+                  <span className="hud-label tabular ordinal-index leading-none! w-8 shrink-0 text-avala-neon">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                 )
@@ -137,11 +137,11 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                           type="button"
                           aria-expanded={isExpanded}
                           onClick={() => setExpanded(isExpanded ? null : item.href)}
-                          className="flex w-full items-start py-4 text-left"
+                          className="flex w-full items-center py-4 text-left"
                         >
                           {number}
                           <span className="display-tight flex-1 text-nav-mobile-item leading-none text-avala-paper">{item.label}</span>
-                          <span className="mt-1.5 flex size-8 items-center justify-center border border-avala-paper/20 text-avala-paper">
+                          <span className="flex size-8 self-center items-center justify-center border border-avala-paper/20 text-avala-paper">
                             <motion.span animate={{ rotate: isExpanded ? 45 : 0 }} transition={{ duration: 0.3 }}>
                               <Plus className="size-4" strokeWidth={1.5} />
                             </motion.span>
@@ -191,7 +191,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                         </AnimatePresence>
                       </>
                     ) : (
-                      <NavLink to={item.href} onClick={close} className="group flex items-start py-4">
+                      <NavLink to={item.href} onClick={close} className="group flex items-center py-4">
                         {({ isActive }) => (
                           <>
                             {number}
@@ -202,7 +202,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                             >
                               {item.label}
                             </span>
-                            <ArrowUpRight className="mt-2 size-5 text-avala-paper/40" strokeWidth={1.25} />
+                            <ArrowUpRight className="size-5 self-center text-avala-paper/40" strokeWidth={1.25} />
                           </>
                         )}
                       </NavLink>
