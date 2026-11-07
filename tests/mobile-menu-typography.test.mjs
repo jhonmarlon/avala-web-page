@@ -45,15 +45,29 @@ test('all five mobile main labels share the compact display role and existing le
   assert.doesNotMatch(html, /text-\[2\.4rem\]/)
 })
 
+test('mobile main ordinals and labels share a centered row with normalized line boxes', () => {
+  const html = render()
+  const numbers = [...html.matchAll(/<span class="([^"]*\bordinal-index\b[^"]*)">0[1-5]<\/span>/g)]
+  assert.equal(numbers.length, 5)
+  for (const [, classes] of numbers) {
+    assert.match(classes, /\bw-8\b/)
+    assert.ok(classes.split(' ').includes('leading-none!'), 'override the shared ordinal line height for visual centering')
+    assert.doesNotMatch(classes, /\b(?:pt|mt|translate-y)-/, 'centering must not depend on a pixel offset')
+  }
+  assert.equal((html.match(/class="(?:flex w-full|group flex) items-center py-4/g) ?? []).length, 5)
+  assert.match(html, /class="flex size-8 self-center items-center justify-center border/)
+  assert.match(html, /class="[^"]*size-5 self-center text-avala-paper\/40"/)
+})
+
 test('mobile menu retains routes, numbering, active state, controls and padded targets', () => {
   const html = render()
   assert.match(html, /<dialog[^>]*id="mobile-navigation"[^>]*aria-label="Menú principal"/)
   assert.match(html, /<button[^>]*aria-label="Cerrar menú"[^>]*class="[^"]*h-11 w-11/)
-  assert.match(html, /<button[^>]*aria-expanded="false"[^>]*class="flex w-full items-start py-4 text-left"/)
+  assert.match(html, /<button[^>]*aria-expanded="false"[^>]*class="flex w-full items-center py-4 text-left"/)
   for (const href of ['/', '/nosotros', '/casos-de-exito', '/contacto']) {
     assert.ok(html.includes(`href="${href}"`))
   }
-  assert.equal((html.match(/class="group flex items-start py-4(?: active)?"/g) ?? []).length, 4)
+  assert.equal((html.match(/class="group flex items-center py-4(?: active)?"/g) ?? []).length, 4)
   for (const number of ['01', '02', '03', '04', '05']) assert.ok(html.includes(`>${number}</span>`))
   assert.match(html, /aria-current="page"/)
   assert.match(html, /text-avala-neon">Nosotros<\/span>/)
