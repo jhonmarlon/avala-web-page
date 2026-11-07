@@ -1,3 +1,36 @@
+/* A static transparent overlay keeps existing backgrounds and motion intact. */
+.app-watermark {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+  opacity: 0.32;
+}
+
+.app-watermark-blue { stop-color: var(--color-brand-700); }
+.app-watermark-highlight { stop-color: var(--color-avala-neon); }
+.app-watermark-gold { stop-color: var(--color-avala-gold); }
+
+@media (max-width: 640px) {
+  .app-watermark { opacity: 0.24; }
+
+  /* Widen the artwork, not the fixed viewport or its non-scaling strokes. */
+  .app-watermark > g {
+    transform-box: view-box;
+    transform-origin: center;
+    transform: scaleX(1.6);
+  }
+}
+
+@media (forced-colors: active) {
+  .app-watermark { display: none; }
+}
+
 /* Icon pilot: no continuous decorative motion, no icon-only tab stops. */
 @keyframes icon-terminal-cursor {
   0%, 100% { opacity: 1; }

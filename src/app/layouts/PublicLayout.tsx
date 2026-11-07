@@ -4,6 +4,7 @@ import { Outlet, useMatches } from 'react-router'
 import { PageScrollPinScope } from '@/components/ui/PageScrollPinScope'
 import { Cursor } from '@/components/fx/Cursor'
 import { Grain } from '@/components/fx/Grain'
+import { GlobalWaveWatermark } from '@/components/fx/GlobalWaveWatermark'
 import { Footer } from '@/components/layout/Footer'
 import { Header } from '@/components/layout/Header'
 import { ScrollToTop } from '@/components/layout/ScrollToTop'
@@ -27,6 +28,7 @@ export function PublicLayout() {
         {pageScrollPin ? <PageScrollPinScope>{content}</PageScrollPinScope> : content}
         <Cursor />
         <Grain />
+        <GlobalWaveWatermark />
       </div>
     </MotionConfig>
   )
