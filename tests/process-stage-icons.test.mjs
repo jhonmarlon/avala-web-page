@@ -18,6 +18,7 @@ registerHooks({
     if (url === new URL('./stage-motion-stub.mjs', import.meta.url).href) return {
       format: 'module', shortCircuit: true,
       source: `import { createElement } from 'react';
+        export { animate } from 'motion/react';
         export const calls = [];
         export const rows = [];
         let reduced = false;
@@ -46,7 +47,7 @@ const { processSteps } = await import('../src/features/home/data/content.ts')
 const { calls, rows, setReduced } = await import('stage-motion:stub')
 
 for (const reduced of [false, true]) {
-  test(`About method has five decorative icons with hover-only gestures (reduced=${reduced})`, () => {
+  test(`About method has five decorative icons preserving desktop hover gestures (reduced=${reduced})`, () => {
     setReduced(reduced)
     const html = renderToStaticMarkup(createElement(MemoryRouter, null, createElement(AboutPage)))
     const method = html.match(/<ol\b[^>]*>[\s\S]*?<\/ol>/)[0]
@@ -109,7 +110,7 @@ test('Solutions keeps all catalog entries with ten scenes and no obsolete glyph 
   }
 })
 
-test('glyph never autoplays and hover respects reduced or unresolved motion preferences', () => {
+test('glyph does not autoplay during render and hover respects reduced or unresolved motion preferences', () => {
   const step = processSteps[3]
   for (const reduced of [false, true, null]) {
     setReduced(reduced)

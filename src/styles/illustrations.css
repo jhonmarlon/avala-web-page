@@ -34,7 +34,7 @@
   filter: var(--illustration-contact-shadow);
 }
 
-/* Two local spatial actors per scene; static on touch. */
+/* Two local spatial actors per scene; hover or one mobile viewport entry. */
 .illustration-gesture {
   transform-box: fill-box;
   transform-origin: center;
@@ -144,6 +144,19 @@
 
   .sequence-illustration .illustration-gesture[data-gesture="main"] { animation-duration: 650ms; }
   .esim-flow-illustration .illustration-gesture[data-gesture="flow-main"] { animation-duration: 650ms; }
+}
+
+/* Mobile entry reuses the same finite curves, without emulating hover. */
+@media (hover: none) and (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+  [data-mobile-icon-entry="active"] .illustration-gesture {
+    animation: var(--illustration-gesture) 550ms ease-in-out;
+    animation-delay: 60ms;
+  }
+  .sequence-illustration[data-mobile-icon-entry="active"] .illustration-gesture[data-gesture="main"],
+  .esim-flow-illustration[data-mobile-icon-entry="active"] .illustration-gesture[data-gesture="flow-main"] {
+    animation-duration: 650ms;
+    animation-delay: 0ms;
+  }
 }
 
 /* Whole-scene hover light is independent of spatial motion and preserves idle depth. */
